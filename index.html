@@ -792,7 +792,6 @@
                     
                     <div style="margin-bottom: 20px;">
                         <p><strong>Your Coins:</strong> <span id="withdrawCoins" class="coins">0</span></p>
-                        <!-- MINIMUM WITHDRAWAL CHANGED -->
                         <p><strong>Minimum Withdrawal:</strong> 50 coins (10 coins = 1 PKR)</p>
                         <p><strong>Withdrawal Amount:</strong> <span id="withdrawAmount">0</span> PKR</p>
                     </div>
@@ -821,7 +820,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <!-- MINIMUM WITHDRAWAL CHANGED -->
                         <label for="withdrawCoinsInput">Coins to Withdraw (Min: 50)</label>
                         <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="50">
                     </div>
@@ -1008,7 +1006,6 @@
                 } else {
                     const uid = 'CM' + Date.now();
                     currentUser = { name: fullName, phone: phoneNumber, uid: uid };
-                    // --- THIS IS WHERE NEW USERS ARE CREATED WITH 0 VALUES ---
                     database.ref('users/' + phoneNumber).set({
                         name: fullName, phone: phoneNumber, uid: uid, coins: 0,
                         joined: new Date().toISOString(), spinsUsed: 0, tapsToday: 0, tapCoins: 0,
@@ -1161,11 +1158,101 @@ Let's give them a warm welcome to the community! 🚀💰
             });
         }
         
+        // --- FIXED FUNCTIONS ---
+        function handleSpin() {
+            if (spinsRemaining <= 0) {
+                showRewardModal(-1);
+                return;
+            }
+            spinBtn.disabled = true;
+            spinBtn.textContent = 'Spinning...';
+
+            const rewards = [15, 2, 10, 0, 5, 1];
+            const rewardIndex = Math.floor(Math.random() * rewards.length);
+            const reward = rewards[rewardIndex];
+
+            const currentRotation = parseInt(wheel.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
+            const extraRotation = 360 * 5; 
+            const segmentAngle = 360 / rewards.length;
+            const targetSegmentCenter = (segmentAngle * rewardIndex) + (segmentAngle / 2);
+            const finalRotation = extraRotation + (360 - targetSegmentCenter);
+            
+            wheel.style.transform = `rotate(${currentRotation + finalRotation}deg)`;
+            
+            const newSpinsUsed = (userData.spinsUsed || 0) + 1;
+            database.ref('users/' + currentUser.phone).update({ spinsUsed: newSpinsUsed });
+            
+            setTimeout(() => {
+                if (reward > 0) {
+                    const newCoins = (userData.coins || 0) + reward;
+                    database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+                }
+                showRewardModal(reward);
+            }, 4100);
+        }
+        
+        function handleTap(event) {
+            if (tapCoins >= 100) return;
+            tapsToday++;
+            const updates = { tapsToday: tapsToday };
+            if (tapsToday % 10 === 0) {
+                tapCoins++;
+                const newCoins = (userData.coins || 0) + 1;
+                updates.coins = newCoins;
+                updates.tapCoins = tapCoins;
+            }
+            database.ref('users/' + currentUser.phone).update(updates);
+        }
+
+        function handleCoinFlip(userChoice) {
+            if (isFlipping) return;
+
+            const betAmount = parseInt(betAmountInput.value);
+            const currentCoins = userData.coins || 0;
+
+            if (isNaN(betAmount) || betAmount < 10) {
+                alert('Minimum bet is 10 coins.');
+                return;
+            }
+            if (betAmount > currentCoins) {
+                alert("You don't have enough coins to make this bet.");
+                return;
+            }
+
+            isFlipping = true;
+            flipResult.textContent = '';
+            headsBtn.disabled = true;
+            tailsBtn.disabled = true;
+            
+            coin.classList.add('flipping');
+            
+            setTimeout(() => {
+                const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+                let newCoins;
+
+                if (userChoice === result) {
+                    newCoins = currentCoins + betAmount;
+                    flipResult.textContent = `You Won ${betAmount * 2} Coins! 🎉`;
+                    flipResult.className = 'win-text';
+                } else {
+                    newCoins = currentCoins - betAmount;
+                    flipResult.textContent = `You Lost ${betAmount} Coins! 😔`;
+                    flipResult.className = 'lose-text';
+                }
+                
+                database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+
+                coin.classList.remove('flipping');
+                headsBtn.disabled = false;
+                tailsBtn.disabled = false;
+                isFlipping = false;
+            }, 1500);
+        }
+        
         function updateWithdrawAmount() {
             const coins = parseInt(withdrawCoinsInput.value) || 0;
             const amount = coins / 10;
             withdrawAmountSpan.textContent = amount.toFixed(2);
-            // MINIMUM WITHDRAWAL CHANGED
             withdrawBtn.disabled = coins < 50 || coins > (userData.coins || 0) || !selectedWithdrawMethod || !document.getElementById('accountNumber').value;
         }
         
@@ -1191,9 +1278,7 @@ Let's give them a warm welcome to the community! 🚀💰
 
             const message = `
 💸 <b>New Withdrawal Request!</b> 💸
-
 A user has requested a withdrawal. Please process it soon.
-
 <b><u>User Details:</u></b>
 👤 <b>Name:</b>
 <code>${userData.name}</code>
@@ -1201,7 +1286,6 @@ A user has requested a withdrawal. Please process it soon.
 <code>${userData.phone}</code>
 🆔 <b>UID:</b>
 <code>${userData.uid}</code>
-
 <b><u>Withdrawal Info:</u></b>
 🏦 <b>Method:</b> ${method}
 #️⃣ <b>Account:</b>
@@ -1302,4 +1386,4 @@ A user has requested a withdrawal. Please process it soon.
     <script type='text/javascript' src='//pl27875387.effectivegatecpm.com/f3/13/08/f31308e7b78fce49e92651ffd5b9ee4d.js'></script>
 
 </body>
-    </html>
+</html>
