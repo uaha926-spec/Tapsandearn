@@ -2,746 +2,1039 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Tap & Spin Pro</title>
-    
-    <!-- Firebase SDKs -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinMaster - Earn Rewards</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <style>
-        /* --- Fonts & Global Setup --- */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
         :root {
-            --primary-start: #4338ca;
-            --primary-end: #0e7490;
-            --background: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --white: #ffffff;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --disabled-bg: #e2e8f0;
-            --disabled-text: #94a3b8;
-            --border-light: #e2e8f0;
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --success: #00b09b;
+            --warning: #ff9a00;
+            --danger: #ff416c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html { height: 100%; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100%;
-            padding: 1rem;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: var(--dark);
         }
-
-        /* --- Main Container & Screen Transitions --- */
+        
         .container {
-            width: 100%;
-            max-width: 420px;
-            height: 95vh;
-            max-height: 800px;
-            background: var(--background);
-            border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-            overflow: hidden;
-            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-btn {
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
         }
         
-        .screen {
-            padding: 2.5rem 2rem;
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
+        .nav-btn.active {
+            background: var(--gradient);
+            color: white;
         }
-
-        .screen.hidden {
-            opacity: 0;
-            transform: scale(0.98);
-            pointer-events: none;
+        
+        .section {
+            display: none;
         }
-
-        /* --- Auth Screens --- */
-        .auth-screen { text-align: center; }
-        .auth-screen h1 {
-            font-size: 2rem;
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5ee;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 12px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 0.75rem;
-            background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
         }
-        .auth-screen p { margin-bottom: 2.5rem; color: var(--text-secondary); font-size: 1rem; }
-
-        .form-group { margin-bottom: 1.5rem; text-align: left; position: relative; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
-        .form-group input { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--border-light); border-radius: 12px; font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; }
-        .form-group input:focus, .form-group input:focus-visible { outline: none; border-color: var(--primary-start); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1); }
-        .form-group.error input { border-color: var(--danger); animation: shake 0.4s; }
         
-        /* --- PROFESSIONAL WARNING STYLE --- */
-        .form-warning {
-            background-color: #fffbeb;
-            border-left: 4px solid #fbbF24;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            text-align: left;
-            font-size: 0.85rem;
-            color: #b45309;
-            margin-top: -0.5rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 20px auto;
         }
-
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-
-        /* --- Button Styles --- */
-        .btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: var(--white); cursor: pointer; background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); transition: transform 0.2s, box-shadow 0.2s; margin-top: 1rem; box-shadow: 0 4px 15px -5px rgba(67, 56, 202, 0.5); position: relative; overflow: hidden; }
-        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent); transition: left 0.6s ease; }
-        .btn:hover::before { left: 100%; }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px -5px rgba(67, 56, 202, 0.6); }
-        .btn:active:not(:disabled) { transform: translateY(0); }
-        .btn:disabled { background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
-        .btn-secondary { background: var(--card-bg); border: 2px solid var(--primary-start); color: var(--primary-start); box-shadow: none; }
-        .btn-success { background: var(--success); box-shadow: 0 4px 15px -5px rgba(22, 163, 74, 0.5); }
-        .btn-danger { background: var(--danger); box-shadow: 0 4px 15px -5px rgba(220, 38, 38, 0.5); }
-        .btn-link { background: none; border: none; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 1.5rem; padding: 0; box-shadow: none; }
-        .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: var(--white); animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* --- App Screen --- */
-        #app-screen { padding: 0; display: flex; flex-direction: column; height: 100%; }
-        .app-header { background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); color: var(--white); padding: 1.5rem; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; text-align: center; position: relative; z-index: 10; flex-shrink: 0; box-shadow: 0 10px 20px -10px rgba(67,56,202,0.4); }
-        #logoutBtn { position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.15); border: none; border-radius: 8px; padding: 0.5rem; cursor: pointer; transition: background-color 0.2s; }
-        #logoutBtn:hover { background: rgba(255, 255, 255, 0.3); }
-        #logoutBtn svg { width: 20px; height: 20px; stroke: var(--white); display: block; }
-        .app-header h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.25rem; text-align: center; }
-        .stat-item { background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 12px; }
-        .stat-item .label { font-size: 0.8rem; opacity: 0.8; margin-bottom: 0.25rem; }
-        .stat-item .value { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
-        .value .icon { width: 24px; height: 24px; }
-
-        .app-main { padding: 1.5rem; overflow-y: auto; flex-grow: 1; }
-        .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
-        .card h3 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600; }
         
-        /* Spin Wheel */
-        #wheel-container { position: relative; width: 100%; max-width: 280px; margin: 0 auto; }
-        #wheelCanvas { width: 100%; height: auto; }
-        #spin-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: var(--white); border-radius: 50%; border: 8px solid var(--card-bg); box-shadow: 0 0 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary-start); cursor: pointer; transition: transform 0.2s; }
-        #spin-button:hover { transform: translate(-50%, -50%) scale(1.1); }
-        #wheel-container::after { content: '▼'; font-size: 2rem; color: var(--danger); position: absolute; top: -15px; left: 50%; transform: translateX(-50%); }
-
-        /* Tap to Earn */
-        #tap-button { width: 110px; height: 110px; border-radius: 50%; margin: 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: var(--white); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); cursor: pointer; user-select: none; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 8px 20px -8px rgba(67, 56, 202, 0.7); }
-        #tap-button:active { transform: scale(0.95); box-shadow: 0 4px 15px -8px rgba(67, 56, 202, 0.7); }
-        .progress-bar { width: 100%; height: 10px; background-color: var(--disabled-bg); border-radius: 5px; overflow: hidden; margin-top: 1.5rem; }
-        #tap-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); transition: width 0.3s ease; }
-        #tap-info, #watch-ad-info { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.75rem; }
-        
-        /* --- Toast Notification --- */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background-color: var(--text-primary); color: var(--white); padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(-20px); animation: fadeIn 0.5s forwards, fadeOut 0.5s 3.5s forwards; }
-        .toast.success { background-color: var(--success); }
-        .toast.error { background-color: var(--danger); }
-        .toast-icon { width: 20px; height: 20px; flex-shrink: 0; }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
-
-        /* --- Custom Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 1rem; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 2rem; max-width: 380px; width: 100%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
-        .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-content h3 { font-size: 1.4rem; margin-bottom: 0.75rem; }
-        .modal-content p { color: var(--text-secondary); margin-bottom: 2rem; white-space: pre-wrap; line-height: 1.6; }
-        .modal-actions { display: flex; gap: 1rem; }
-
-        /* --- Flying Coin Animation --- */
-        .flying-coin { position: fixed; width: 24px; height: 24px; background: #facc15; border-radius: 50%; z-index: 9999; transition: transform 0.8s cubic-bezier(0.5, -0.5, 1, 1), opacity 0.8s linear; pointer-events: none; }
-    
-        /* Ad container styling */
-        .ad-banner-container {
-            margin: 1.5rem 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- WHATSAPP FAB --- */
-        .whatsapp-fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #25D366;
+        .wheel {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
+            background: conic-gradient(
+                #ff9a00 0deg 60deg,
+                #00b09b 60deg 120deg,
+                #2575fc 120deg 180deg,
+                #6a11cb 180deg 240deg,
+                #ff416c 240deg 300deg,
+                #ffcd56 300deg 360deg
+            );
+            position: relative;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--danger);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+        }
+        
+        .tap-area {
+            width: 200px;
+            height: 200px;
+            background: var(--gradient);
+            border-radius: 50%;
+            margin: 20px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 999;
-            transition: transform 0.2s ease-in-out;
-        }
-        .whatsapp-fab:hover {
-            transform: scale(1.1);
-        }
-        .whatsapp-fab svg {
-            width: 32px;
-            height: 32px;
-            fill: #fff;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.1s;
+            user-select: none;
         }
         
-        /* --- MAINTENANCE SCREEN --- */
-        #maintenance-screen {
+        .tap-area:active {
+            transform: scale(0.95);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .alert-warning {
+            background: rgba(255, 154, 0, 0.2);
+            border-left: 4px solid var(--warning);
+        }
+        
+        .alert-info {
+            background: rgba(37, 117, 252, 0.2);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .withdraw-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e1e5ee;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .withdraw-option.selected {
+            border-color: var(--primary);
+            background: rgba(106, 17, 203, 0.1);
+        }
+        
+        .withdraw-option i {
+            font-size: 24px;
+            margin-right: 15px;
+            color: var(--primary);
+        }
+        
+        .invite-box {
+            background: var(--gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .invite-code {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
             align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
             text-align: center;
+            animation: popIn 0.5s;
+        }
+
+        .modal-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon.win {
+            color: var(--success);
+        }
+
+        .modal-icon.lose {
+            color: var(--warning);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .coins {
+            color: #ffcd56;
+            font-weight: 700;
+        }
+        
+        .ad-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px;
+            animation: firework 1s ease-out;
+        }
+        
+        @keyframes firework {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--colors);
+            top: -10px;
+            animation: confetti-fall 5s linear forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* --- NUOVO STILE: Pulsante di Supporto WhatsApp --- */
+        .whatsapp-support {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25D366;
             color: white;
-            padding: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: transform 0.3s;
+            text-decoration: none;
         }
-        .maintenance-icon {
-            font-size: 5rem;
-            animation: spin 4s linear infinite;
-        }
-        #maintenance-screen h2 {
-            font-size: 1.8rem;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        #maintenance-screen p {
-            font-size: 1rem;
-            max-width: 350px;
-            line-height: 1.6;
-            opacity: 0.9;
+
+        .whatsapp-support:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-    <!-- MAINTENANCE SCREEN HTML -->
-    <div id="maintenance-screen" class="hidden">
-        <div class="maintenance-icon">⚙️</div>
-        <h2>🛠️ System Maintenance in Progress 🛠️</h2>
-        <p>We are currently deploying an exciting new update to improve your experience. The app is temporarily unavailable.<br><br>We will be back online shortly. Thank you for your patience!</p>
-    </div>
-    
-    <div id="toast-container"></div>
     <div class="container">
-        <!-- ===== LANDING SCREEN ===== -->
-        <div id="landing-screen" class="screen auth-screen">
-            <h1>Tap & Spin Pro</h1>
-            <p>The ultimate rewards app. Login or sign up to get started.</p>
-            <button id="goToLoginBtn" class="btn">Login</button>
-            <button id="goToSignUpBtn" class="btn btn-secondary">Sign Up</button>
-        </div>
-
-        <!-- ===== SIGN UP SCREEN ===== -->
-        <div id="signup-screen" class="screen auth-screen hidden">
-            <h1>Create Account</h1>
-            <p>Join us and start your earning journey today!</p>
-            <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" placeholder="e.g. John Doe"></div>
-            <div class="form-group"><label for="signUpPhone">Easypaisa / Jazzcash Number</label><input type="tel" id="signUpPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
-            <div class="form-warning">
-                ⚠️ <strong>CRITICAL:</strong> You <strong>MUST</strong> enter your Easypaisa or Jazzcash number. Payments to incorrect numbers are <strong>final and cannot be recovered</strong>.
+        <!-- Welcome Modal -->
+        <div id="welcomeModal" class="modal" style="display: flex;">
+            <div class="modal-content">
+                <h2 style="margin-bottom: 15px;">🎉 Stay Tuned With Us! 🎉</h2>
+                <p style="margin-bottom: 20px; font-size: 18px;">We're constantly adding new features and exciting updates to make your earning experience even better!</p>
+                <button class="btn btn-primary" onclick="closeWelcomeModal()">Let's Get Started! 🚀</button>
             </div>
-            <button id="signUpBtn" class="btn"><span>Sign Up</span></button>
-            <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
         </div>
 
-        <!-- ===== LOGIN SCREEN ===== -->
-        <div id="login-screen" class="screen auth-screen hidden">
-            <h1>Welcome Back!</h1>
-            <p>Enter your number to continue.</p>
-            <div class="form-group"><label for="loginPhone">Easypaisa / Jazzcash Number</label><input type="tel" id="loginPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
-            <button id="loginBtn" class="btn"><span>Login</span></button>
-            <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
+        <!-- Spin Reward Modal -->
+        <div id="rewardModal" class="modal">
+            <div class="modal-content">
+                <div id="rewardModalIcon" class="modal-icon"></div>
+                <h2 id="rewardModalTitle" style="margin-bottom: 15px;"></h2>
+                <p id="rewardModalMessage" style="margin-bottom: 20px; font-size: 18px;"></p>
+                <button class="btn btn-primary" onclick="closeRewardModal()">Awesome!</button>
+            </div>
         </div>
-
-        <!-- ===== APP SCREEN ===== -->
-        <div id="app-screen" class="screen hidden">
-            <header class="app-header">
-                <button id="logoutBtn" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-                <h2 id="userName"></h2>
-                <div class="stats-grid">
-                    <div class="stat-item"><div class="label">Total Coins</div><div class="value" id="totalCoins"></div></div>
-                    <div class="stat-item"><div class="label">Spins Left</div><div class="value" id="spinsLeft"></div></div>
+        
+        <!-- Login Section -->
+        <div id="loginSection" class="section active">
+            <div class="header">
+                <h1><i class="fas fa-coins"></i> CoinMaster</h1>
+                <p>Earn Rewards Daily! 💰</p>
+            </div>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 20px; text-align: center;">Login to Start Earning 🎯</h2>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> You need to bind your Easypaisa or JazzCash number otherwise you'll not be able to withdraw.
                 </div>
-            </header>
-            <main class="app-main">
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" class="form-control" placeholder="03XX-XXXXXXX" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Login & Start Earning 🚀</button>
+                </form>
+            </div>
+            
+            <div class="ad-container">
+                <!-- Adsterra Ad Script -->
+            </div>
+        </div>
+        
+        <!-- Main App Section -->
+        <div id="appSection" class="section">
+            <div class="header">
+                <h1><i class="fas fa-coins"></i> CoinMaster</h1>
+                <p>Welcome, <span id="userName">User</span>! 🎉</p>
+                <p>Coins: <span id="totalCoins" class="coins">0</span> 💰</p>
+            </div>
+            
+            <div class="nav">
+                <button class="nav-btn active" data-section="spinsSection">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Spins</span>
+                </button>
+                <button class="nav-btn" data-section="tapsSection">
+                    <i class="fas fa-hand-pointer"></i>
+                    <span>Taps</span>
+                </button>
+                <button class="nav-btn" data-section="profileSection">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </button>
+                <button class="nav-btn" data-section="withdrawSection">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </button>
+            </div>
+            
+            <!-- Spins Section -->
+            <div id="spinsSection" class="section active">
                 <div class="card">
-                    <h3>🎡 Spin to Earn</h3>
-                    <div id="wheel-container">
-                        <canvas id="wheelCanvas" width="500" height="500"></canvas>
-                        <div id="spin-button">SPIN</div>
+                    <h2 style="text-align: center; margin-bottom: 15px;">Daily Spins 🎡</h2>
+                    <p style="text-align: center; margin-bottom: 15px;">Spins Remaining: <span id="spinsRemaining">10</span>/10</p>
+                    
+                    <div class="wheel-container">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel" id="wheel">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary);">SPIN</div>
+                        </div>
+                    </div>
+                    
+                    <button id="spinBtn" class="btn btn-primary">Spin Now! 🎯</button>
+                    
+                    <div class="alert alert-info" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i> Spin the wheel to win coins! 10 spins per day.
                     </div>
                 </div>
                 
-                <!-- Banner Ad 1 -->
-                <div class="ad-banner-container">
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : '01efd94df9ed3ed4a270aa47108fe17e',
-                            'format' : 'iframe',
-                            'height' : 50,
-                            'width' : 320,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                <div class="ad-container">
+                    <!-- Adsterra Ad Script -->
                 </div>
-
+            </div>
+            
+            <!-- Taps Section -->
+            <div id="tapsSection" class="section">
                 <div class="card">
-                    <h3>📺 Watch Ads to Earn</h3>
-                    <button id="watchAdBtn" class="btn"><span>Watch Ad</span></button>
-                    <p id="watch-ad-info"></p>
-                </div>
-
-                 <!-- Banner Ad 2 -->
-                 <div class="ad-banner-container">
-                    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
-                </div>
-
-                <div class="card">
-                    <h3>👆 Tap to Earn</h3>
-                    <div id="tap-button">Tap!</div>
-                    <div class="progress-bar"><div id="tap-progress-fill"></div></div>
-                    <div id="tap-info"></div>
+                    <h2 style="text-align: center; margin-bottom: 15px;">Tap to Earn 👆</h2>
+                    <p style="text-align: center; margin-bottom: 15px;">Taps Today: <span id="tapsToday">0</span>/1000 (Max: 100 coins/day)</p>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="tapCoins">0</div>
+                            <div>Coins Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="tapProgress">0%</div>
+                            <div>Progress</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tap-area" id="tapArea">
+                        TAP ME!<br>
+                        <small>10 taps = 1 coin</small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Tap the circle to earn coins! 10 taps = 1 coin.
+                    </div>
                 </div>
                 
-                <!-- Banner Ad 3 -->
-                <div class="ad-banner-container">
-                     <script type="text/javascript">
-                        atOptions = {
-                            'key' : '01efd94df9ed3ed4a270aa47108fe17e',
-                            'format' : 'iframe',
-                            'height' : 50,
-                            'width' : 320,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                <div class="ad-container">
+                    <!-- Adsterra Ad Script -->
                 </div>
-
+            </div>
+            
+            <!-- Profile Section -->
+            <div id="profileSection" class="section">
                 <div class="card">
-                    <h3>💸 Withdraw Coins</h3>
-                    <p id="withdraw-info" style="text-align:center; margin-bottom:1rem; color: var(--text-secondary);"></p>
-                    <button id="withdrawBtn" class="btn"><span>Withdraw</span></button>
+                    <h2 style="text-align: center; margin-bottom: 20px;">Your Profile 👤</h2>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="profileCoins">0</div>
+                            <div>Total Coins</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="profileSpins">0</div>
+                            <div>Daily Spins</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <p><strong>Name:</strong> <span id="profileName">-</span></p>
+                        <p><strong>Phone:</strong> <span id="profilePhone">-</span></p>
+                        <p><strong>UID:</strong> <span id="profileUID">-</span></p>
+                        <p><strong>Joined:</strong> <span id="profileJoined">-</span></p>
+                    </div>
+                    
+                    <div class="invite-box">
+                        <h3>Invite Friends 👥</h3>
+                        <p>Share your invite code and get +5 spins and +20 coins daily when they join!</p>
+                        <div class="invite-code" id="inviteCode">COINMASTER-XXXX</div>
+                        <button class="btn btn-warning" onclick="copyInviteCode()">Copy Invite Code</button>
+                    </div>
                 </div>
-            </main>
-        </div>
-    </div>
-    
-    <!-- Custom Modal -->
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="modalTitle"></h3>
-            <p id="modalMessage"></p>
-            <div class="modal-actions">
-                <button id="modalCancel" class="btn btn-secondary" style="margin-top:0;">Cancel</button>
-                <button id="modalConfirm" class="btn" style="margin-top:0;">Confirm</button>
+                
+                <div class="ad-container">
+                    <!-- Adsterra Ad Script -->
+                </div>
+            </div>
+            
+            <!-- Withdraw Section -->
+            <div id="withdrawSection" class="section">
+                <div class="card">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Withdraw Earnings 💸</h2>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> You need to connect a VPN to withdraw otherwise your withdraw will be rejected.
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p><strong>Your Coins:</strong> <span id="withdrawCoins" class="coins">0</span></p>
+                        <p><strong>Minimum Withdrawal:</strong> 200 coins (10 coins = 1 PKR)</p>
+                        <p><strong>Withdrawal Amount:</strong> <span id="withdrawAmount">0</span> PKR</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Select Payment Method:</label>
+                        <div class="withdraw-option" data-method="easypaisa">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div>
+                                <h3>Easypaisa</h3>
+                                <p>Withdraw to your Easypaisa account</p>
+                            </div>
+                        </div>
+                        <div class="withdraw-option" data-method="jazzcash">
+                            <i class="fas fa-wallet"></i>
+                            <div>
+                                <h3>JazzCash</h3>
+                                <p>Withdraw to your JazzCash account</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accountNumber">Account Number</label>
+                        <input type="text" id="accountNumber" class="form-control" placeholder="Enter your account number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="withdrawCoinsInput">Coins to Withdraw (Min: 200)</label>
+                        <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="200">
+                    </div>
+                    
+                    <button id="withdrawBtn" class="btn btn-success" disabled>Request Withdrawal</button>
+                </div>
+                
+                <div class="ad-container">
+                    <!-- Adsterra Ad Script -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- WHATSAPP FAB -->
-    <a href="https://wa.me/923449292933?text=Assalam-O-alaikum%20Haroon%20bhai" class="whatsapp-fab" target="_blank" aria-label="Contact on WhatsApp">
-        <svg viewBox="0 0 32 32"><path d=" M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.044-.53-.044-.315 0-.58.158-.82.158-.843 0-1.948.516-2.594 1.232-.69.77-1.39 2.906 1.39 5.895 2.78 2.988 5.108 3.518 5.78 3.518.287 0 .83-.128 1.15-.244.56-.17.99-.945 1.19-1.49.2-.545.2-.945.143-1.19-.072-.244-.214-.372-.486-.372zm-2.94 6.466c-3.268 0-5.93-2.662-5.93-5.93 0-3.268 2.662-5.93 5.93-5.93 3.268 0 5.93 2.662 5.93 5.93 0 3.268-2.662 5.93-5.93 5.93zm8.863-16.425c-1.518-1.518-3.54-2.355-5.69-2.355s-4.17.836-5.69 2.355c-1.518 1.518-2.355 3.54-2.355 5.69s.836 4.17 2.355 5.69c1.518 1.518 3.54 2.355 5.69 2.355s4.17-.836 5.69-2.355c1.518-1.518 2.355-3.54 2.355-5.69s-.836-4.17-2.355-5.69z"></path></svg>
+    <!-- --- NUOVO ELEMENTO: Pulsante di Supporto WhatsApp --- -->
+    <a href="https://wa.me/923449292933?text=Assalam-O-Alaikum%20Haroon%20bhai" class="whatsapp-support" target="_blank" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
     </a>
 
-<script>
-(function() {
-    "use strict";
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD81bZWx7Bw3Y6YAY753OyMur49vLcEGTY",
+            authDomain: "calling-b5573.firebaseapp.com",
+            databaseURL: "https://calling-b5573-default-rtdb.firebaseio.com",
+            projectId: "calling-b5573",
+            storageBucket: "calling-b5573.firebasestorage.app",
+            messagingSenderId: "625719430185",
+            appId: "1:625719430185:web:cae7ca1f34eb2fb83ba038",
+            measurementId: "G-06VR4RXLTY"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Telegram Bot Configuration
+        const TELEGRAM_BOT_TOKEN = "8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k";
+        const TELEGRAM_CHAT_ID = "7122620719";
+    </script>
 
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyD81bZWx7Bw3Y6YAY753OyMur49vLcEGTY",
-        authDomain: "calling-b5573.firebaseapp.com",
-        databaseURL: "https://calling-b5573-default-rtdb.firebaseio.com",
-        projectId: "calling-b5573",
-        storageBucket: "calling-b5573.appspot.com",
-        messagingSenderId: "625719430185",
-        appId: "1:625719430185:web:cae7ca1f34eb2fb83ba038",
-        measurementId: "G-06VR4RXLTY"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // --- APP CONFIGURATION ---
-    const CONFIG = {
-        DB_CURRENT_USER_SESSION_KEY: 'tapSpinProCurrentUserPhone',
-        DATA_RESET_FLAG: 'data_reset_v2', // New flag for this reset
-        DAILY_SPIN_LIMIT: 10,
-        DAILY_AD_WATCH_LIMIT: 10,
-        MAX_TAP_COINS_PER_DAY: 100,
-        TAPS_PER_COIN: 10,
-        MIN_SPIN_REWARD: 5,
-        MAX_SPIN_REWARD: 10,
-        AD_WATCH_REWARD: 10,
-        AD_WATCH_DURATION: 15,
-        TAPS_BEFORE_AD: 10,
-        MIN_WITHDRAWAL_COINS: 200,
-        COIN_TO_RUPEE_RATE: 10,
-        AD_REDIRECT_URL: 'https://www.highperformanceformat.com/sz4d2z7?key=4c56e305d1843c054328456c22c07519',
-        WHEEL_VISUAL_SEGMENTS: [ // Only for visual effect, not for reward calculation
-            { value: 5, color: '#fecaca' }, { value: 8, color: '#fed7aa' },
-            { value: 10, color: '#fef08a' }, { value: 6, color: '#d9f99d' },
-            { value: 9, color: '#bfdbfe' }, { value: 7, color: '#e9d5ff' },
-        ],
-        TELEGRAM: {
-            TOKEN_PART_A: "8099895542",
-            TOKEN_PART_B: "AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k",
-            CHAT_ID: "7122620719"
-        },
-        MESSAGES: {
-            INVALID_INPUT: 'Please enter a valid name and 11-digit number.',
-            INVALID_PHONE: 'Please enter a valid 11-digit phone number.',
-            USER_EXISTS: 'This number is already registered. Multi-account usage is forbidden.',
-            LOGIN_FAILED: 'No account found with this number. Please sign up first.',
-            LOGOUT_CONFIRM: 'Are you sure you want to logout?',
-            EXIT_CONFIRM: 'Are you sure you want to exit the app?',
-            FIREBASE_ERROR: "Network error. Please check your connection and try again."
-        }
-    };
-    
-    // --- ADS MODULE ---
-    const Ads = {
-        triggerRedirectAd() {
-            // This function opens the ad link in a new tab.
-            // It must be called from within a user click event to avoid pop-up blockers.
-            const adWindow = window.open(CONFIG.AD_REDIRECT_URL, '_blank');
-            if (!adWindow) {
-                UI.showToast("Please disable your pop-up blocker to earn.", "error");
-            }
-        }
-    };
-
-    // --- UI, ICONS, GAME MODULES ---
-    const ICONS = { coin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>`, spin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001a7.5 7.5 0 01-1.08 3.904l-4.06 4.06a7.5 7.5 0 01-12.14 0 7.5 7.5 0 010-12.14l4.06-4.06a7.5 7.5 0 013.904-1.08h.001v4.992a2.25 2.25 0 003.287 2.13l-1.084-1.084a.25.25 0 01.178-.426h1.628a2.25 2.25 0 012.25 2.25v1.628a.25.25 0 01-.427.178l-1.084-1.084a2.25 2.25 0 00-2.13 3.287z" /></svg>`, loader: `<div class="loader"></div>`, toastSuccess: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`, toastError: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>` };
-    const UI = { elements: { container: document.querySelector('.container'), screens: document.querySelectorAll('.screen'), maintenanceScreen: document.getElementById('maintenance-screen'), goToLoginBtn: document.getElementById('goToLoginBtn'), goToSignUpBtn: document.getElementById('goToSignUpBtn'), signUpBtn: document.getElementById('signUpBtn'), loginBtn: document.getElementById('loginBtn'), logoutBtn: document.getElementById('logoutBtn'), spinButton: document.getElementById('spin-button'), tapButton: document.getElementById('tap-button'), withdrawBtn: document.getElementById('withdrawBtn'), watchAdBtn: document.getElementById('watchAdBtn'), userNameDisplay: document.getElementById('userName'), totalCoinsDisplay: document.getElementById('totalCoins'), spinsLeftDisplay: document.getElementById('spinsLeft'), tapProgressFill: document.getElementById('tap-progress-fill'), tapInfo: document.getElementById('tap-info'), watchAdInfo: document.getElementById('watch-ad-info'), withdrawInfo: document.getElementById('withdraw-info'), toastContainer: document.getElementById('toast-container'), wheelCanvas: document.getElementById('wheelCanvas'), modal: document.getElementById('customModal'), modalTitle: document.getElementById('modalTitle'), modalMessage: document.getElementById('modalMessage'), modalCancel: document.getElementById('modalCancel'), modalConfirm: document.getElementById('modalConfirm'), modalActions: document.querySelector('.modal-actions'), }, showScreen(screenId) { this.elements.screens.forEach(s => s.classList.toggle('hidden', s.id !== screenId)); }, showToast(message, type = 'success') { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = `${type === 'success' ? ICONS.toastSuccess : ICONS.toastError}<span>${message}</span>`; this.elements.toastContainer.appendChild(toast); setTimeout(() => toast.remove(), 4000); }, showModal(title, message, confirmClass = '', confirmText = 'Confirm', cancelText = 'Cancel') { return new Promise((resolve) => { this.elements.modalTitle.textContent = title; this.elements.modalMessage.textContent = message; this.elements.modalConfirm.className = `btn ${confirmClass}`.trim(); this.elements.modalConfirm.textContent = confirmText; if (!cancelText) { this.elements.modalCancel.style.display = 'none'; this.elements.modalActions.style.justifyContent = 'center'; } else { this.elements.modalCancel.textContent = cancelText; this.elements.modalCancel.style.display = 'flex'; this.elements.modalActions.style.justifyContent = ''; } this.elements.modal.classList.add('visible'); const handleConfirm = () => { this.elements.modal.classList.remove('visible'); resolve(true); cleanup(); }; const handleCancel = () => { this.elements.modal.classList.remove('visible'); resolve(false); cleanup(); }; const cleanup = () => { this.elements.modalConfirm.removeEventListener('click', handleConfirm); this.elements.modalCancel.removeEventListener('click', handleCancel); }; this.elements.modalConfirm.addEventListener('click', handleConfirm, { once: true }); if (cancelText) { this.elements.modalCancel.addEventListener('click', handleCancel, { once: true }); } }); }, setLoading(button, isLoading) { const span = button.querySelector('span'); if (isLoading) { button.disabled = true; if(span) span.style.display = 'none'; button.insertAdjacentHTML('afterbegin', ICONS.loader); } else { button.disabled = false; if(span) span.style.display = 'inline'; const loader = button.querySelector('.loader'); if(loader) loader.remove(); } }, updateApp(user) { this.elements.userNameDisplay.textContent = `Welcome, ${user.name}!`; this.elements.totalCoinsDisplay.innerHTML = `${user.coins} ${ICONS.coin}`; this.elements.spinsLeftDisplay.innerHTML = `${user.spinsLeft} ${ICONS.spin}`; const tapCoinsEarned = Math.floor(user.tapsToday / CONFIG.TAPS_PER_COIN); const tapLimitReached = tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY; this.elements.tapInfo.textContent = tapLimitReached ? "Daily tap limit reached" : `${tapCoinsEarned}/${CONFIG.MAX_TAP_COINS_PER_DAY} coins earned from taps today.`; this.elements.tapButton.disabled = tapLimitReached; this.elements.tapProgressFill.style.width = `${(user.tapProgress / CONFIG.TAPS_PER_COIN) * 100}%`; const adsLeft = CONFIG.DAILY_AD_WATCH_LIMIT - user.adsWatchedToday; this.elements.watchAdInfo.textContent = adsLeft > 0 ? `${adsLeft} ads left today.` : "Daily ad limit reached."; this.elements.watchAdBtn.disabled = adsLeft <= 0; const canWithdraw = user.coins >= CONFIG.MIN_WITHDRAWAL_COINS; const withdrawAmount = CONFIG.MIN_WITHDRAWAL_COINS / CONFIG.COIN_TO_RUPEE_RATE; this.elements.withdrawBtn.disabled = !canWithdraw; this.elements.withdrawInfo.textContent = `${CONFIG.MIN_WITHDRAWAL_COINS} Coins = ₹${withdrawAmount}`; this.elements.withdrawBtn.querySelector('span').textContent = canWithdraw ? `Withdraw ₹${withdrawAmount}` : `Need ${CONFIG.MIN_WITHDRAWAL_COINS - user.coins} more coins`; }, animateCoin(sourceElement) { const coin = document.createElement('div'); coin.className = 'flying-coin'; this.elements.container.appendChild(coin); const startRect = sourceElement.getBoundingClientRect(); const endRect = this.elements.totalCoinsDisplay.getBoundingClientRect(); coin.style.left = `${startRect.left + startRect.width / 2}px`; coin.style.top = `${startRect.top + startRect.height / 2}px`; requestAnimationFrame(() => { coin.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.5)`; coin.style.opacity = '0'; }); coin.addEventListener('transitionend', () => coin.remove()); }, toggleInputError(inputElement, hasError) { const formGroup = inputElement.closest('.form-group'); if (formGroup) { formGroup.classList.toggle('error', hasError); } } };
-    const Game = { ctx: UI.elements.wheelCanvas.getContext('2d'), spinAngleStart: 0, spinTime: 0, spinTimeTotal: 0, isSpinning: false, drawWheel() { const segments = CONFIG.WHEEL_VISUAL_SEGMENTS; const { width, height } = UI.elements.wheelCanvas; const centerX = width / 2; const centerY = height / 2; const radius = Math.min(centerX, centerY) * 0.95; const arcSize = 2 * Math.PI / segments.length; this.ctx.clearRect(0, 0, width, height); this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 2; this.ctx.font = 'bold 24px Poppins'; for (let i = 0; i < segments.length; i++) { const angle = this.spinAngleStart + i * arcSize; this.ctx.fillStyle = segments[i].color; this.ctx.beginPath(); this.ctx.arc(centerX, centerY, radius, angle, angle + arcSize); this.ctx.lineTo(centerX, centerY); this.ctx.fill(); this.ctx.stroke(); this.ctx.save(); this.ctx.fillStyle = '#334155'; this.ctx.translate(centerX + Math.cos(angle + arcSize / 2) * radius * 0.7, centerY + Math.sin(angle + arcSize / 2) * radius * 0.7); this.ctx.rotate(angle + arcSize / 2 + Math.PI / 2); this.ctx.fillText(segments[i].value, -this.ctx.measureText(segments[i].value).width / 2, 0); this.ctx.restore(); } }, spin() { this.spinTime += 30; if (this.spinTime >= this.spinTimeTotal) { this.stopSpin(); return; } const spinAngle = this.spinAngleStart - this.easeOut(this.spinTime, 0, this.spinAngleStart, this.spinTimeTotal); this.spinAngleStart += (spinAngle * Math.PI / 180); this.drawWheel(); requestAnimationFrame(this.spin.bind(this)); }, startSpin() { if (this.isSpinning || State.currentUser.spinsLeft <= 0) { UI.showToast("No spins left for today!", 'error'); return; } Ads.triggerRedirectAd(); this.isSpinning = true; State.currentUser.spinsLeft--; App.vibrate(50); this.spinTime = 0; this.spinTimeTotal = Math.random() * 3000 + 4000; const degrees = Math.random() * 3600 + 3600; this.spinAngleStart = degrees * Math.PI / 180; this.spin(); }, stopSpin() { this.isSpinning = false; const { MIN_SPIN_REWARD, MAX_SPIN_REWARD } = CONFIG; const coinsWon = Math.floor(Math.random() * (MAX_SPIN_REWARD - MIN_SPIN_REWARD + 1)) + MIN_SPIN_REWARD; UI.showToast(`You won ${coinsWon} coins!`, 'success'); App.vibrate([100, 50, 100]); State.currentUser.coins += coinsWon; setTimeout(() => { UI.animateCoin(UI.elements.spinButton); State.saveCurrentUser(); UI.updateApp(State.currentUser); }, 500); }, easeOut(t, b, c, d) { const ts = (t /= d) * t; const tc = ts * t; return b + c * (tc + -3 * ts + 3 * t); } };
-    
-    // --- API SERVICE (Telegram) ---
-    const API = { async sendTelegramMessage(message) { const { TOKEN_PART_A, TOKEN_PART_B, CHAT_ID } = CONFIG.TELEGRAM; const url = `https://api.telegram.org/bot${TOKEN_PART_A}:${TOKEN_PART_B}/sendMessage`; try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' }) }); if (!response.ok) throw new Error('Telegram API error'); } catch (error) { console.error('Telegram message failed:', error); UI.showToast('Could not send system notification.', 'error'); } } };
-
-    // --- STATE MANAGER (Firebase) ---
-    const State = { currentUser: null, async saveCurrentUser() { if (!this.currentUser) return; try { await database.ref('users/' + this.currentUser.phone).set(this.currentUser); } catch (error) { console.error("Firebase save error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); } }, async fetchUser(phone) { try { const snapshot = await database.ref('users/' + phone).once('value'); return snapshot.val(); } catch (error) { console.error("Firebase fetch error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); return null; } }, setCurrentUser(user) { this.currentUser = user; if (user) { localStorage.setItem(CONFIG.DB_CURRENT_USER_SESSION_KEY, user.phone); } else { localStorage.removeItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); } }, async checkSession() { const phone = localStorage.getItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); if (phone) { const user = await this.fetchUser(phone); if (user) { this.setCurrentUser(user); return true; } } this.setCurrentUser(null); return false; } };
-    
-    // --- APP CONTROLLER ---
-    const App = {
-        async init() {
-            this.bindEvents();
-            if (await State.checkSession()) {
-                this.start();
+    <script>
+        // Global variables
+        let currentUser = null;
+        let userData = null;
+        let spinsRemaining = 10;
+        let tapsToday = 0;
+        let tapCoins = 0;
+        let selectedWithdrawMethod = null;
+        
+        // DOM elements
+        const loginSection = document.getElementById('loginSection');
+        const appSection = document.getElementById('appSection');
+        const loginForm = document.getElementById('loginForm');
+        const userNameSpan = document.getElementById('userName');
+        const totalCoinsSpan = document.getElementById('totalCoins');
+        const spinsRemainingSpan = document.getElementById('spinsRemaining');
+        const spinBtn = document.getElementById('spinBtn');
+        const wheel = document.getElementById('wheel');
+        const tapsTodaySpan = document.getElementById('tapsToday');
+        const tapCoinsSpan = document.getElementById('tapCoins');
+        const tapProgressSpan = document.getElementById('tapProgress');
+        const tapArea = document.getElementById('tapArea');
+        const profileCoinsSpan = document.getElementById('profileCoins');
+        const profileSpinsSpan = document.getElementById('profileSpins');
+        const profileNameSpan = document.getElementById('profileName');
+        const profilePhoneSpan = document.getElementById('profilePhone');
+        const profileUIDSpan = document.getElementById('profileUID');
+        const profileJoinedSpan = document.getElementById('profileJoined');
+        const inviteCodeSpan = document.getElementById('inviteCode');
+        const withdrawCoinsSpan = document.getElementById('withdrawCoins');
+        const withdrawAmountSpan = document.getElementById('withdrawAmount');
+        const withdrawCoinsInput = document.getElementById('withdrawCoinsInput');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const rewardModal = document.getElementById('rewardModal');
+        
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            // NOTE: For screenshot purposes, we will not auto-login.
+            // const savedUser = localStorage.getItem('coinMasterUser');
+            // if (savedUser) {
+            //     currentUser = JSON.parse(savedUser);
+            //     loadUserData();
+            //     showApp();
+            // }
+            
+            setupNavigation();
+            setupEventListeners();
+            
+            if (!localStorage.getItem('welcomeShown')) {
+                setTimeout(() => {
+                    welcomeModal.style.display = 'flex';
+                }, 1000);
             } else {
-                UI.showScreen('landing-screen');
+                 welcomeModal.style.display = 'none';
             }
-        },
-
-        async start() {
-            await this.displayUpdateNotice();
-            this.checkAndResetDailyLimits();
-            UI.updateApp(State.currentUser);
-            Game.drawWheel();
-            UI.showScreen('app-screen');
-            history.pushState({ noBackExitsApp: true }, '');
-        },
+        });
         
-        vibrate(duration) {
-            if ('vibrate' in navigator) navigator.vibrate(duration);
-        },
-
-        async displayUpdateNotice() {
-            await UI.showModal(
-                "🚀 App Update! 🚀",
-                "A new 'Watch Ads to Earn' feature has been added. Stay tuned for more exciting updates!",
-                '', 'Awesome!', null
-            );
-        },
-
-        bindEvents() {
-            UI.elements.goToLoginBtn.addEventListener('click', () => UI.showScreen('login-screen'));
-            UI.elements.goToSignUpBtn.addEventListener('click', () => UI.showScreen('signup-screen'));
-            document.querySelectorAll('.btn-link').forEach(btn => btn.addEventListener('click', () => UI.showScreen(btn.dataset.target)));
+        function setupNavigation() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section:not(#loginSection):not(#appSection)');
             
-            UI.elements.signUpBtn.addEventListener('click', this.handleSignUp);
-            UI.elements.loginBtn.addEventListener('click', this.handleLogin);
-            UI.elements.logoutBtn.addEventListener('click', this.handleLogout);
-            UI.elements.spinButton.addEventListener('click', () => Game.startSpin());
-            UI.elements.tapButton.addEventListener('click', this.handleTap);
-            UI.elements.watchAdBtn.addEventListener('click', this.handleWatchAd);
-            UI.elements.withdrawBtn.addEventListener('click', this.handleWithdraw);
-            
-            window.addEventListener('popstate', this.handleBackButton);
-        },
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    sections.forEach(s => {
+                        if (s.id === targetSection) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        }
         
-        handleBackButton: async (event) => {
-            if (!document.getElementById('app-screen').classList.contains('hidden')) {
-                 if(event.state && event.state.noBackExitsApp){
-                    history.pushState({ noBackExitsApp: true }, '');
-                    const confirmed = await UI.showModal("Exit App", CONFIG.MESSAGES.EXIT_CONFIRM, 'btn-danger', 'Yes', 'No');
-                    if (confirmed) window.close();
-                 }
-            }
-        },
-        
-        handleSignUp: async () => {
-            const nameInput = document.getElementById('fullName');
-            const phoneInput = document.getElementById('signUpPhone');
-            const name = nameInput.value.trim();
-            const phone = phoneInput.value.trim();
+        function setupEventListeners() {
+            loginForm.addEventListener('submit', handleLogin);
+            spinBtn.addEventListener('click', handleSpin);
+            tapArea.addEventListener('click', handleTap);
             
-            UI.toggleInputError(nameInput, false);
-            UI.toggleInputError(phoneInput, false);
-
-            if (!name || !/^\d{11}$/.test(phone)) {
-                UI.showToast(CONFIG.MESSAGES.INVALID_INPUT, 'error');
-                UI.toggleInputError(nameInput, !name);
-                UI.toggleInputError(phoneInput, !/^\d{11}$/.test(phone));
+            document.querySelectorAll('.withdraw-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedWithdrawMethod = this.getAttribute('data-method');
+                    updateWithdrawAmount();
+                });
+            });
+            
+            withdrawCoinsInput.addEventListener('input', updateWithdrawAmount);
+            withdrawBtn.addEventListener('click', handleWithdraw);
+        }
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            
+            if (!phoneNumber.match(/^03\d{9}$/)) {
+                alert('Please enter a valid Pakistani phone number (03XXXXXXXXX)');
                 return;
             }
             
-            UI.setLoading(UI.elements.signUpBtn, true);
-
-            const existingUser = await State.fetchUser(phone);
-            if (existingUser) {
-                UI.showToast(CONFIG.MESSAGES.USER_EXISTS, 'error');
-                UI.toggleInputError(phoneInput, true);
-                UI.setLoading(UI.elements.signUpBtn, false);
-                return;
-            }
-            
-            const newUser = { 
-                name, phone, coins: 0, 
-                spinsLeft: CONFIG.DAILY_SPIN_LIMIT,
-                adsWatchedToday: 0,
-                tapsToday: 0,
-                tapProgress: 0, 
-                tapsSinceAd: 0,
-                lastResetDate: new Date().toDateString(),
-                lastWithdrawalDate: null, 
-                [CONFIG.DATA_RESET_FLAG]: true // Mark as not needing a reset
-            };
-            
-            State.setCurrentUser(newUser);
-            await State.saveCurrentUser();
-            
-            const message = `🎉 *New User Registration*\n--------------------------------------\n*Name:* \`${name}\`\n*Number:* \`${phone}\``;
-            await API.sendTelegramMessage(message);
-            
-            UI.showToast(`Welcome, ${name}!`, 'success');
-            App.start();
-            UI.setLoading(UI.elements.signUpBtn, false);
-        },
-
-        handleLogin: async () => {
-            const phoneInput = document.getElementById('loginPhone');
-            const phone = phoneInput.value.trim();
-            UI.toggleInputError(phoneInput, false);
-
-            if (!/^\d{11}$/.test(phone)) {
-                UI.showToast(CONFIG.MESSAGES.INVALID_PHONE, 'error');
-                UI.toggleInputError(phoneInput, true);
-                return;
-            }
-            
-            UI.setLoading(UI.elements.loginBtn, true);
-            const user = await State.fetchUser(phone);
-
-            if (!user) {
-                UI.showToast(CONFIG.MESSAGES.LOGIN_FAILED, 'error');
-                UI.toggleInputError(phoneInput, true);
-                UI.setLoading(UI.elements.loginBtn, false);
-                return;
-            }
-            
-            // --- ONE-TIME DATA RESET LOGIC ---
-            if (!user[CONFIG.DATA_RESET_FLAG]) {
-                user.coins = 0;
-                user.spinsLeft = CONFIG.DAILY_SPIN_LIMIT;
-                user.adsWatchedToday = 0;
-                user.tapsToday = 0;
-                user.tapProgress = 0;
-                user.lastResetDate = new Date().toDateString();
-                user[CONFIG.DATA_RESET_FLAG] = true; // Set the flag to prevent future resets
-                await State.saveCurrentUser();
-                UI.showToast("Account updated! Your progress has been reset for the new version.", 'success');
-            }
-
-            State.setCurrentUser(user);
-            UI.showToast(`Welcome back, ${user.name}!`, 'success');
-            App.start();
-            UI.setLoading(UI.elements.loginBtn, false);
-        },
+            database.ref('users/' + phoneNumber).once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        currentUser = {
+                            name: snapshot.val().name,
+                            phone: phoneNumber,
+                            uid: snapshot.val().uid
+                        };
+                    } else {
+                        const uid = 'CM' + Date.now();
+                        currentUser = {
+                            name: fullName,
+                            phone: phoneNumber,
+                            uid: uid
+                        };
+                        
+                        database.ref('users/' + phoneNumber).set({
+                            name: fullName,
+                            phone: phoneNumber,
+                            uid: uid,
+                            coins: 0,
+                            joined: new Date().toISOString(),
+                            spinsUsed: 0,
+                            tapsToday: 0,
+                            tapCoins: 0,
+                            lastReset: new Date().toISOString(),
+                            invitedBy: null,
+                            hasInvited: false
+                        });
+                        
+                        sendTelegramMessage(`New user registered!\nName: ${fullName}\nPhone: ${phoneNumber}\nUID: ${uid}`);
+                    }
+                    
+                    localStorage.setItem('coinMasterUser', JSON.stringify(currentUser));
+                    loadUserData();
+                    showApp();
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    alert('Login failed. Please try again.');
+                });
+        }
         
-        handleLogout: async () => {
-            const confirmed = await UI.showModal("Confirm Logout", CONFIG.MESSAGES.LOGOUT_CONFIRM, 'btn-danger');
-            if (confirmed) {
-                App.vibrate(50);
-                UI.showToast('You have been logged out.', 'success');
-                State.setCurrentUser(null);
-                UI.showScreen('landing-screen');
-            }
-        },
-        
-        handleTap: () => {
-            const tapCoinsEarned = Math.floor(State.currentUser.tapsToday / CONFIG.TAPS_PER_COIN);
-            if (tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY) {
-                UI.showToast("You've reached your daily tap limit!", 'error');
-                return;
-            }
-
-            App.vibrate(10);
-            
-            State.currentUser.tapsToday++;
-            State.currentUser.tapProgress++;
-            State.currentUser.tapsSinceAd++;
-
-            if (State.currentUser.tapProgress >= CONFIG.TAPS_PER_COIN) {
-                State.currentUser.coins++;
-                State.currentUser.tapProgress = 0;
-                UI.animateCoin(UI.elements.tapButton);
-            }
-            
-            if (State.currentUser.tapsSinceAd >= CONFIG.TAPS_BEFORE_AD) {
-                Ads.triggerRedirectAd();
-                State.currentUser.tapsSinceAd = 0;
-            } 
-
-            State.saveCurrentUser();
-            UI.updateApp(State.currentUser);
-        },
-        
-        handleWatchAd: () => {
-            if (State.currentUser.adsWatchedToday >= CONFIG.DAILY_AD_WATCH_LIMIT) {
-                UI.showToast("You've reached your daily ad limit!", 'error');
-                return;
-            }
-            if (UI.elements.watchAdBtn.disabled) return; // Prevent multiple clicks
-
-            const watchBtn = UI.elements.watchAdBtn;
-            const watchInfo = UI.elements.watchAdInfo;
-            watchBtn.disabled = true;
-            
-            Ads.triggerRedirectAd();
-
-            // Start the timer after the ad is shown
-            let countdown = CONFIG.AD_WATCH_DURATION;
-            watchInfo.textContent = `Please wait ${countdown} seconds for your reward...`;
-
-            const interval = setInterval(() => {
-                countdown--;
-                if (countdown > 0) {
-                    watchInfo.textContent = `Please wait ${countdown} seconds for your reward...`;
-                } else {
-                        watchInfo.textContent = `Claiming your reward...`;
+        function loadUserData() {
+            database.ref('users/' + currentUser.phone).on('value', snapshot => {
+                if (snapshot.exists()) {
+                    userData = snapshot.val();
+                    checkDailyReset();
+                    updateUI();
                 }
+            });
+        }
+        
+        function checkDailyReset() {
+            const lastReset = new Date(userData.lastReset);
+            const now = new Date();
             
-                if (countdown <= -1) { // Wait one extra second before finishing
-                    clearInterval(interval);
-                    
-                    const reward = CONFIG.AD_WATCH_REWARD;
-                    State.currentUser.coins += reward;
-                    State.currentUser.adsWatchedToday++;
-                    
-                    UI.animateCoin(watchBtn);
-                    UI.showToast(`You earned ${reward} coins!`, 'success');
-                    
-                    State.saveCurrentUser();
-                    UI.updateApp(State.currentUser);
-                }
-            }, 1000);
-        },
-
-        handleWithdraw: async () => {
-            if (State.currentUser.coins < CONFIG.MIN_WITHDRAWAL_COINS) {
-                UI.showToast(`You need at least ${CONFIG.MIN_WITHDRAWAL_COINS} coins to withdraw.`, 'error');
-                return;
-            }
-
-            // Professional VPN Warning Modal
-            const vpnConfirmed = await UI.showModal(
-                "🛑 ACTION REQUIRED: VPN Connection Needed", 
-                "Our payment system requires a secure VPN connection to process withdrawals correctly. If you proceed without a VPN, your request will be rejected or lost. This action cannot be undone.",
-                'btn-danger', 'I Understand, I am using a VPN'
-            );
-
-            if (!vpnConfirmed) return;
-
-            // Final Confirmation Modal
-            const finalConfirmation = await UI.showModal(
-                "Confirm Withdrawal",
-                `This will deduct ${CONFIG.MIN_WITHDRAWAL_COINS} coins from your balance. Are you sure?`,
-                'btn-success',
-                'Yes, Withdraw Now'
-            );
-
-            if (!finalConfirmation) return;
-            
-            UI.setLoading(UI.elements.withdrawBtn, true);
-            
-            App.vibrate(50);
-            const { name, phone } = State.currentUser;
-            const coins = CONFIG.MIN_WITHDRAWAL_COINS;
-            const amount = coins / CONFIG.COIN_TO_RUPEE_RATE;
-            
-            State.currentUser.coins -= coins;
-            
-            const timestamp = new Date().toLocaleString('en-US', { hour12: true });
-            const message = `💰 *New Withdrawal Request*\n--------------------------------------\n*Name:* \`${name}\`\n*Number:* \`${phone}\`\n*Amount:* ₹${amount} (${coins} Coins)\n--------------------------------------\n*Time:* ${timestamp}\n\nTap number below to copy for payment:\n\`${phone}\``;
-            
-            await API.sendTelegramMessage(message);
-            await State.saveCurrentUser();
-            
-            UI.showToast('Withdrawal request sent successfully!', 'success');
-            UI.updateApp(State.currentUser);
-            UI.setLoading(UI.elements.withdrawBtn, false);
-        },
-
-        checkAndResetDailyLimits() {
-            const today = new Date().toDateString();
-            if (State.currentUser.lastResetDate !== today) {
-                State.currentUser.spinsLeft = CONFIG.DAILY_SPIN_LIMIT;
-                State.currentUser.adsWatchedToday = 0;
-                State.currentUser.tapsToday = 0;
-                State.currentUser.tapProgress = 0;
-                State.currentUser.lastResetDate = today;
-                State.saveCurrentUser();
-                UI.showToast('Your daily limits have been reset!', 'success');
+            if (lastReset.getDate() !== now.getDate() || 
+                lastReset.getMonth() !== now.getMonth() || 
+                lastReset.getFullYear() !== now.getFullYear()) {
+                
+                const updates = {
+                    spinsUsed: 0,
+                    tapsToday: 0,
+                    tapCoins: 0,
+                    lastReset: now.toISOString()
+                };
+                
+                database.ref('users/' + currentUser.phone).update(updates);
+                userData = {...userData, ...updates};
             }
         }
-    };
-    
-    // --- INITIALIZE APP ---
-    document.addEventListener('DOMContentLoaded', () => App.init());
+        
+        function updateUI() {
+            if (!userData) return;
+            
+            const currentCoins = userData.coins || 0;
+            totalCoinsSpan.textContent = currentCoins;
+            profileCoinsSpan.textContent = currentCoins;
+            withdrawCoinsSpan.textContent = currentCoins;
+            
+            spinsRemaining = 10 - (userData.spinsUsed || 0);
+            if (userData.hasInvited) spinsRemaining += 5;
+            spinsRemainingSpan.textContent = `${spinsRemaining}/10`;
+            profileSpinsSpan.textContent = spinsRemaining;
+            
+            tapsToday = userData.tapsToday || 0;
+            tapCoins = userData.tapCoins || 0;
+            tapsTodaySpan.textContent = `${tapsToday}/1000`;
+            tapCoinsSpan.textContent = tapCoins;
+            
+            const progress = Math.min(100, (tapCoins));
+            tapProgressSpan.textContent = `${progress}%`;
+            
+            userNameSpan.textContent = userData.name;
+            profileNameSpan.textContent = userData.name;
+            profilePhoneSpan.textContent = userData.phone;
+            profileUIDSpan.textContent = userData.uid;
+            profileJoinedSpan.textContent = new Date(userData.joined).toLocaleDateString();
+            
+            inviteCodeSpan.textContent = `COINMASTER-${userData.uid}`;
+            
+            spinBtn.disabled = spinsRemaining <= 0;
+            spinBtn.textContent = spinsRemaining > 0 ? 'Spin Now! 🎯' : 'No Spins Left Today 😔';
+        }
+        
+        function showApp() {
+            loginSection.classList.remove('active');
+            appSection.classList.add('active');
+        }
 
-})();
-</script>
+        function handleSpin() {
+            if (spinsRemaining <= 0) {
+                showRewardModal(-1);
+                return;
+            }
+            
+            spinBtn.disabled = true;
+            spinBtn.textContent = 'Spinning...';
+            
+            let reward = (Math.random() < 0.999) ? Math.floor(Math.random() * 16) : 15 + Math.floor(Math.random() * 36);
+            
+            const currentRotation = parseInt(wheel.style.transform?.replace('rotate(', '')?.replace('deg)', '') || 0);
+            const extraRotation = 360 * 5;
+            const targetRotation = currentRotation + extraRotation + (360 - (reward * (360 / 51)));
+            
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            
+            const newSpinsUsed = (userData.spinsUsed || 0) + 1;
+            database.ref('users/' + currentUser.phone).update({ spinsUsed: newSpinsUsed });
+            
+            setTimeout(() => {
+                if (reward > 0) {
+                    const newCoins = (userData.coins || 0) + reward;
+                    database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+                }
+                
+                showRewardModal(reward);
+            }, 3000);
+        }
+        
+        function handleTap(event) {
+            if (tapCoins >= 100) return;
+            
+            tapsToday++;
+            
+            const updates = { tapsToday: tapsToday };
+            
+            if (tapsToday % 10 === 0) {
+                tapCoins++;
+                const newCoins = (userData.coins || 0) + 1;
+                updates.coins = newCoins;
+                updates.tapCoins = tapCoins;
+            }
+            
+            database.ref('users/' + currentUser.phone).update(updates);
+        }
+        
+        function updateWithdrawAmount() {
+            const coins = parseInt(withdrawCoinsInput.value) || 0;
+            const amount = coins / 10;
+            withdrawAmountSpan.textContent = amount.toFixed(2);
+            
+            withdrawBtn.disabled = coins < 200 || coins > (userData.coins || 0) || !selectedWithdrawMethod || !document.getElementById('accountNumber').value;
+        }
+        
+        function handleWithdraw() {
+            const coins = parseInt(withdrawCoinsInput.value);
+            const accountNumber = document.getElementById('accountNumber').value;
+            
+            if (confirm(`Are you sure you want to withdraw ${coins} coins (${coins/10} PKR) to your ${selectedWithdrawMethod} account?`)) {
+                const newCoins = (userData.coins || 0) - coins;
+                database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+                
+                sendTelegramMessage(
+                    `Withdrawal Request!\n` +
+                    `User: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\n` +
+                    `Method: ${selectedWithdrawMethod}\nAccount: ${accountNumber}\n` +
+                    `Coins: ${coins}\nAmount: ${coins/10} PKR`
+                );
+                
+                alert('Withdrawal request submitted! We will process it within 24 hours.');
+                
+                withdrawCoinsInput.value = '';
+                document.getElementById('accountNumber').value = '';
+                document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
+                selectedWithdrawMethod = null;
+                updateWithdrawAmount();
+            }
+        }
+        
+        function copyInviteCode() {
+            navigator.clipboard.writeText(inviteCodeSpan.textContent)
+                .then(() => alert('Invite code copied to clipboard!'))
+                .catch(err => console.error('Failed to copy: ', err));
+        }
+        
+        function sendTelegramMessage(message) {
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+            }).catch(error => console.error('Telegram error:', error));
+        }
+        
+        function closeWelcomeModal() {
+            welcomeModal.style.display = 'none';
+            localStorage.setItem('welcomeShown', 'true');
+        }
+
+        function showRewardModal(reward) {
+            const icon = document.getElementById('rewardModalIcon');
+            const title = document.getElementById('rewardModalTitle');
+            const message = document.getElementById('rewardModalMessage');
+
+            icon.className = 'modal-icon';
+
+            if (reward > 0) {
+                icon.innerHTML = '🎉';
+                icon.classList.add('win');
+                title.textContent = 'Congratulations!';
+                message.innerHTML = `You won <span class="coins">${reward}</span> coins!`;
+                createConfetti();
+            } else if (reward === 0) {
+                icon.innerHTML = '😔';
+                icon.classList.add('lose');
+                title.textContent = 'Better Luck Next Time!';
+                message.textContent = 'No coins won this spin. Keep trying!';
+            } else {
+                icon.innerHTML = '🚫';
+                icon.classList.add('lose');
+                title.textContent = 'No Spins Left!';
+                message.textContent = 'You have used all your spins for today. Come back tomorrow!';
+            }
+
+            rewardModal.style.display = 'flex';
+        }
+
+        function closeRewardModal() {
+            rewardModal.style.display = 'none';
+        }
+        
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = getRandomColor();
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 100);
+            }
+        }
+        
+        function getRandomColor() {
+            const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff9a00', '#ff416c', '#ffcd56'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
 </body>
 </html>
