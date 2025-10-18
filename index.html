@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Spin & Earn — Prototype (Telegram notifications)</title>
+<style>
+  :root{--bg:#f6f7fb;--card:#fff;--accent:#2563eb;--muted:#6b7280;}
+  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:var(--bg); margin:0; padding:28px; color:#111;}
+  .wrap{max-width:920px;margin:0 auto;}
+  .card{background:var(--card); padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,.06); margin-bottom:18px;}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  h1{font-size:20px;margin:0;}
+  .muted{color:var(--muted);font-size:13px;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  input, button, select, textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px;}
+  button{background:var(--accent);color:white;border:none;cursor:pointer;}
+  .small{font-size:13px;color:var(--muted);}
+  .center{display:flex;align-items:center;gap:12px;}
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .stat{background:#f8fafc;padding:12px;border-radius:10px;min-width:140px;text-align:center;}
+  .spin-area{display:flex;gap:12px;align-items:center;margin-top:12px;}
+  .big{font-weight:700;font-size:18px;}
+  .log{white-space:pre-wrap;background:#f3f4f6;padding:10px;border-radius:8px;color:#0f172a;max-height:200px;overflow:auto;font-size:13px;}
+  .link{color:var(--accent);text-decoration:none;}
+  .danger{color:#b91c1c}
+  footer{font-size:13px;color:var(--muted);margin-top:10px;}
+  @media(max-width:640px){ .stats{flex-direction:column;} .row{flex-direction:column;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" id="authCard">
+    <header>
+      <h1>Spin & Earn — Prototype</h1>
+      <div class="muted">Client-side demo — NOT secure for production</div>
+    </header>
+
+    <div id="authArea">
+      <p class="small"><strong>Warning:</strong> Bot token is embedded client-side (in this demo). This is insecure for production. Use server-side token storage for real apps.</p>
+      <p class="small">Login/Register with your name & Easypaisa number. One number = one account (local enforcement).</p>
+      <form id="authForm">
+        <div class="row">
+          <input id="nameInput" placeholder="Full name" required />
+          <input id="phoneInput" placeholder="Easypaisa number (e.g. 03XXXXXXXXX)" required />
+        </div>
+        <div style="margin-top:10px" class="row">
+          <input id="refInput" placeholder="Referral code (optional)" />
+          <button type="submit">Register / Login</button>
+        </div>
+      </form>
+
+      <div style="margin-top:12px" class="small">
+        If you already registered, use the same number to login. New users can paste a referral code to attribute.
+      </div>
+    </div>
+
+    <div id="afterAuth" style="display:none;">
+      <div class="center">
+        <div>
+          <div class="big" id="welcome">Welcome, User</div>
+          <div class="small" id="phoneView">Number: —</div>
+        </div>
+        <div style="margin-left:auto">
+          <button id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="small">Coins</div>
+          <div id="coins" style="font-size:20px;font-weight:700">0</div>
+        </div>
+        <div class="stat">
+          <div class="small">Spins left today</div>
+          <div id="spinsLeft" style="font-size:20px;font-weight:700">0</div>
+        </div>
+        <div class="stat">
+          <div class="small">Referrals</div>
+          <div id="refCount" style="font-size:20px;font-weight:700">0</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="small">Daily Spin (10 per day)</div>
+            <div class="muted">Each spin gives <strong>5-15 coins</strong> randomly</div>
+          </div>
+          <div>
+            <button id="spinBtn">Spin Now 🎯</button>
+          </div>
+        </div>
+
+        <div class="spin-area">
+          <div>
+            <button id="bulkSpinBtn">Spin ×5</button>
+          </div>
+          <div>
+            <button id="earnSpinBtn">Claim Earned Spin</button>
+            <div class="small">(simulate watching ad / task to get 1 spin)</div>
+          </div>
+          <div style="margin-left:auto">
+            <div class="small">Your referral link:</div>
+            <div id="refLink" style="word-break:break-all"></div>
+          </div>
+        </div>
+        <div style="margin-top:10px" class="log" id="spinLog">Ready to spin.</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">Withdraw</h3>
+        <div class="small">Minimum withdrawal: <strong>100 coins</strong> = <strong>10 Rs</strong></div>
+        <form id="withdrawForm" style="margin-top:10px">
+          <div class="row">
+            <input id="withdrawAmount" placeholder="Amount in coins (min 100)" />
+            <input id="withdrawPhone" placeholder="Easypaisa number to receive (e.g. 03...)" />
+          </div>
+          <div style="margin-top:10px">
+            <button type="submit">Request Withdrawal</button>
+          </div>
+        </form>
+        <div style="margin-top:10px">
+          <div class="small">Withdrawal requests (local):</div>
+          <div class="log" id="withdrawLog">No requests yet.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">Account tools</h3>
+        <div class="row">
+          <button id="resetDailyBtn">Force daily reset (dev)</button>
+          <button id="deleteAccountBtn" class="danger">Delete account (local)</button>
+        </div>
+        <div style="margin-top:8px" class="small">Note: Device date/time controls the daily reset. For production use server-side resets.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="small card">
+    <strong>Notes:</strong> This demo sends notifications to your Telegram bot when users register or request withdrawals. Token and chat id are embedded in client-side JS — this is insecure for production. Ask me for a secure server-side version.
+  </footer>
+</div>
+
+<script>
+/* -------------------------
+   CONFIG — TOKEN & CHAT ID
+   You provided these; they are placed client-side below.
+   WARNING: embedding token client-side is insecure.
+------------------------- */
+const BOT_TOKEN = "8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k";
+const BOT_CHAT_ID = "7122620719";
+
+async function sendTelegramMessage(text){
+  try {
+    // Telegram sendMessage endpoint accepts application/json POST
+    const url = `https://api.telegram.org/bot${encodeURIComponent(BOT_TOKEN)}/sendMessage`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: BOT_CHAT_ID, text: text, parse_mode: "HTML" })
+    });
+    const json = await resp.json();
+    if(!json.ok){
+      console.warn('Telegram API error', json);
+      return {ok:false, json};
+    }
+    return {ok:true, json};
+  } catch (err){
+    console.error('Failed to send Telegram message', err);
+    return {ok:false, err};
+  }
+}
+
+/* -------------------------
+   Rest of app (same prototype)
+------------------------- */
+
+const USERS_KEY = 'spin_users_v1';
+const CURRENT_KEY = 'spin_current_v1';
+const WDR_KEY = 'spin_withdrawals_v1';
+const DAILY_BASE = 10;
+const REF_BONUS_THRESHOLD = 5;
+const REF_BONUS_SPINS = 5;
+const COIN_MIN_WITHDRAW = 100;
+const COIN_TO_RS = 10;
+
+function loadUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY)||'{}'); }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function setCurrent(phone){ localStorage.setItem(CURRENT_KEY, phone); }
+function getCurrent(){ return localStorage.getItem(CURRENT_KEY); }
+function loadWithdrawals(){ return JSON.parse(localStorage.getItem(WDR_KEY)||'[]'); }
+function saveWithdrawals(a){ localStorage.setItem(WDR_KEY, JSON.stringify(a)); }
+
+function todayStr(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+function genReferralCode(phone){
+  const last4 = phone.slice(-4).replace(/\D/g,'') || Math.floor(Math.random()*9000+1000);
+  return 'REF'+last4+String(Math.floor(Math.random()*900));
+}
+
+function ensureUser(phone, name, referredByCode){
+  const users = loadUsers();
+  if (users[phone]) return {exists:true,user:users[phone]};
+  const rcode = genReferralCode(phone);
+  const user = {
+    name, phone, coins:0,
+    referralCode: rcode,
+    referrals: [],
+    referredBy: null,
+    refCount: 0,
+    lastSpinReset: null,
+    spinsLeft: 0,
+    extraDailySpins: 0,
+  };
+  if (referredByCode){
+    const refPhone = Object.keys(users).find(p => users[p].referralCode === referredByCode);
+    if (refPhone){
+      user.referredBy = refPhone;
+      users[refPhone].referrals.push(phone);
+      users[refPhone].refCount = users[refPhone].referrals.length;
+      if (users[refPhone].refCount >= REF_BONUS_THRESHOLD && users[refPhone].extraDailySpins === 0){
+        users[refPhone].extraDailySpins += REF_BONUS_SPINS;
+        // notify referrer milestone
+        sendTelegramMessage(`<b>Referral milestone</b>\nUser <i>${users[refPhone].name}</i> reached ${users[refPhone].refCount} referrals and was granted +${REF_BONUS_SPINS} daily spins.`);
+      }
+    }
+  }
+  users[phone] = user;
+  saveUsers(users);
+
+  // Send Telegram notification about new registration
+  sendTelegramMessage(`<b>New Registration</b>\nName: <i>${escapeHtml(name)}</i>\nPhone: <code>${escapeHtml(phone)}</code>\nReferral used: ${referredByCode ? escapeHtml(referredByCode) : 'none'}`);
+
+  return {exists:false, user};
+}
+
+/* UI */
+const authArea = document.getElementById('authArea');
+const authForm = document.getElementById('authForm');
+const nameInput = document.getElementById('nameInput');
+const phoneInput = document.getElementById('phoneInput');
+const refInput = document.getElementById('refInput');
+const afterAuth = document.getElementById('afterAuth');
+const welcome = document.getElementById('welcome');
+const phoneView = document.getElementById('phoneView');
+const coinsView = document.getElementById('coins');
+const spinsLeftView = document.getElementById('spinsLeft');
+const spinBtn = document.getElementById('spinBtn');
+const bulkSpinBtn = document.getElementById('bulkSpinBtn');
+const earnSpinBtn = document.getElementById('earnSpinBtn');
+const spinLog = document.getElementById('spinLog');
+const refLink = document.getElementById('refLink');
+const refCountView = document.getElementById('refCount');
+const logoutBtn = document.getElementById('logoutBtn');
+const withdrawForm = document.getElementById('withdrawForm');
+const withdrawAmount = document.getElementById('withdrawAmount');
+const withdrawPhone = document.getElementById('withdrawPhone');
+const withdrawLog = document.getElementById('withdrawLog');
+const resetDailyBtn = document.getElementById('resetDailyBtn');
+const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+function loadCurrentUserData(){
+  const phone = getCurrent();
+  if(!phone) return null;
+  const users = loadUsers();
+  return users[phone] || null;
+}
+
+function saveUser(user){
+  const users = loadUsers();
+  users[user.phone] = user;
+  saveUsers(users);
+}
+
+function loginUser(phone){
+  const users = loadUsers();
+  const user = users[phone];
+  if(!user) return false;
+  setCurrent(phone);
+  renderDashboard();
+  appendSpinLog(`Logged in as ${user.name} (${phone})`);
+  return true;
+}
+
+function logout(){
+  localStorage.removeItem(CURRENT_KEY);
+  showAuth();
+}
+
+function showAuth(){
+  authArea.style.display='block';
+  afterAuth.style.display='none';
+  nameInput.value='';
+  phoneInput.value='';
+  refInput.value='';
+}
+
+function appendSpinLog(text){
+  const t = new Date().toLocaleString();
+  spinLog.textContent = `[${t}] ${text}\n` + spinLog.textContent;
+}
+
+function refreshWithdrawLog(){
+  const w = loadWithdrawals();
+  withdrawLog.textContent = w.length ? w.map(r=>`${new Date(r.ts).toLocaleString()} | ${r.phone} requested ${r.amount} coins -> ${r.dest}`).join('\n') : 'No requests yet.';
+}
+
+function resetDailyIfNeeded(user){
+  const today = todayStr();
+  if (user.lastSpinReset !== today){
+    user.lastSpinReset = today;
+    user.spinsLeft = DAILY_BASE + (user.extraDailySpins || 0);
+    saveUser(user);
+  }
+}
+
+function renderDashboard(){
+  const user = loadCurrentUserData();
+  if(!user){ showAuth(); return;}
+  authArea.style.display='none';
+  afterAuth.style.display='block';
+  welcome.textContent = `Welcome, ${user.name}`;
+  phoneView.textContent = `Number: ${user.phone}`;
+  resetDailyIfNeeded(user);
+  coinsView.textContent = user.coins;
+  spinsLeftView.textContent = user.spinsLeft;
+  refCountView.textContent = user.refCount;
+  const link = window.location.origin + window.location.pathname + '?ref=' + user.referralCode;
+  refLink.innerHTML = `<a class="link" href="${link}" target="_blank">${link}</a>`;
+  refreshWithdrawLog();
+}
+
+/* Auth flow */
+authForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const ref = refInput.value.trim() || null;
+  if(!name || !phone){ alert('Enter name and phone'); return; }
+  if(!/^\+?\d{10,15}$/.test(phone) && !/^0\d{9,10}$/.test(phone)){
+    if(!confirm('Phone number looks unusual. Continue?')) return;
+  }
+  const result = ensureUser(phone, name, ref);
+  if(result.exists){
+    loginUser(phone);
+    appendSpinLog('Logged in (existing account).');
+  } else {
+    loginUser(phone);
+    appendSpinLog('Account created and logged in. Referral used: ' + (result.user.referredBy ? result.user.referredBy : 'none'));
+  }
+});
+
+logoutBtn.addEventListener('click', ()=> logout());
+
+/* Spin logic */
+function performSpin(times=1){
+  const user = loadCurrentUserData();
+  if(!user){ alert('Not logged in'); return; }
+  resetDailyIfNeeded(user);
+  let spins = times;
+  if (user.spinsLeft <=0){ appendSpinLog('No spins left today.'); return; }
+  if (spins > user.spinsLeft) spins = user.spinsLeft;
+  let totalGained = 0;
+  for(let i=0;i<spins;i++){
+    const gain = Math.floor(Math.random()*11)+5; // 5..15
+    user.coins += gain;
+    totalGained += gain;
+    user.spinsLeft -= 1;
+    appendSpinLog(`Spin result: +${gain} coins`);
+  }
+  saveUser(user);
+  renderDashboard();
+  appendSpinLog(`Total gained: ${totalGained} coins.`);
+}
+
+spinBtn.addEventListener('click', ()=> performSpin(1));
+bulkSpinBtn.addEventListener('click', ()=> performSpin(5));
+
+earnSpinBtn.addEventListener('click', ()=>{
+  const user = loadCurrentUserData();
+  if(!user){ alert('Not logged in'); return; }
+  user.spinsLeft += 1;
+  saveUser(user);
+  appendSpinLog('Earn action complete: +1 spin credited.');
+  renderDashboard();
+});
+
+/* Withdrawals */
+withdrawForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const user = loadCurrentUserData();
+  if(!user){ alert('Not logged in'); return; }
+  const amount = parseInt(withdrawAmount.value,10);
+  const dest = withdrawPhone.value.trim();
+  if(isNaN(amount) || amount < COIN_MIN_WITHDRAW){ alert('Minimum withdrawal is ' + COIN_MIN_WITHDRAW + ' coins.'); return; }
+  if(amount > user.coins){ alert('Insufficient coins'); return; }
+  if(!dest){ alert('Enter Easypaisa number to receive'); return; }
+  const w = loadWithdrawals();
+  const req = {phone:user.phone, amount, dest, ts: Date.now()};
+  w.unshift(req);
+  saveWithdrawals(w);
+  user.coins -= amount;
+  saveUser(user);
+  appendSpinLog(`Withdrawal requested: ${amount} coins -> ${dest}`);
+  withdrawAmount.value=''; withdrawPhone.value='';
+  renderDashboard();
+
+  // Send Telegram notification about withdrawal
+  const msg = `<b>Withdrawal Request</b>\nUser: <i>${escapeHtml(user.name)}</i>\nPhone: <code>${escapeHtml(user.phone)}</code>\nAmount: ${amount} coins (~${(amount/COIN_TO_RS).toFixed(2)} Rs)\nDestination: <code>${escapeHtml(dest)}</code>\nTime: ${new Date().toLocaleString()}`;
+  await sendTelegramMessage(msg);
+});
+
+/* Dev / account tools */
+resetDailyBtn.addEventListener('click', ()=>{
+  const user = loadCurrentUserData();
+  if(!user){ alert('Not logged in'); return; }
+  user.lastSpinReset = null;
+  saveUser(user);
+  renderDashboard();
+  appendSpinLog('Forced daily reset (dev).');
+});
+
+deleteAccountBtn.addEventListener('click', ()=>{
+  if(!confirm('Delete your local account data? This is irreversible (local).')) return;
+  const user = loadCurrentUserData();
+  if(!user) return;
+  const users = loadUsers();
+  delete users[user.phone];
+  saveUsers(users);
+  localStorage.removeItem(CURRENT_KEY);
+  appendSpinLog('Account deleted (local).');
+  showAuth();
+});
+
+/* On load: auto-login if current exists, and handle ?ref param */
+window.addEventListener('load', ()=>{
+  const url = new URL(window.location.href);
+  const ref = url.searchParams.get('ref');
+  if(ref){ refInput.value = ref; }
+  const cur = getCurrent();
+  if(cur){
+    renderDashboard();
+    appendSpinLog('Auto-logged in.');
+  } else {
+    showAuth();
+  }
+});
+
+/* small helper to escape html for messages */
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+</script>
+</body>
+</html>
