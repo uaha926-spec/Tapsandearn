@@ -1,1 +1,784 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tap & Spin Pro</title>
+    <style>
+        /* --- Fonts & Global Setup --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-start: #4338ca;
+            --primary-end: #0e7490;
+            --background: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --white: #ffffff;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --disabled-bg: #e2e8f0;
+            --disabled-text: #94a3b8;
+            --border-light: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { height: 100%; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            padding: 1rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Main Container & Screen Transitions --- */
+        .container {
+            width: 100%;
+            max-width: 420px;
+            height: 95vh;
+            max-height: 800px;
+            background: var(--background);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen {
+            padding: 2.5rem 2rem;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            overflow-y: auto;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            transform: scale(0.98);
+            pointer-events: none;
+        }
+
+        /* --- Auth Screens --- */
+        .auth-screen { text-align: center; }
+        .auth-screen h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .auth-screen p { margin-bottom: 2.5rem; color: var(--text-secondary); font-size: 1rem; }
+
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--border-light); border-radius: 12px; font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input:focus, .form-group input:focus-visible { outline: none; border-color: var(--primary-start); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1); }
+        
+        /* --- Button Styles --- */
+        .btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: var(--white); cursor: pointer; background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); transition: transform 0.2s, box-shadow 0.2s; margin-top: 1rem; box-shadow: 0 4px 15px -5px rgba(67, 56, 202, 0.5); }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px -5px rgba(67, 56, 202, 0.6); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn:disabled { background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-secondary { background: var(--card-bg); border: 2px solid var(--primary-start); color: var(--primary-start); box-shadow: none; }
+        .btn-danger { background: var(--danger); box-shadow: 0 4px 15px -5px rgba(220, 38, 38, 0.5); }
+        .btn-link { background: none; border: none; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 1.5rem; padding: 0; box-shadow: none; }
+        .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: var(--white); animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- App Screen --- */
+        #app-screen { padding: 0; display: flex; flex-direction: column; height: 100%; }
+        .app-header { background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); color: var(--white); padding: 1.5rem; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; text-align: center; position: relative; z-index: 10; flex-shrink: 0; }
+        #logoutBtn { position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.15); border: none; border-radius: 8px; padding: 0.5rem; cursor: pointer; transition: background-color 0.2s; }
+        #logoutBtn:hover { background: rgba(255, 255, 255, 0.3); }
+        #logoutBtn svg { width: 20px; height: 20px; stroke: var(--white); display: block; }
+        .app-header h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.25rem; text-align: center; }
+        .stat-item { background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 12px; }
+        .stat-item .label { font-size: 0.8rem; opacity: 0.8; margin-bottom: 0.25rem; }
+        .stat-item .value { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+        .value .icon { width: 24px; height: 24px; }
+
+        .app-main { padding: 1.5rem; overflow-y: auto; flex-grow: 1; }
+        .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+        .card h3 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600; }
+        
+        /* Spin Wheel */
+        #wheel-container { position: relative; width: 100%; max-width: 280px; margin: 0 auto; }
+        #wheelCanvas { width: 100%; height: auto; }
+        #spin-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: var(--white); border-radius: 50%; border: 8px solid var(--card-bg); box-shadow: 0 0 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary-start); cursor: pointer; transition: transform 0.2s; }
+        #spin-button:hover { transform: translate(-50%, -50%) scale(1.1); }
+        #wheel-container::after { content: '▼'; font-size: 2rem; color: var(--danger); position: absolute; top: -15px; left: 50%; transform: translateX(-50%); }
+
+        /* Tap to Earn */
+        #tap-button { width: 110px; height: 110px; border-radius: 50%; margin: 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: var(--white); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); cursor: pointer; user-select: none; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 8px 20px -8px rgba(67, 56, 202, 0.7); }
+        #tap-button:active { transform: scale(0.95); box-shadow: 0 4px 15px -8px rgba(67, 56, 202, 0.7); }
+        .progress-bar { width: 100%; height: 10px; background-color: var(--disabled-bg); border-radius: 5px; overflow: hidden; margin-top: 1.5rem; }
+        #tap-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); transition: width 0.3s ease; }
+        #tap-info { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.75rem; }
+        
+        /* --- Toast Notification --- */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .toast { background-color: var(--text-primary); color: var(--white); padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(-20px); animation: fadeIn 0.5s forwards, fadeOut 0.5s 3.5s forwards; }
+        .toast.success { background-color: var(--success); }
+        .toast.error { background-color: var(--danger); }
+        .toast-icon { width: 20px; height: 20px; flex-shrink: 0; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
+
+        /* --- Custom Modal --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 1rem; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 2rem; max-width: 380px; width: 100%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .modal-content h3 { font-size: 1.4rem; margin-bottom: 0.75rem; }
+        .modal-content p { color: var(--text-secondary); margin-bottom: 2rem; white-space: pre-wrap; }
+        .modal-actions { display: flex; gap: 1rem; }
+
+        /* --- Flying Coin Animation --- */
+        .flying-coin { position: fixed; width: 24px; height: 24px; background: #facc15; border-radius: 50%; z-index: 9999; transition: transform 0.8s cubic-bezier(0.5, 0, 1, 1), opacity 0.8s linear; pointer-events: none; }
+    
+        /* Ad container styling */
+        .ad-banner-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+    <div class="container">
+        <!-- ===== LANDING SCREEN ===== -->
+        <div id="landing-screen" class="screen auth-screen">
+            <h1>Tap & Spin Pro</h1>
+            <p>The ultimate rewards app. Login or sign up to get started.</p>
+            <button id="goToLoginBtn" class="btn">Login</button>
+            <button id="goToSignUpBtn" class="btn btn-secondary">Sign Up</button>
+        </div>
+
+        <!-- ===== SIGN UP SCREEN ===== -->
+        <div id="signup-screen" class="screen auth-screen hidden">
+            <h1>Create Account</h1>
+            <p>Join us and start your earning journey today!</p>
+            <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" placeholder="e.g. John Doe"></div>
+            <div class="form-group"><label for="signUpPhone">Easypaisa Phone Number</label><input type="tel" id="signUpPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
+            <button id="signUpBtn" class="btn"><span>Sign Up</span></button>
+            <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
+        </div>
+
+        <!-- ===== LOGIN SCREEN ===== -->
+        <div id="login-screen" class="screen auth-screen hidden">
+            <h1>Welcome Back!</h1>
+            <p>Enter your number to continue.</p>
+            <div class="form-group"><label for="loginPhone">Easypaisa Phone Number</label><input type="tel" id="loginPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
+            <button id="loginBtn" class="btn"><span>Login</span></button>
+            <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
+        </div>
+
+        <!-- ===== APP SCREEN ===== -->
+        <div id="app-screen" class="screen hidden">
+            <header class="app-header">
+                <button id="logoutBtn" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+                <h2 id="userName"></h2>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="label">Total Coins</div><div class="value" id="totalCoins"></div></div>
+                    <div class="stat-item"><div class="label">Spins Left</div><div class="value" id="spinsLeft"></div></div>
+                </div>
+            </header>
+            <main class="app-main">
+                <div class="card">
+                    <h3>🎡 Spin to Earn</h3>
+                    <div id="wheel-container">
+                        <canvas id="wheelCanvas" width="500" height="500"></canvas>
+                        <div id="spin-button">SPIN</div>
+                    </div>
+                </div>
+
+                <!-- Banner Ad 1 -->
+                <div class="ad-banner-container">
+                    <script async="async" data-cfasync="false" src="//pl27871918.effectivegatecpm.com/b8452b1ae74005d89bf7fcd8f56cb6f3/invoke.js"></script>
+                    <div id="container-b8452b1ae74005d89bf7fcd8f56cb6f3"></div>
+                </div>
+
+                <div class="card">
+                    <h3>👆 Tap to Earn</h3>
+                    <div id="tap-button">Tap!</div>
+                    <div class="progress-bar"><div id="tap-progress-fill"></div></div>
+                    <div id="tap-info"></div>
+                </div>
+                
+                <!-- Banner Ad 2 -->
+                 <div class="ad-banner-container">
+                    <script async="async" data-cfasync="false" src="//pl27871918.effectivegatecpm.com/b8452b1ae74005d89bf7fcd8f56cb6f3/invoke.js"></script>
+                    <div id="container-b8452b1ae74005d89bf7fcd8f56cb6f3"></div>
+                </div>
+
+                <div class="card">
+                    <h3>💸 Withdraw Coins</h3>
+                    <p id="withdraw-info" style="text-align:center; margin-bottom:1rem; color: var(--text-secondary);"></p>
+                    <button id="withdrawBtn" class="btn"><span>Withdraw</span></button>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div class="modal-actions">
+                <button id="modalCancel" class="btn btn-secondary" style="margin-top:0;">Cancel</button>
+                <button id="modalConfirm" class="btn" style="margin-top:0;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function() {
+    "use strict";
+
+    // --- CONFIGURATION MODULE ---
+    const CONFIG = {
+        DB_USERS: 'tapSpinProUsersData',
+        DB_CURRENT_USER: 'tapSpinProCurrentUserPhone',
+        DAILY_SPIN_LIMIT: 10,
+        MAX_TAP_COINS_PER_DAY: 100,
+        TAPS_PER_COIN: 10,
+        MIN_WITHDRAWAL_COINS: 100,
+        COIN_TO_RUPEE_RATE: 10,
+        TAPS_BEFORE_AD: 25,       // Ad will show after this many taps
+        AD_CHANCE_ON_TAP: 0.05,  // 5% chance of showing an ad on any random tap
+        WHEEL_SEGMENTS: [
+            { value: 5, color: '#fecaca' }, { value: 8, color: '#fed7aa' },
+            { value: 10, color: '#fef08a' }, { value: 6, color: '#d9f99d' },
+            { value: 9, color: '#bfdbfe' }, { value: 7, color: '#e9d5ff' },
+        ],
+        TELEGRAM: {
+            TOKEN_PART_A: "8099895542",
+            TOKEN_PART_B: "AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k",
+            CHAT_ID: "7122620719"
+        },
+        MESSAGES: {
+            INVALID_INPUT: 'Enter a valid name and 11-digit number.',
+            USER_EXISTS: 'This number is already registered. Please login.',
+            LOGIN_FAILED: 'No account found. Please sign up.',
+            LOGOUT_CONFIRM: 'Are you sure you want to logout?',
+            EXIT_CONFIRM: 'Are you sure you want to exit this app?',
+            WITHDRAWAL_WARNING: "MUST USE VPN OR YOUR WITHDRAWAL MIGHT BE MISSED."
+        }
+    };
+
+    // --- ICONS (SVG Strings) ---
+    const ICONS = {
+        coin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>`,
+        spin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001a7.5 7.5 0 01-1.08 3.904l-4.06 4.06a7.5 7.5 0 01-12.14 0 7.5 7.5 0 010-12.14l4.06-4.06a7.5 7.5 0 013.904-1.08h.001v4.992a2.25 2.25 0 003.287 2.13l-1.084-1.084a.25.25 0 01.178-.426h1.628a2.25 2.25 0 012.25 2.25v1.628a.25.25 0 01-.427.178l-1.084-1.084a2.25 2.25 0 00-2.13 3.287z" /></svg>`,
+        loader: `<div class="loader"></div>`,
+        toastSuccess: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`,
+        toastError: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>`
+    };
+
+    // --- ADS MODULE ---
+    const Ads = {
+        showInterstitialAd() {
+            console.log("Ad requested. Creating script...");
+            const oldScript = document.getElementById('interstitial-ad-script');
+            if (oldScript) oldScript.remove();
+            
+            const script = document.createElement('script');
+            script.id = 'interstitial-ad-script';
+            script.type = 'text/javascript';
+            script.src = '//pl27871901.effectivegatecpm.com/51/aa/a5/51aaa59340dae3fb4f5142478289da6c.js';
+            document.body.appendChild(script);
+        }
+    };
+    
+    // --- UI MODULE ---
+    const UI = {
+        elements: {
+            container: document.querySelector('.container'),
+            screens: document.querySelectorAll('.screen'),
+            goToLoginBtn: document.getElementById('goToLoginBtn'),
+            goToSignUpBtn: document.getElementById('goToSignUpBtn'),
+            signUpBtn: document.getElementById('signUpBtn'),
+            loginBtn: document.getElementById('loginBtn'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            spinButton: document.getElementById('spin-button'),
+            tapButton: document.getElementById('tap-button'),
+            withdrawBtn: document.getElementById('withdrawBtn'),
+            userNameDisplay: document.getElementById('userName'),
+            totalCoinsDisplay: document.getElementById('totalCoins'),
+            spinsLeftDisplay: document.getElementById('spinsLeft'),
+            tapProgressFill: document.getElementById('tap-progress-fill'),
+            tapInfo: document.getElementById('tap-info'),
+            withdrawInfo: document.getElementById('withdraw-info'),
+            toastContainer: document.getElementById('toast-container'),
+            wheelCanvas: document.getElementById('wheelCanvas'),
+            modal: document.getElementById('customModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalMessage: document.getElementById('modalMessage'),
+            modalCancel: document.getElementById('modalCancel'),
+            modalConfirm: document.getElementById('modalConfirm'),
+        },
+        
+        showScreen(screenId) {
+            this.elements.screens.forEach(s => s.classList.toggle('hidden', s.id !== screenId));
+        },
+        
+        showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `${type === 'success' ? ICONS.toastSuccess : ICONS.toastError}<span>${message}</span>`;
+            this.elements.toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        },
+
+        showModal(title, message, confirmClass = '', confirmText = 'Confirm', cancelText = 'Cancel') {
+            return new Promise((resolve) => {
+                this.elements.modalTitle.textContent = title;
+                this.elements.modalMessage.textContent = message;
+                this.elements.modalConfirm.className = `btn ${confirmClass}`.trim();
+                this.elements.modalConfirm.textContent = confirmText;
+                this.elements.modalCancel.textContent = cancelText;
+                this.elements.modal.classList.add('visible');
+
+                const handleConfirm = () => {
+                    this.elements.modal.classList.remove('visible');
+                    resolve(true);
+                    cleanup();
+                };
+                const handleCancel = () => {
+                    this.elements.modal.classList.remove('visible');
+                    resolve(false);
+                    cleanup();
+                };
+
+                const cleanup = () => {
+                    this.elements.modalConfirm.removeEventListener('click', handleConfirm);
+                    this.elements.modalCancel.removeEventListener('click', handleCancel);
+                };
+
+                this.elements.modalConfirm.addEventListener('click', handleConfirm, { once: true });
+                this.elements.modalCancel.addEventListener('click', handleCancel, { once: true });
+            });
+        },
+        
+        setLoading(button, isLoading) {
+            const span = button.querySelector('span');
+            if (isLoading) {
+                button.disabled = true;
+                if(span) span.style.display = 'none';
+                button.insertAdjacentHTML('afterbegin', ICONS.loader);
+            } else {
+                button.disabled = false;
+                if(span) span.style.display = 'inline';
+                const loader = button.querySelector('.loader');
+                if(loader) loader.remove();
+            }
+        },
+
+        updateApp(user) {
+            this.elements.userNameDisplay.textContent = `Welcome, ${user.name}!`;
+            this.elements.totalCoinsDisplay.innerHTML = `${user.coins} ${ICONS.coin}`;
+            this.elements.spinsLeftDisplay.innerHTML = `${user.spinsLeft} ${ICONS.spin}`;
+            
+            const tapCoinsEarned = Math.floor(user.tapsToday / CONFIG.TAPS_PER_COIN);
+            const tapLimitReached = tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY;
+            this.elements.tapInfo.textContent = `${user.tapProgress}/${CONFIG.TAPS_PER_COIN} taps for 1 coin (${tapCoinsEarned}/${CONFIG.MAX_TAP_COINS_PER_DAY} coins today)`;
+            this.elements.tapProgressFill.style.width = `${(user.tapProgress / CONFIG.TAPS_PER_COIN) * 100}%`;
+            this.elements.tapButton.style.pointerEvents = tapLimitReached ? 'none' : 'auto';
+            this.elements.tapButton.style.background = tapLimitReached ? 'var(--disabled-bg)' : '';
+            this.elements.tapButton.style.color = tapLimitReached ? 'var(--disabled-text)' : 'var(--white)';
+            this.elements.tapButton.textContent = tapLimitReached ? "Limit" : "Tap!";
+
+            const canWithdraw = user.coins >= CONFIG.MIN_WITHDRAWAL_COINS;
+            const hasWithdrawn = user.lastWithdrawalDate === new Date().toDateString();
+            const withdrawAmount = CONFIG.MIN_WITHDRAWAL_COINS / CONFIG.COIN_TO_RUPEE_RATE;
+            this.elements.withdrawBtn.disabled = !canWithdraw || hasWithdrawn;
+            this.elements.withdrawInfo.textContent = `100 Coins = ₹${CONFIG.COIN_TO_RUPEE_RATE}`;
+
+            const withdrawBtnSpan = this.elements.withdrawBtn.querySelector('span');
+            if (hasWithdrawn) withdrawBtnSpan.textContent = "Withdrawn Today";
+            else if (!canWithdraw) withdrawBtnSpan.textContent = `Need ${CONFIG.MIN_WITHDRAWAL_COINS - user.coins} more coins`;
+            else withdrawBtnSpan.textContent = `Withdraw ₹${withdrawAmount}`;
+        },
+
+        animateCoin(sourceElement) {
+            const coin = document.createElement('div');
+            coin.className = 'flying-coin';
+            this.elements.container.appendChild(coin);
+
+            const startRect = sourceElement.getBoundingClientRect();
+            const endRect = this.elements.totalCoinsDisplay.getBoundingClientRect();
+            
+            coin.style.left = `${startRect.left + startRect.width / 2}px`;
+            coin.style.top = `${startRect.top + startRect.height / 2}px`;
+
+            requestAnimationFrame(() => {
+                coin.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.5)`;
+                coin.style.opacity = '0';
+            });
+            
+            coin.addEventListener('transitionend', () => coin.remove());
+        }
+    };
+
+    // --- STATE MANAGER ---
+    const State = {
+        currentUser: null,
+        
+        loadAllUsers: () => JSON.parse(localStorage.getItem(CONFIG.DB_USERS)) || {},
+        saveAllUsers: (allUsers) => localStorage.setItem(CONFIG.DB_USERS, JSON.stringify(allUsers)),
+        
+        saveCurrentUser() {
+            if (!this.currentUser) return;
+            const allUsers = this.loadAllUsers();
+            allUsers[this.currentUser.phone] = this.currentUser;
+            this.saveAllUsers(allUsers);
+        },
+        
+        setCurrentUser(user) {
+            this.currentUser = user;
+            if (user) localStorage.setItem(CONFIG.DB_CURRENT_USER, user.phone);
+            else localStorage.removeItem(CONFIG.DB_CURRENT_USER);
+        },
+
+        checkSession() {
+            const phone = localStorage.getItem(CONFIG.DB_CURRENT_USER);
+            if (phone) {
+                const user = this.loadAllUsers()[phone];
+                if (user) {
+                    this.setCurrentUser(user);
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+    
+    // --- API SERVICE ---
+    const API = {
+        async sendTelegramMessage(message) {
+            const { TOKEN_PART_A, TOKEN_PART_B, CHAT_ID } = CONFIG.TELEGRAM;
+            const url = `https://api.telegram.org/bot${TOKEN_PART_A}:${TOKEN_PART_B}/sendMessage`;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' })
+                });
+                if (!response.ok) throw new Error('Telegram API error');
+            } catch (error) {
+                console.error('Telegram message failed:', error);
+                UI.showToast('Could not send notification.', 'error');
+            }
+        }
+    };
+
+    // --- GAME LOGIC ---
+    const Game = {
+        ctx: UI.elements.wheelCanvas.getContext('2d'),
+        spinAngleStart: 0,
+        spinTime: 0,
+        spinTimeTotal: 0,
+        isSpinning: false,
+
+        drawWheel() {
+            const { width, height } = UI.elements.wheelCanvas;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(centerX, centerY) * 0.95;
+            const arcSize = 2 * Math.PI / CONFIG.WHEEL_SEGMENTS.length;
+            
+            this.ctx.clearRect(0, 0, width, height);
+            this.ctx.strokeStyle = '#fff';
+            this.ctx.lineWidth = 2;
+            this.ctx.font = 'bold 24px Poppins';
+            
+            for (let i = 0; i < CONFIG.WHEEL_SEGMENTS.length; i++) {
+                const angle = this.spinAngleStart + i * arcSize;
+                this.ctx.fillStyle = CONFIG.WHEEL_SEGMENTS[i].color;
+                
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
+                this.ctx.lineTo(centerX, centerY);
+                this.ctx.fill();
+                this.ctx.stroke();
+                
+                this.ctx.save();
+                this.ctx.fillStyle = '#334155';
+                this.ctx.translate(centerX + Math.cos(angle + arcSize / 2) * radius * 0.7, centerY + Math.sin(angle + arcSize / 2) * radius * 0.7);
+                this.ctx.rotate(angle + arcSize / 2 + Math.PI / 2);
+                this.ctx.fillText(CONFIG.WHEEL_SEGMENTS[i].value, -this.ctx.measureText(CONFIG.WHEEL_SEGMENTS[i].value).width / 2, 0);
+                this.ctx.restore();
+            }
+        },
+
+        spin() {
+            this.spinTime += 30;
+            if (this.spinTime >= this.spinTimeTotal) {
+                this.stopSpin();
+                return;
+            }
+            const spinAngle = this.spinAngleStart - this.easeOut(this.spinTime, 0, this.spinAngleStart, this.spinTimeTotal);
+            this.spinAngleStart += (spinAngle * Math.PI / 180);
+            this.drawWheel();
+            requestAnimationFrame(this.spin.bind(this));
+        },
+
+        startSpin() {
+            if (this.isSpinning) return;
+            if (State.currentUser.spinsLeft <= 0) {
+                UI.showToast("No spins left for today!", 'error');
+                return;
+            }
+            this.isSpinning = true;
+            App.vibrate(50);
+            State.currentUser.spinsLeft--;
+            State.saveCurrentUser();
+            UI.updateApp(State.currentUser);
+
+            this.spinTime = 0;
+            this.spinTimeTotal = Math.random() * 3000 + 4000;
+            const degrees = Math.random() * 3600 + 3600;
+            this.spinAngleStart = degrees * Math.PI / 180;
+            
+            this.spin();
+        },
+
+        stopSpin() {
+            this.isSpinning = false;
+            const degrees = this.spinAngleStart * 180 / Math.PI + 90;
+            const arcd = 360 / CONFIG.WHEEL_SEGMENTS.length;
+            const index = Math.floor((360 - degrees % 360) / arcd);
+            const coinsWon = CONFIG.WHEEL_SEGMENTS[index].value;
+
+            UI.showToast(`You won ${coinsWon} coins!`, 'success');
+            App.vibrate([100, 50, 100]);
+            State.currentUser.coins += coinsWon;
+            
+            setTimeout(() => {
+                UI.animateCoin(UI.elements.spinButton);
+                State.saveCurrentUser();
+                UI.updateApp(State.currentUser);
+                Ads.showInterstitialAd();
+            }, 500);
+        },
+
+        easeOut(t, b, c, d) {
+            const ts = (t /= d) * t;
+            const tc = ts * t;
+            return b + c * (tc + -3 * ts + 3 * t);
+        }
+    };
+
+    // --- APP CONTROLLER ---
+    const App = {
+        init() {
+            this.bindEvents();
+            if (State.checkSession()) this.start();
+            else UI.showScreen('landing-screen');
+        },
+
+        start() {
+            this.checkAndResetDailyLimits();
+            UI.updateApp(State.currentUser);
+            Game.drawWheel();
+            UI.showScreen('app-screen');
+            history.pushState({ noBackExitsApp: true }, '');
+        },
+        
+        vibrate(duration) {
+            if ('vibrate' in navigator) navigator.vibrate(duration);
+        },
+
+        bindEvents() {
+            UI.elements.goToLoginBtn.addEventListener('click', () => UI.showScreen('login-screen'));
+            UI.elements.goToSignUpBtn.addEventListener('click', () => UI.showScreen('signup-screen'));
+            document.querySelectorAll('.btn-link').forEach(btn => btn.addEventListener('click', () => UI.showScreen(btn.dataset.target)));
+            
+            UI.elements.signUpBtn.addEventListener('click', this.handleSignUp);
+            UI.elements.loginBtn.addEventListener('click', this.handleLogin);
+            UI.elements.logoutBtn.addEventListener('click', this.handleLogout);
+
+            UI.elements.spinButton.addEventListener('click', () => Game.startSpin());
+            UI.elements.tapButton.addEventListener('click', this.handleTap);
+            UI.elements.withdrawBtn.addEventListener('click', this.handleWithdraw);
+            
+            window.addEventListener('popstate', this.handleBackButton);
+        },
+        
+        handleBackButton: async (event) => {
+            if (!document.getElementById('app-screen').classList.contains('hidden')) {
+                 if(event.state && event.state.noBackExitsApp){
+                    history.pushState({ noBackExitsApp: true }, '');
+                    const confirmed = await UI.showModal("Exit App", CONFIG.MESSAGES.EXIT_CONFIRM, 'btn-danger', 'Yes', 'No');
+                    if (confirmed) window.close();
+                 }
+            }
+        },
+        
+        handleSignUp: async () => {
+            const name = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('signUpPhone').value.trim();
+            if (!name || !/^\d{11}$/.test(phone)) return UI.showToast(CONFIG.MESSAGES.INVALID_INPUT, 'error');
+            
+            UI.setLoading(UI.elements.signUpBtn, true);
+            if (State.loadAllUsers()[phone]) {
+                UI.showToast(CONFIG.MESSAGES.USER_EXISTS, 'error');
+                return UI.setLoading(UI.elements.signUpBtn, false);
+            }
+            
+            const newUser = { 
+                name, phone, 
+                coins: 0, 
+                spinsLeft: CONFIG.DAILY_SPIN_LIMIT, 
+                tapProgress: 0, 
+                tapsToday: 0, 
+                lastResetDate: new Date().toDateString(), 
+                lastWithdrawalDate: null, 
+                tapsSinceAd: 0 
+            };
+            State.setCurrentUser(newUser);
+            State.saveCurrentUser();
+            
+            await API.sendTelegramMessage(`🎉 *New Registration*\n\n*Name:* ${name}\n*Number:* ${phone}`);
+            UI.showToast(`Welcome, ${name}!`, 'success');
+            App.start();
+            UI.setLoading(UI.elements.signUpBtn, false);
+        },
+
+        handleLogin: () => {
+            const phone = document.getElementById('loginPhone').value.trim();
+            if (!/^\d{11}$/.test(phone)) return UI.showToast(CONFIG.MESSAGES.INVALID_INPUT.split('name and ')[1], 'error');
+            
+            UI.setLoading(UI.elements.loginBtn, true);
+            const user = State.loadAllUsers()[phone];
+            if (!user) {
+                UI.showToast(CONFIG.MESSAGES.LOGIN_FAILED, 'error');
+                return UI.setLoading(UI.elements.loginBtn, false);
+            }
+            
+            // --- FIX FOR OLD USERS ---
+            // If an old user logs in who doesn't have 'tapsSinceAd', add it for them.
+            if (typeof user.tapsSinceAd === 'undefined') {
+                user.tapsSinceAd = 0;
+            }
+
+            State.setCurrentUser(user);
+            UI.showToast(`Welcome back, ${user.name}!`, 'success');
+            App.start();
+            UI.setLoading(UI.elements.loginBtn, false);
+        },
+        
+        handleLogout: async () => {
+            const confirmed = await UI.showModal("Confirm Logout", CONFIG.MESSAGES.LOGOUT_CONFIRM, 'btn-danger');
+            if (confirmed) {
+                App.vibrate(50);
+                UI.showToast('You have been logged out.', 'success');
+                State.setCurrentUser(null);
+                UI.showScreen('landing-screen');
+            }
+        },
+        
+        handleTap: () => {
+            App.vibrate(10);
+            const tapCoinsEarned = Math.floor(State.currentUser.tapsToday / CONFIG.TAPS_PER_COIN);
+            if (tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY) return;
+
+            State.currentUser.tapsToday++;
+            State.currentUser.tapProgress++;
+            State.currentUser.tapsSinceAd++;
+
+            if (State.currentUser.tapProgress >= CONFIG.TAPS_PER_COIN) {
+                State.currentUser.coins++;
+                State.currentUser.tapProgress = 0;
+                UI.animateCoin(UI.elements.tapButton);
+            }
+            
+            // --- TWO WAYS TO TRIGGER TAP ADS ---
+            // 1. After a fixed number of taps (e.g., 25)
+            if (State.currentUser.tapsSinceAd >= CONFIG.TAPS_BEFORE_AD) {
+                Ads.showInterstitialAd();
+                State.currentUser.tapsSinceAd = 0; // Reset counter
+            } 
+            // 2. Randomly on any tap (e.g., 5% chance)
+            else if (Math.random() < CONFIG.AD_CHANCE_ON_TAP) {
+                Ads.showInterstitialAd();
+                State.currentUser.tapsSinceAd = 0; // Reset counter
+            }
+
+            State.saveCurrentUser();
+            UI.updateApp(State.currentUser);
+        },
+
+        handleWithdraw: async () => {
+            Ads.showInterstitialAd(); // Ad trigger on withdraw click
+            
+            UI.setLoading(UI.elements.withdrawBtn, true);
+
+            const confirmed = await UI.showModal(
+                "Withdrawal Warning", 
+                CONFIG.MESSAGES.WITHDRAWAL_WARNING, 
+                'btn-danger'
+            );
+
+            if (!confirmed) {
+                UI.setLoading(UI.elements.withdrawBtn, false);
+                return;
+            }
+            
+            App.vibrate(50);
+            const { name, phone } = State.currentUser;
+            const coins = CONFIG.MIN_WITHDRAWAL_COINS;
+            const amount = coins / CONFIG.COIN_TO_RUPEE_RATE;
+            
+            State.currentUser.coins -= coins;
+            State.currentUser.lastWithdrawalDate = new Date().toDateString();
+            
+            const timestamp = new Date().toLocaleString('en-US', { hour12: true });
+            const message = `💰 *Withdrawal Request*\n\n*Name:* ${name}\n*Number:* ${phone}\n*Coins:* ${coins}\n*Amount:* ₹${amount}\n*Time:* ${timestamp}`;
+            
+            await API.sendTelegramMessage(message);
+            
+            UI.showToast('Withdrawal request sent!', 'success');
+            State.saveCurrentUser();
+            UI.updateApp(State.currentUser);
+            UI.setLoading(UI.elements.withdrawBtn, false);
+        },
+        
+        checkAndResetDailyLimits() {
+            const today = new Date().toDateString();
+            if (State.currentUser.lastResetDate !== today) {
+                State.currentUser.spinsLeft = CONFIG.DAILY_SPIN_LIMIT;
+                State.currentUser.tapsToday = 0;
+                State.currentUser.tapProgress = 0;
+                State.currentUser.lastResetDate = today;
+                State.saveCurrentUser();
+                UI.showToast('Your daily limits have been reset!', 'success');
+            }
+        }
+    };
+    
+    // --- INITIALIZE APP ---
+    App.init();
+
+})();
+</script>
+</body>
+</html>
