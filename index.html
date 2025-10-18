@@ -1,736 +1,344 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spin & Tap Earn — Single File</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --accent:#ff6b6b; --muted:#94a3b8;
-      --glass: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    body{margin:0; min-height:100vh; background:
-      radial-gradient(700px 400px at 10% 10%, rgba(255,107,107,0.06), transparent),
-      radial-gradient(600px 300px at 90% 90%, rgba(59,130,246,0.03), transparent),
-      var(--bg); color:#e6eef8; -webkit-font-smoothing:antialiased}
-    .wrap{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
-    .card{background:var(--card); border-radius:18px;padding:18px;box-shadow: 0 6px 30px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.02)}
-    .logo{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-    .logo .dot{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ffb86b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#051425}
-    h1{margin:0;font-size:18px}
-    .muted{color:var(--muted);font-size:13px}
-    /* login */
-    .login{display:flex;flex-direction:column;gap:10px}
-    .input{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);color:inherit}
-    .btn{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:12px;border-radius:12px;font-weight:700;cursor:pointer}
-    .big{font-size:26px;font-weight:800}
-    /* profile & actions */
-    .profile{display:flex;gap:12px;align-items:center}
-    .avatar{width:64px;height:64px;border-radius:14px;background:linear-gradient(180deg,#6ee7b7,#34d399);display:flex;align-items:center;justify-content:center;font-size:20px;color:#042018;font-weight:800}
-    .meter{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-    .stats{display:flex;gap:10px}
-    .stat{flex:1;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);text-align:center}
-    .wheel-wrap{display:flex;gap:18px;align-items:center}
-    .wheel{width:320px;height:320px;border-radius:50%;background:conic-gradient(#ff9b9b 0 20deg,#ffd59d 20deg 60deg,#b3f0d4 60deg 120deg,#cddcff 120deg 160deg,#f3d4ff 160deg 200deg,#ffd9d9 200deg 260deg,#dbeafe 260deg 320deg,#ffe3e3 320deg 360deg);display:grid;place-items:center;position:relative;box-shadow:inset 0 8px 30px rgba(0,0,0,0.35)}
-    .wheel .center{width:120px;height:120px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;backdrop-filter: blur(6px);flex-direction:column}
-    .pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:28px solid #fffb;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.6))}
-    .balance{font-size:22px;font-weight:800}
-    .small{font-size:12px;color:var(--muted)}
-    /* taps */
-    .taps{display:flex;flex-direction:column;gap:8px;align-items:center}
-    .tap-btn{background:linear-gradient(180deg,#1e293b,#0f1724);padding:14px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);font-weight:700;cursor:pointer}
-    /* withdraw form */
-    .row{display:flex;gap:8px}
-    .copy-btn{background:rgba(255,255,255,0.04);padding:8px;border-radius:8px;border:none;cursor:pointer}
-    .notice{background:linear-gradient(90deg, rgba(255,107,107,0.06), rgba(255,255,255,0.02));padding:10px;border-radius:8px;color:var(--muted);font-size:13px}
-    /* responsive */
-    @media(max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}.wheel{width:260px;height:260px}}
-    .fancy-popup{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(0deg,rgba(2,6,23,0.6),rgba(2,6,23,0.6));z-index:9999}
-    .modal{background:linear-gradient(180deg,#071122,#0b1a2a);padding:26px;border-radius:18px;box-shadow:0 14px 50px rgba(2,6,23,0.8);max-width:640px}
-    .close{background:rgba(255,255,255,0.03);border:none;padding:8px;border-radius:8px;cursor:pointer}
-    .tiny{font-size:12px;color:var(--muted)}
-    .invite-box{display:flex;gap:8px;align-items:center}
-    .uid{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px}
-    /* stunning heading */
-    .hero{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-    .spark{font-size:20px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Spin & Tap Earn — Mobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060a;--card:#071226;--gold:#ffb86b;--accent:#ff6b6b;--muted:#93a4b8}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#04050a,#081226);color:#e6eef8;-webkit-font-smoothing:antialiased}
+.app{max-width:420px;margin:12px auto;padding:12px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)}
+.header{display:flex;align-items:center;gap:10px}
+.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#ffd07a);display:grid;place-items:center;color:#071226;font-weight:800}
+.h1{font-weight:800;font-size:18px}
+.muted{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;align-items:center}
+.input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+.btn{background:linear-gradient(90deg,var(--accent),var(--gold));border:none;padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.center{display:grid;place-items:center}
+/* wheel 3d classic */
+.wheel-wrap{display:flex;gap:12px;align-items:center;justify-content:center;flex-direction:column}
+.wheel-outer{width:300px;height:300px;border-radius:50%;background:conic-gradient(#2b394d 0 51deg,#183047 51deg 102deg,#213547 102deg 153deg,#2b394d 153deg 204deg,#183047 204deg 255deg,#213547 255deg 306deg,#2b394d 306deg 360deg);position:relative;box-shadow:0 18px 50px rgba(0,0,0,0.6), inset 0 8px 30px rgba(255,255,255,0.02)}
+.wheel-ring{position:absolute;inset:10px;border-radius:50%;background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.03), transparent 25%);display:grid;place-items:center}
+.wheel-face{width:240px;height:240px;border-radius:50%;background:linear-gradient(180deg,#0a1530,#051020);display:grid;place-items:center;transform-style:preserve-3d;transition:transform 4s cubic-bezier(.18,.86,.18,1)}
+.sector{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:700;transform-origin:center;pointer-events:none}
+.pointer{width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:26px solid rgba(255,255,255,0.95);position:relative;top:-18px;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6))}
+.center-btn{background:linear-gradient(180deg,#ffb86b,#ff8b6b);padding:12px 16px;border-radius:50px;font-weight:800;color:#071226;box-shadow:0 8px 25px rgba(0,0,0,0.5)}
+/* responsive */
+@media(max-width:420px){.wheel-outer{width:270px;height:270px}.wheel-face{width:210px;height:210px}}
+.notice{background:linear-gradient(90deg,rgba(255,107,107,0.05),transparent);padding:8px;border-radius:8px;color:var(--muted);font-size:13px}
+.toast{position:fixed;right:12px;bottom:12px;background:#07202d;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- left column: login or profile -->
-    <div class="card" id="leftCard">
-      <div class="logo">
-        <div class="dot">SE</div>
-        <div>
-          <h1>Spin & Tap Earn</h1>
-          <div class="muted">Fast • Sexy UI • Single-file</div>
-        </div>
-      </div>
-
-      <!-- Login / Bind warning -->
-      <div id="loginArea">
-        <div class="muted tiny">You need to bind your Easypaisa or JazzCash number otherwise you'll not be able to withdraw. ⚠️ Please bind now.</div>
-        <div style="height:12px"></div>
-        <div class="login">
-          <input id="fullName" class="input" placeholder="Full name (English only)" />
-          <input id="phone" class="input" placeholder="Phone number (e.g. 03XXXXXXXXX)" />
-          <div style="display:flex;gap:8px">
-            <select id="currencyMethod" class="input" style="flex:1">
-              <option value="easypaisa">Bind Easypaisa number</option>
-              <option value="jazzcash">Bind JazzCash number</option>
-            </select>
-            <button id="loginBtn" class="btn">Register & Enter</button>
-          </div>
-          <div class="muted tiny">Minimum withdrawal: <strong>200 coins</strong>. Rate: <strong>10 coins = 1 Rs</strong>.</div>
-        </div>
-      </div>
-
-      <!-- profile area (hidden until login) -->
-      <div id="profileArea" style="display:none">
-        <div class="profile">
-          <div class="avatar" id="avatarEmoji">😊</div>
-          <div>
-            <div id="welcome" class="big">Welcome, User</div>
-            <div class="muted" id="smallPhone"></div>
-          </div>
-        </div>
-        <div style="height:12px"></div>
-        <div class="meter card">
-          <div class="stats">
-            <div class="stat">
-              <div class="muted tiny">Balance</div>
-              <div class="balance" id="balance">0</div>
-              <div class="tiny muted">coins</div>
-            </div>
-            <div class="stat">
-              <div class="muted tiny">Spins left</div>
-              <div class="balance" id="spinsLeft">0</div>
-              <div class="tiny muted">today</div>
-            </div>
-            <div class="stat">
-              <div class="muted tiny">Tap coins today</div>
-              <div class="balance" id="tapCoins">0</div>
-              <div class="tiny muted">max 100/day</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="height:12px"></div>
-        <div>
-          <div class="muted tiny">Your UID (share to invite):</div>
-          <div style="height:8px"></div>
-          <div class="invite-box">
-            <div class="uid" id="uidBox">--</div>
-            <button class="copy-btn" id="copyUid">Copy</button>
-            <div style="flex:1"></div>
-            <div class="muted tiny">Invites give +5 spins & +20 coins (only once).</div>
-          </div>
-        </div>
-
-      </div>
+<div class="app">
+  <div class="card header">
+    <div class="logo">SE</div>
+    <div>
+      <div class="h1">Spin & Tap Earn</div>
+      <div class="small muted">Dark • Mobile • Classic wheel</div>
     </div>
+  </div>
 
-    <!-- right column: main -->
+  <!-- login -->
+  <div id="loginCard" class="card">
+    <div class="small muted">You need to bind your Easypaisa or JazzCash number otherwise you'll not be able to withdraw.</div>
+    <div style="height:8px"></div>
+    <input id="name" class="input" placeholder="Full name (English)" />
+    <div style="height:8px"></div>
+    <input id="phone" class="input" placeholder="Phone number e.g. 03XXXXXXXXX" />
+    <div style="height:8px"></div>
+    <div class="row">
+      <select id="bindMethod" class="input" style="width:48%">
+        <option value="easypaisa">Easypaisa</option>
+        <option value="jazzcash">JazzCash</option>
+      </select>
+      <button id="register" class="btn" style="flex:1">Register & Enter</button>
+    </div>
+    <div style="height:8px"></div>
+    <div class="small muted">Min withdraw 200 coins — 10 coins = 1 Rs</div>
+  </div>
+
+  <!-- main -->
+  <div id="mainArea" style="display:none">
     <div class="card">
-      <div class="hero">
-        <div class="spark">🎡</div>
-        <div>
-          <div style="display:flex;gap:12px;align-items:end">
-            <div style="font-size:20px;font-weight:800">Spin Wheel — Win Coins</div>
-            <div class="muted tiny">Only 10 spins per day • Big visual wheel</div>
-          </div>
-          <div class="muted tiny">Spin rewards: 0, 5, 10, 15, 25, 40, 50 (very rare). 0.01% chance for 50 coins.</div>
-        </div>
-      </div>
-
-      <div class="wheel-wrap">
-        <div style="flex:1">
-          <div class="pointer"></div>
-          <div class="wheel" id="wheel">
-            <div class="center">
-              <div id="spinBtn" class="btn" style="padding:12px 20px">SPIN 🎯</div>
-              <div class="tiny muted" style="margin-top:6px">Spins left: <strong id="spinLeftSmall">0</strong></div>
-            </div>
-          </div>
-        </div>
-
-        <div style="width:360px">
-          <div class="card" style="margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div class="muted tiny">Tap to earn</div>
-                <div style="font-weight:800;font-size:18px">Tap zone — 10 taps = 1 coin</div>
-              </div>
-              <div class="muted tiny">Daily cap: 100 coins</div>
-            </div>
-            <div style="height:12px"></div>
-            <div class="taps">
-              <button id="tapArea" class="tap-btn">TAP 👉</button>
-              <div class="muted tiny">Taps this session: <span id="tapCount">0</span> • Coins from taps today: <span id="tapCoinCount">0</span></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><div class="muted tiny">Withdraw</div><div style="font-weight:800">Request payout</div></div>
-              <div class="muted tiny">Min <strong>200 coins</strong></div>
-            </div>
-            <div style="height:12px"></div>
-            <div class="muted tiny">Choose method (Easypaisa / JazzCash) — this must be bound and will be sent to Telegram</div>
-            <div style="height:8px"></div>
-            <div style="display:flex;gap:8px">
-              <select id="withdrawMethod" class="input" style="flex:1">
-                <option value="easypaisa">Easypaisa</option>
-                <option value="jazzcash">JazzCash</option>
-              </select>
-              <input id="withdrawAmount" class="input" placeholder="Amount (coins)" style="width:120px"/>
-            </div>
-            <div style="height:8px"></div>
-            <div class="notice">You need to connect a VPN to withdraw otherwise your withdraw will be rejected and cannot be added back to your account.</div>
-            <div style="height:8px"></div>
-            <div style="display:flex;gap:8px">
-              <button id="withdrawBtn" class="btn" style="flex:1">Request Withdraw</button>
-              <button id="copyNumberBtn" class="copy-btn">Copy Bound Number</button>
-            </div>
-            <div style="height:8px"></div>
-            <div class="muted tiny">When you press withdraw — a request will be sent to the Telegram bot instantly (owner bot token provided).</div>
-          </div>
-
-          <div style="height:12px"></div>
-          <div class="card">
-            <div style="font-weight:800">Recent activity</div>
-            <div class="muted tiny" id="activityLog">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="height:12px"></div>
-      <!-- ads banners area -->
-      <div id="adsArea" class="card">
-        <div style="display:flex;gap:12px;align-items:center">
-          <div style="font-weight:800">Sponsored</div>
-          <div class="muted tiny">(These are the ad scripts you provided — will run in iframes)</div>
-        </div>
-        <div style="height:8px"></div>
-        <!-- banner script slots -->
-        <div id="banner1"></div>
-        <div id="banner2"></div>
-        <div id="banner3"></div>
-        <div id="banner4"></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- fancy welcome popup -->
-  <div id="welcomePopup" class="fancy-popup" style="display:none">
-    <div class="modal">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:20px;font-weight:800">Stay tuned with us for more exciting updates ✨</div>
-          <div class="muted tiny">New features, bigger rewards — follow us!</div>
-        </div>
-        <button class="close" id="closeWelcome">Close</button>
-      </div>
-      <div style="height:12px"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" id="gotItBtn">I'm excited!</button>
+      <div class="flex-between"><div><strong id="uName">User</strong><div class="small muted" id="uPhone"></div></div>
+      <div class="small muted">Balance <div id="bal" style="font-weight:800;text-align:right">0</div></div></div>
+      <div style="height:8px"></div>
+      <div class="flex-between">
+        <div class="small muted">UID</div><div id="uid" style="background:rgba(255,255,255,0.02);padding:6px;border-radius:8px">--</div>
       </div>
     </div>
+
+    <div class="card wheel-wrap center">
+      <div class="pointer"></div>
+      <div class="wheel-outer">
+        <div class="wheel-ring">
+          <div id="wheelFace" class="wheel-face">
+            <!-- text sectors (visual only) -->
+            <div class="sector" style="transform:rotate(0deg) translateY(-85px)">50</div>
+            <div class="sector" style="transform:rotate(51.4deg) translateY(-85px)">40</div>
+            <div class="sector" style="transform:rotate(102.8deg) translateY(-85px)">25</div>
+            <div class="sector" style="transform:rotate(154.2deg) translateY(-85px)">15</div>
+            <div class="sector" style="transform:rotate(205.6deg) translateY(-85px)">10</div>
+            <div class="sector" style="transform:rotate(257deg) translateY(-85px)">5</div>
+            <div class="sector" style="transform:rotate(308.4deg) translateY(-85px)">0</div>
+            <div class="center center-btn" id="spinBtn">SPIN</div>
+          </div>
+        </div>
+      </div>
+      <div style="height:6px"></div>
+      <div class="small muted">10 spins/day • Popunder ad opens on spin</div>
+      <div style="height:8px"></div>
+      <div class="row"><div class="small muted">Spins left:</div><div id="spLeft" style="font-weight:800">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between"><div><strong>Tap to earn</strong><div class="small muted">10 taps = 1 coin (max 100 coins/day)</div></div><div id="tapCoins" style="font-weight:800">0</div></div>
+      <div style="height:8px"></div>
+      <div class="row"><button id="tapBtn" class="btn" style="flex:1">TAP</button><div style="width:8px"></div><div class="small muted">Taps: <span id="tapCount">0</span></div></div>
+    </div>
+
+    <div class="card">
+      <div class="small muted">Withdraw (VPN required)</div>
+      <div style="height:6px"></div>
+      <div class="row">
+        <select id="withdrawMethod" class="input" style="width:48%"><option value="easypaisa">Easypaisa</option><option value="jazzcash">JazzCash</option></select>
+        <input id="withdrawAmount" class="input" placeholder="Coins" type="number" style="width:48%"/>
+      </div>
+      <div style="height:8px"></div>
+      <div class="notice small muted">You need to connect a VPN to withdraw otherwise your withdraw will be rejected and cannot be added back to your account.</div>
+      <div style="height:8px"></div>
+      <div class="row"><button id="withdrawBtn" class="btn" style="flex:1">Request Withdraw</button><button id="copyPhone" class="btn" style="background:#0b2a35;width:44%">Copy #</button></div>
+    </div>
+
+    <div id="ads" class="card">
+      <div class="small muted">Sponsored</div>
+      <div id="ad1"></div>
+      <div id="ad2"></div>
+    </div>
+
+    <div class="card small muted center"><div id="activity">—</div></div>
   </div>
+</div>
 
-  <!-- firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<!-- firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <script>
-  /*************** CONFIG ***************/
-  const firebaseConfig = {
-    apiKey: "AIzaSyD81bZWx7Bw3Y6YAY753OyMur49vLcEGTY",
-    authDomain: "calling-b5573.firebaseapp.com",
-    databaseURL: "https://calling-b5573-default-rtdb.firebaseio.com",
-    projectId: "calling-b5573",
-    storageBucket: "calling-b5573.firebasestorage.app",
-    messagingSenderId: "625719430185",
-    appId: "1:625719430185:web:cae7ca1f34eb2fb83ba038",
-    measurementId: "G-06VR4RXLTY"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+<script>
+/* CONFIG (your provided keys & token) */
+const firebaseConfig = {
+  apiKey: "AIzaSyD81bZWx7Bw3Y6YAY753OyMur49vLcEGTY",
+  authDomain: "calling-b5573.firebaseapp.com",
+  databaseURL: "https://calling-b5573-default-rtdb.firebaseio.com",
+  projectId: "calling-b5573",
+  storageBucket: "calling-b5573.firebasestorage.app",
+  messagingSenderId: "625719430185",
+  appId: "1:625719430185:web:cae7ca1f34eb2fb83ba038",
+  measurementId: "G-06VR4RXLTY"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // Telegram (provided)
-  const TELEGRAM_TOKEN = '8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k';
-  const TELEGRAM_CHAT = '7122620719';
+/* TELEGRAM (provided) */
+const TELEGRAM_TOKEN = '8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k';
+const TELEGRAM_CHAT  = '7122620719';
 
-  /*************** LOCAL STATE & UTIL ***************/
-  const LS = localStorage;
-  const todayKey = () => {
-    const d = new Date(); return `${d.getUTCFullYear()}-${d.getUTCMonth()+1}-${d.getUTCDate()}`;
-  };
+/* local-session */
+const LSKEY = 'ste_session';
+function nowKey(){const d=new Date(); return `${d.getUTCFullYear()}-${d.getUTCMonth()+1}-${d.getUTCDate()}`}
+function uid(){return 'UID-'+Math.random().toString(36).slice(2,7).toUpperCase()}
+function load(){try{return JSON.parse(localStorage.getItem(LSKEY))}catch(e){return null}}
+function save(s){localStorage.setItem(LSKEY,JSON.stringify(s))}
 
-  function uidGenerate(){
-    // readable short UID
-    const s = Math.random().toString(36).slice(2,8).toUpperCase();
-    return 'UID-' + s;
-  }
-  function show(el){el.style.display='block'}
-  function hide(el){el.style.display='none'}
-  function fmt(n){return Math.round(n*100)/100}
+/* wheel weights */
+const options=[{v:0,w:0.2},{v:5,w:49.4},{v:10,w:49.4},{v:15,w:0.8},{v:25,w:0.08},{v:40,w:0.05},{v:50,w:0.03}];
+const total=options.reduce((a,b)=>a+b.w,0);
+function pick(){
+  let r=Math.random()*total; for(const o of options){r-=o.w; if(r<=0) return o.v} return 5;
+}
 
-  /*************** WEIGHTED SPIN SETUP ***************/
-  // rewards and weights (percent approx)
-  const wheelOptions = [
-    {value:0, weight:0.2},
-    {value:5, weight:49.8},
-    {value:10, weight:49.5},
-    {value:15, weight:0.4},
-    {value:25, weight:0.05},
-    {value:40, weight:0.04},
-    {value:50, weight:0.01}
-  ];
-  // build cumulative
-  const totalWeight = wheelOptions.reduce((s,o)=>s+o.weight,0);
-  const wheelCumulative = [];
-  let acc=0;
-  for(const o of wheelOptions){acc+=o.weight; wheelCumulative.push({v:o.value, up:acc});}
+/* UI refs */
+const loginCard=document.getElementById('loginCard'), mainArea=document.getElementById('mainArea');
+const elName=document.getElementById('name'), elPhone=document.getElementById('phone'), elBind=document.getElementById('bindMethod');
+const register=document.getElementById('register'), uName=document.getElementById('uName'), uPhone=document.getElementById('uPhone'), uidEl=document.getElementById('uid');
+const balEl=document.getElementById('bal'), spLeft=document.getElementById('spLeft'), spinBtn=document.getElementById('spinBtn');
+const wheelFace=document.getElementById('wheelFace'), tapBtn=document.getElementById('tapBtn'), tapCountEl=document.getElementById('tapCount'), tapCoinsEl=document.getElementById('tapCoins');
+const withdrawBtn=document.getElementById('withdrawBtn'), withdrawMethod=document.getElementById('withdrawMethod'), withdrawAmount=document.getElementById('withdrawAmount');
+const activity=document.getElementById('activity'), copyPhone=document.getElementById('copyPhone'), ad1=document.getElementById('ad1'), ad2=document.getElementById('ad2');
 
-  function spinPick(){
-    const r = Math.random()*totalWeight;
-    for(const c of wheelCumulative) if(r <= c.up) return c.v;
-    return 5;
-  }
+/* load session */
+let S = load();
+if(S){S = ensureDaily(S); enterSession(S);} 
 
-  /*************** APP LOGIC ***************/
-  // session structure saved in LS under 'se_session'
-  // {name, phone, method, uid, registeredAt, lastActiveDate, balance, spinsToday, tapCoinsToday, tapCount, inviteUsed:bool}
-  const SESSION_KEY = 'se_session';
+/* register */
+register.addEventListener('click', async ()=>{
+  const name=elName.value.trim(), phone=elPhone.value.replace(/\D/g,'').trim(), method=elBind.value;
+  if(!name||!phone){alert('Enter name and phone');return;}
+  // check phone unique in firebase
+  const snap = await db.ref('users/byPhone/'+phone).once('value');
+  if(snap.exists()){alert('Phone already registered'); return;}
+  S = {name,phone,method,uid:uid(),registered:Date.now(),balance:0,spins:10,tapCount:0,tapCoins:0,lastDay:nowKey(),inviteClaimed:false};
+  const uref = db.ref('users/list').push();
+  await uref.set(S);
+  await db.ref('users/byPhone/'+phone).set({uid:S.uid,key:uref.key});
+  save(S); enterSession(S);
+  sendTelegram(`🆕 New user\nName: ${S.name}\nPhone: ${S.phone}\nUID: ${S.uid}\nMethod: ${S.method}`);
+  applyPendingInvite();
+});
 
-  function loadSession(){
-    const raw = LS.getItem(SESSION_KEY);
-    if(!raw) return null;
-    try {return JSON.parse(raw);} catch(e){return null;}
-  }
-  function saveSession(s){LS.setItem(SESSION_KEY, JSON.stringify(s));}
+/* ensure daily reset */
+function ensureDaily(s){
+  const d=nowKey();
+  if(s.lastDay!==d){s.lastDay=d;s.spins=10;s.tapCount=0;s.tapCoins=0;}
+  return s;
+}
 
-  // ensure daily reset logic: if lastActiveDate != today, reset spins & taps
-  function ensureDaily(s){
-    const today = todayKey();
-    if(s.lastActiveDate !== today){
-      s.lastActiveDate = today;
-      s.spinsToday = 10; // reset
-      s.tapCoinsToday = 0;
-      s.tapCount = 0;
-      s.inviteClaimed = s.inviteClaimed || false; // keep inviteUsed persistent; user can only claim one invite ever
-    }
-    return s;
-  }
-
-  // UI elements
-  const loginArea = document.getElementById('loginArea');
-  const profileArea = document.getElementById('profileArea');
-  const leftCard = document.getElementById('leftCard');
-  const welcome = document.getElementById('welcome');
-  const smallPhone = document.getElementById('smallPhone');
-  const avatarEmoji = document.getElementById('avatarEmoji');
-  const uidBox = document.getElementById('uidBox');
-  const copyUid = document.getElementById('copyUid');
-  const balanceEl = document.getElementById('balance');
-  const spinsLeft = document.getElementById('spinsLeft');
-  const spinLeftSmall = document.getElementById('spinLeftSmall');
-  const tapCountEl = document.getElementById('tapCount');
-  const tapCoinEl = document.getElementById('tapCoinCount');
-  const spinBtn = document.getElementById('spinBtn');
-  const wheel = document.getElementById('wheel');
-  const tapArea = document.getElementById('tapArea');
-  const withdrawBtn = document.getElementById('withdrawBtn');
-  const withdrawMethod = document.getElementById('withdrawMethod');
-  const withdrawAmount = document.getElementById('withdrawAmount');
-  const activityLog = document.getElementById('activityLog');
-  const copyNumberBtn = document.getElementById('copyNumberBtn');
-
-  // ads placeholders - insert provided scripts
-  const banner1 = document.getElementById('banner1');
-  const banner2 = document.getElementById('banner2');
-  const banner3 = document.getElementById('banner3');
-  const banner4 = document.getElementById('banner4');
-
-  banner1.innerHTML = `<div id="adslot1"></div>`;
-  banner2.innerHTML = `<div id="adslot2"></div>`;
-  banner3.innerHTML = `<div id="adslot3"></div>`;
-  banner4.innerHTML = `<div id="adslot4"></div>`;
-
-  // inject the ad scripts provided by user into slots
-  const adScripts = [
-`<script type="text/javascript">  atOptions = { 'key' : '9cbc681ebce5bc26688dd3025f0cbdef', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {}  }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/9cbc681ebce5bc26688dd3025f0cbdef/invoke.js"></script>`,
-`<script type="text/javascript">  atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {}  }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>`,
-`<script type="text/javascript">  atOptions = { 'key' : '76e7056cf71d83911fb0aaf9e2cb675c', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {}  }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>`,
-`<script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>`,
-`<script type="text/javascript">  atOptions = { 'key' : '01efd94df9ed3ed4a270aa47108fe17e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {}  }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>`
-  ];
-
-  // place ads into DOM (we won't run them inside the single-file sandbox environment reliably, but this will include the scripts)
-  adScripts.forEach((s, idx) => {
-    const slot = document.getElementById('adslot' + (idx+1));
-    if(slot) slot.innerHTML = s;
+/* enter UI */
+function enterSession(s){
+  S = ensureDaily(s);
+  save(S);
+  loginCard.style.display='none'; mainArea.style.display='block';
+  uName.textContent = S.name; uPhone.textContent = `${S.method.toUpperCase()}: ${S.phone}`; uidEl.textContent = S.uid;
+  balEl.textContent = S.balance || 0; spLeft.textContent = S.spins; tapCountEl.textContent = S.tapCount; tapCoinsEl.textContent = S.tapCoins;
+  activity.textContent = 'Ready — play & earn!';
+  // realtime sync
+  db.ref('users/list').orderByChild('uid').equalTo(S.uid).on('value', snap=>{
+    if(!snap.exists()) return;
+    const k = Object.keys(snap.val())[0]; const d = snap.val()[k];
+    S.balance = d.balance ?? S.balance; S.spins = d.spins ?? S.spins; save(S);
+    balEl.textContent = S.balance; spLeft.textContent = S.spins;
   });
+}
 
-  /*************** AUTH / REGISTER ***************/
-  document.getElementById('loginBtn').addEventListener('click', async ()=>{
-    const name = document.getElementById('fullName').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const method = document.getElementById('currencyMethod').value;
-    if(!name || !phone){ alert('Please enter name and phone number'); return; }
-    // ensure phone unique on firebase and localstorage
-    const phoneKey = phone.replace(/\D+/g,'');
-    // check in firebase if phone already registered
-    const snap = await db.ref('users/byPhone/' + phoneKey).once('value');
-    if(snap.exists()){
-      alert('This phone number is already registered. Use a different number.');
-      return;
-    }
-    // create user session
-    let s = {
-      name, phone: phoneKey, method,
-      uid: uidGenerate(),
-      registeredAt: new Date().toISOString(),
-      lastActiveDate: todayKey(),
-      balance: 0,
-      spinsToday: 10,
-      tapCoinsToday: 0,
-      tapCount: 0,
-      inviteClaimed: false
-    };
-    // save in firebase users and byPhone map
-    const userRef = db.ref('users/list').push();
-    await userRef.set(s);
-    await db.ref('users/byPhone/' + phoneKey).set({uid: s.uid, userKey: userRef.key});
-    // save session locally to persist forever
-    saveSession(s);
-    // send telegram message for new user
-    sendTelegramMessage(`🆕 New user registered\nName: ${s.name}\nPhone: ${s.phone}\nMethod: ${s.method}\nUID: ${s.uid}`);
-    // show UI
-    initForSession(s, true);
-  });
-
-  // on load, try to restore session
-  window.addEventListener('load', ()=>{
-    const s = loadSession();
-    if(s){ initForSession(ensureDaily(s), false); }
-    // show welcome popup
-    setTimeout(()=> show(document.getElementById('welcomePopup')), 700);
-  });
-
-  // init UI for session
-  function initForSession(s, justRegistered){
-    s = ensureDaily(s);
-    saveSession(s);
-    hide(loginArea);
-    show(profileArea);
-    document.getElementById('fullName').value = '';
-    document.getElementById('phone').value = '';
-    // fill UI
-    welcome.textContent = `Welcome, ${s.name}`;
-    smallPhone.textContent = `${s.method.toUpperCase()}: ${s.phone}`;
-    avatarEmoji.textContent = emojiFromName(s.name);
-    uidBox.textContent = s.uid;
-    updateStats(s);
-    // store into firebase / update last seen
-    db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-      if(snap.exists()){
-        const key = Object.keys(snap.val())[0];
-        db.ref('users/list/' + key).update({lastActiveDate: s.lastActiveDate, balance: s.balance});
-      }
-    });
-    // if justRegistered show a glowy congratulate
-    if(justRegistered){
-      toast(`Welcome ${s.name}! Your UID: ${s.uid} — share it to earn invites! 🎉`);
-    }
-  }
-
-  function emojiFromName(name){
-    const emojis = ['😎','🔥','✨','🎯','🎡','💎','🚀','🤑','🎉','😺'];
-    const idx = name.length % emojis.length;
-    return emojis[idx];
-  }
-
-  function updateStats(s){
-    balanceEl.textContent = s.balance || 0;
-    spinsLeft.textContent = s.spinsToday;
-    spinLeftSmall.textContent = s.spinsToday;
-    tapCountEl.textContent = s.tapCount || 0;
-    tapCoinEl.textContent = s.tapCoinsToday || 0;
-    activityLog.textContent = `Last action: ${s.lastAction || '—'}`;
-  }
-
-  /*************** SPIN HANDLING ***************/
-  spinBtn.addEventListener('click', async ()=>{
-    let s = loadSession();
-    if(!s){ alert('Please register first'); return; }
-    s = ensureDaily(s);
-    if(s.spinsToday <= 0){ alert('No spins left today.'); return; }
-
-    // run popunder ad script (user-supplied). We'll inject the popunder script string and then open new window to help open an ad (best effort).
-    try{
-      // inject the popunder script provided by the user (they required it run each spin)
-      const popScript = document.createElement('script');
-      popScript.type='text/javascript';
-      popScript.text = `atOptions = { 'key' : '9cbc681ebce5bc26688dd3025f0cbdef', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };`;
-      document.body.appendChild(popScript);
-      const popExternal = document.createElement('script');
-      popExternal.type='text/javascript';
-      popExternal.src='//www.highperformanceformat.com/9cbc681ebce5bc26688dd3025f0cbdef/invoke.js';
-      document.body.appendChild(popExternal);
-    }catch(e){console.warn('ad injection failed', e)};
-
-    // animate the wheel
-    spinBtn.disabled = true;
-    const reward = spinPick();
-
-    // visually rotate wheel to an angle that corresponds to reward (best-effort)
-    // find an angle for that reward (map reward -> angle)
-    const sections = [0,5,10,15,25,40,50];
-    const idx = sections.indexOf(reward);
-    // compute a target angle randomized within its segment
-    const segAngle = 360 / sections.length;
-    const targetIndex = idx >= 0 ? idx : 1;
-    const randomOffset = Math.random() * (segAngle - 8) - (segAngle/2 - 4);
-    // rotate multiple times plus target
-    const spins = 6;
-    const targetAngle = spins*360 + (targetIndex * segAngle) + (segAngle/2) + randomOffset;
-    wheel.style.transition = 'transform 4s cubic-bezier(.1,.9,.2,1)';
-    wheel.style.transform = `rotate(${targetAngle}deg)`;
-    // after animation
-    setTimeout(async ()=>{
-      wheel.style.transition = '';
-      // normalize rotation so it doesn't accumulate
-      wheel.style.transform = 'rotate(0deg)';
-      s.spinsToday = Math.max(0, s.spinsToday - 1);
-      s.lastAction = `Spin -> ${reward} coins`;
-      s.balance = (s.balance || 0) + reward;
-      s = ensureDaily(s);
-      saveSession(s);
-      updateStats(s);
-      // update firebase user record
-      db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-        if(snap.exists()){
-          const key = Object.keys(snap.val())[0];
-          db.ref('users/list/' + key).update({balance: s.balance, spinsToday: s.spinsToday, lastActiveDate: s.lastActiveDate});
-        }
-      });
-      // log activity
-      addActivity(`Spin result: ${reward} coins`);
-      // small toast
-      toast(`You won ${reward} coins! 🎉`);
-      spinBtn.disabled = false;
-    }, 4200);
-  });
-
-  /*************** TAPS HANDLING ***************/
-  // 10 taps = 1 coin, cap 100 coins/day from taps
-  tapArea.addEventListener('click', ()=>{
-    let s = loadSession();
-    if(!s){ alert('Please register first'); return; }
-    s = ensureDaily(s);
-    if(s.tapCoinsToday >= 100){ toast('Tap-earn daily cap (100 coins) reached'); return; }
-    s.tapCount = (s.tapCount || 0) + 1;
-    // every 10 taps -> +1 coin
-    if(s.tapCount % 10 === 0){
-      s.tapCoinsToday = (s.tapCoinsToday || 0) + 1;
-      s.balance = (s.balance || 0) + 1;
-    }
-    s.lastAction = `Tap x${s.tapCount}`;
-    saveSession(s);
-    updateStats(s);
+/* spin */
+spinBtn.addEventListener('click', ()=>{
+  if(!S){alert('Login first');return;}
+  S = ensureDaily(S);
+  if(S.spins<=0){alert('No spins left today');return;}
+  // open popunder ad (user-supplied script)
+  try{
+    const s1=document.createElement('script');
+    s1.type='text/javascript'; s1.text=`atOptions = { 'key' : '9cbc681ebce5bc26688dd3025f0cbdef', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };`;
+    document.body.appendChild(s1);
+    const s2=document.createElement('script'); s2.type='text/javascript'; s2.src='//www.highperformanceformat.com/9cbc681ebce5bc26688dd3025f0cbdef/invoke.js';
+    document.body.appendChild(s2);
+  }catch(e){}
+  spinBtn.disabled=true;
+  const reward = pick();
+  // 3D rotation effect: spin multiple rounds then stop
+  const deg = 1800 + Math.floor(Math.random()*360) + (rewardMapAngle(reward));
+  wheelFace.style.transform = `rotateZ(${deg}deg)`;
+  setTimeout(async ()=>{
+    spinBtn.disabled=false;
+    S.spins = Math.max(0, S.spins-1);
+    S.balance = (S.balance||0) + reward;
+    S.lastDay = nowKey();
+    save(S);
     // update firebase
-    db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-      if(snap.exists()){
-        const key = Object.keys(snap.val())[0];
-        db.ref('users/list/' + key).update({balance: s.balance, tapCoinsToday: s.tapCoinsToday, tapCount: s.tapCount, lastActiveDate: s.lastActiveDate});
-      }
+    db.ref('users/list').orderByChild('uid').equalTo(S.uid).limitToFirst(1).once('value',snap=>{
+      if(snap.exists()){ const k=Object.keys(snap.val())[0]; db.ref('users/list/'+k).update({balance:S.balance,spins:S.spins,lastDay:S.lastDay})}
     });
-    addActivity(`Tapped (${s.tapCount} taps)`);
-  });
+    balEl.textContent=S.balance; spLeft.textContent=S.spins; activity.textContent=`Spin -> ${reward} coins`;
+    toast(`You won ${reward} coins!`);
+  },4200);
+});
+function rewardMapAngle(v){
+  // coarse mapping to align visual
+  const map={50:20,40:60,25:110,15:155,10:205,5:255,0:305};
+  return map[v]||250;
+}
 
-  /*************** INVITE CLAIMING ***************/
-  // The invite claim can be performed by visiting the page with ?invite=UID
-  // On load, check URL param
-  (function checkInviteParam(){
-    const params = new URLSearchParams(location.search);
-    const code = params.get('invite');
-    if(code){
-      let s = loadSession();
-      if(!s){
-        // no session yet — store a pending invite to apply after signup
-        LS.setItem('se_pending_invite', code);
-      } else {
-        // apply invite if user hasn't used invite before (only one invite allowed ever)
-        if(!s.inviteClaimed){
-          s.inviteClaimed = true;
-          s.spinsToday = Math.min( s.spinsToday + 5, 9999);
-          s.balance = (s.balance || 0) + 20;
-          saveSession(s);
-          db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-            if(snap.exists()){
-              const key = Object.keys(snap.val())[0];
-              db.ref('users/list/' + key).update({inviteClaimed: true, balance: s.balance, spinsToday: s.spinsToday});
-            }
-          });
-          addActivity(`Invite applied from ${code} (+5 spins, +20 coins)`);
-          toast('Invite accepted! +5 spins & +20 coins 🎁');
-        } else {
-          toast('Invite cannot be applied: you already used your invite bonus.');
-        }
-      }
-    }
-  })();
-
-  /*************** WITHDRAWAL ***************/
-  withdrawBtn.addEventListener('click', async ()=>{
-    let s = loadSession();
-    if(!s){ alert('Please register first'); return; }
-    s = ensureDaily(s);
-    const amt = parseInt(withdrawAmount.value, 10);
-    if(isNaN(amt) || amt <= 0){ alert('Enter withdraw amount in coins'); return; }
-    if(amt < 200){ alert('Minimum withdrawal is 200 coins'); return; }
-    if(amt > s.balance){ alert('Insufficient balance'); return; }
-    // ensure user has bound the number (they did at register) but we double-check method exists
-    if(!s.phone || !s.method){ alert('You must bind your Easypaisa/JazzCash number to withdraw'); return; }
-    // deduct balance optimistically
-    s.balance -= amt;
-    s.lastAction = `Withdraw request ${amt} coins`;
-    saveSession(s);
-    updateStats(s);
-    addActivity(`Withdraw request: ${amt} coins`);
-    // store withdraw in firebase
-    const wref = db.ref('withdrawals').push();
-    await wref.set({
-      uid: s.uid, name: s.name, phone: s.phone, method: withdrawMethod.value,
-      amount: amt, requestedAt: new Date().toISOString(), status: 'pending'
-    });
-    // send telegram
-    const msg = `💸 Withdraw Request\nName: ${s.name}\nUID: ${s.uid}\nMethod: ${withdrawMethod.value}\nPhone: ${s.phone}\nAmount: ${amt} coins\n(10 coins = 1 Rs)`;
-    sendTelegramMessage(msg);
-    // update firebase user record
-    db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-      if(snap.exists()){
-        const key = Object.keys(snap.val())[0];
-        db.ref('users/list/' + key).update({balance: s.balance});
-      }
-    });
-    toast('Withdraw request sent. Check Telegram for details.');
-    withdrawAmount.value = '';
-  });
-
-  copyUid.addEventListener('click', ()=>{
-    const text = uidBox.textContent;
-    navigator.clipboard.writeText(text).then(()=> toast('UID copied to clipboard'));
-  });
-  copyNumberBtn.addEventListener('click', ()=>{
-    const s = loadSession();
-    if(s && s.phone){ navigator.clipboard.writeText(s.phone).then(()=> toast('Bound number copied')); }
-    else alert('No bound number');
-  });
-
-  /*************** ACTIVITY & TOAST ***************/
-  function addActivity(text){
-    const now = new Date().toLocaleString();
-    activityLog.textContent = `${now} — ${text}`;
+/* taps */
+tapBtn.addEventListener('click', ()=>{
+  if(!S){alert('Login first');return;}
+  S = ensureDaily(S);
+  if(S.tapCoins >= 100){toast('Tap earn daily cap (100) reached'); return;}
+  S.tapCount = (S.tapCount||0)+1;
+  if(S.tapCount % 10 === 0){
+    S.tapCoins = (S.tapCoins||0)+1;
+    S.balance = (S.balance||0)+1;
   }
-  function toast(msg){
-    // small ephemeral toast creative
-    const el = document.createElement('div');
-    el.textContent = msg;
-    el.style.position='fixed'; el.style.bottom='28px'; el.style.right='28px';
-    el.style.background='linear-gradient(90deg,#1f2937,#111827)'; el.style.padding='12px 16px';
-    el.style.borderRadius='10px'; el.style.boxShadow='0 8px 30px rgba(0,0,0,0.6)'; el.style.zIndex=99999;
-    document.body.appendChild(el);
-    setTimeout(()=> el.style.opacity='0.0', 1700);
-    setTimeout(()=> el.remove(), 2200);
-  }
-
-  /*************** TELEGRAM SENDER ***************/
-  async function sendTelegramMessage(text){
-    try{
-      // call telegram sendMessage
-      const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-      // POST request
-      await fetch(url, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({chat_id: TELEGRAM_CHAT, text})
-      });
-    }catch(err){
-      console.warn('Telegram send failed', err);
-    }
-  }
-
-  /*************** WELCOME POPUP BUTTONS ***************/
-  document.getElementById('closeWelcome').addEventListener('click', ()=> hide(document.getElementById('welcomePopup')));
-  document.getElementById('gotItBtn').addEventListener('click', ()=> hide(document.getElementById('welcomePopup')));
-
-  /*************** Save session on unload to be safe ***************/
-  window.addEventListener('beforeunload', ()=>{
-    const s = loadSession();
-    if(s){
-      s.lastActiveDate = todayKey();
-      saveSession(s);
-    }
+  save(S);
+  db.ref('users/list').orderByChild('uid').equalTo(S.uid).limitToFirst(1).once('value',snap=>{
+    if(snap.exists()){ const k=Object.keys(snap.val())[0]; db.ref('users/list/'+k).update({balance:S.balance,tapCount:S.tapCount,tapCoins:S.tapCoins})}
   });
+  tapCountEl.textContent=S.tapCount; tapCoinsEl.textContent=S.tapCoins; balEl.textContent=S.balance;
+  activity.textContent=`Tapped (${S.tapCount})`;
+});
 
-  /*************** EXTRA: If a pending invite exists after signup, apply it ***************/
-  // when registering, apply pending invite (if any)
-  (function applyPendingInviteOnRegister(){
-    // when a session is saved, check for pending invite
-    const origSave = saveSession;
-    window.saveSession = function(s){
-      origSave(s);
-      const pending = LS.getItem('se_pending_invite');
-      if(pending && !s.inviteClaimed){
-        s.inviteClaimed = true;
-        s.spinsToday = (s.spinsToday || 0) + 5;
-        s.balance = (s.balance || 0) + 20;
-        LS.removeItem('se_pending_invite');
-        saveSession(s);
-        db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value', snap=>{
-          if(snap.exists()){
-            const key = Object.keys(snap.val())[0];
-            db.ref('users/list/' + key).update({inviteClaimed: true, balance: s.balance, spinsToday: s.spinsToday});
-          }
-        });
-        addActivity(`Invite applied from ${pending}`);
-        toast('Invite accepted! +5 spins & +20 coins 🎁');
-      }
-    }
-  })();
+/* withdraw */
+withdrawBtn.addEventListener('click', async ()=>{
+  if(!S){alert('Login first');return;}
+  const amt = parseInt(withdrawAmount.value,10);
+  if(!amt || amt<200){alert('Min withdraw 200 coins');return;}
+  if(amt > (S.balance||0)){alert('Insufficient balance');return;}
+  // deduct and save
+  S.balance -= amt; save(S); balEl.textContent=S.balance; activity.textContent=`Withdraw requested ${amt} coins`;
+  // create withdrawal entry
+  const wref = db.ref('withdrawals').push();
+  await wref.set({uid:S.uid,name:S.name,phone:S.phone,method:withdrawMethod.value,amount:amt,at:Date.now(),status:'pending'});
+  // send telegram
+  const msg = `💸 Withdraw\nName: ${S.name}\nUID: ${S.uid}\nMethod: ${withdrawMethod.value}\nPhone: ${S.phone}\nAmount: ${amt} coins\n(10 coins = 1 Rs)`;
+  sendTelegram(msg);
+  toast('Withdraw request sent to Telegram');
+  withdrawAmount.value='';
+  // update user balance in firebase
+  db.ref('users/list').orderByChild('uid').equalTo(S.uid).limitToFirst(1).once('value',snap=>{
+    if(snap.exists()){ const k=Object.keys(snap.val())[0]; db.ref('users/list/'+k).update({balance:S.balance})}
+  });
+});
 
-  /*************** small helper: sync UI when session changes externally in firebase (simple) ***************/
-  // Listen to user's db changes if logged in to reflect realtime updates
-  (function setupRealtimeSync(){
-    const s = loadSession();
-    if(!s) return;
-    db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).on('value', snap=>{
-      if(!snap.exists()) return;
-      const key = Object.keys(snap.val())[0];
-      const data = snap.val()[key];
-      // merge certain fields locally
-      let local = loadSession();
-      if(!local) return;
-      local.balance = data.balance ?? local.balance;
-      local.spinsToday = data.spinsToday ?? local.spinsToday;
-      local.tapCoinsToday = data.tapCoinsToday ?? local.tapCoinsToday;
-      local.tapCount = data.tapCount ?? local.tapCount;
-      saveSession(local);
-      updateStats(local);
+/* copy phone */
+copyPhone.addEventListener('click', ()=> {
+  if(!S) return alert('Login first');
+  navigator.clipboard.writeText(S.phone).then(()=>toast('Number copied'));
+});
+
+/* telegram sender */
+async function sendTelegram(text){
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:TELEGRAM_CHAT,text})
     });
-  })();
+  }catch(e){console.warn('tg',e)}
+}
 
-  </script>
+/* toast */
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2200)}
 
-  <!-- Footer small note -->
-  <div style="position:fixed;left:12px;bottom:12px;font-size:12px;color:var(--muted)">Built single-file • All UI & features included • English only</div>
+/* invite via ?invite=UID handling */
+(function(){
+  const p = new URLSearchParams(location.search); const code = p.get('invite');
+  if(code){
+    const s = load();
+    if(!s){ localStorage.setItem('pending_invite',code); return; }
+    if(!s.inviteClaimed){ s.inviteClaimed=true; s.spins = (s.spins||0)+5; s.balance=(s.balance||0)+20; save(s); toast('Invite applied +5 spins & +20 coins'); db.ref('users/list').orderByChild('uid').equalTo(s.uid).limitToFirst(1).once('value',snap=>{ if(snap.exists()){ const k=Object.keys(snap.val())[0]; db.ref('users/list/'+k).update({inviteClaimed:true,spins:s.spins,balance:s.balance})}})}
+  }
+})();
+
+function applyPendingInvite(){
+  const code = localStorage.getItem('pending_invite');
+  if(code && S && !S.inviteClaimed){ S.inviteClaimed=true; S.spins=(S.spins||0)+5; S.balance=(S.balance||0)+20; save(S); db.ref('users/list').orderByChild('uid').equalTo(S.uid).limitToFirst(1).once('value',snap=>{ if(snap.exists()){ const k=Object.keys(snap.val())[0]; db.ref('users/list/'+k).update({inviteClaimed:true,spins:S.spins,balance:S.balance})}}); localStorage.removeItem('pending_invite'); toast('Invite applied +5 spins & +20 coins')}
+}
+
+/* on load: create small welcome popup via toast */
+setTimeout(()=>toast('Stay tuned with us for more exciting updates ✨'),900);
+
+/* inject ad scripts (banners) - exactly as provided */
+ad1.innerHTML = `<script type="text/javascript">  atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {}  }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>`;
+ad2.innerHTML = `<script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>`;
+
+/* new user check on page open: if S exists -> show main, else show login */
+if(S) enterSession(S);
+
+/* small UTILITY: register page prevents re-register by local phone check */
+window.addEventListener('beforeunload', ()=>{ if(S) save(S) });
+</script>
 </body>
-    </html>
+</html>
