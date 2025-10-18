@@ -83,7 +83,7 @@
         }
         
         .nav-btn {
-            padding: 12px 5px;
+            padding: 12px 10px;
             border: none;
             background: transparent;
             border-radius: 10px;
@@ -96,7 +96,8 @@
             align-items: center;
             gap: 5px;
             flex: 1;
-            min-width: 60px;
+            min-width: 70px;
+            font-size: 12px;
         }
         
         .nav-btn.active {
@@ -151,11 +152,6 @@
             background: var(--danger);
             color: white;
         }
-
-        .btn:disabled {
-            background: #c3cfe2;
-            cursor: not-allowed;
-        }
         
         .form-group {
             margin-bottom: 15px;
@@ -198,8 +194,8 @@
         
         .wheel-container {
             position: relative;
-            width: 250px;
-            height: 250px;
+            width: 220px;
+            height: 220px;
             margin: 20px auto;
         }
         
@@ -216,9 +212,9 @@
                 #ffcd56 300deg 360deg
             );
             position: relative;
-            transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            border: 5px solid white;
+            overflow: hidden;
         }
         
         .wheel-pointer {
@@ -232,42 +228,19 @@
             clip-path: polygon(50% 100%, 0 0, 100% 0);
             z-index: 10;
         }
-
-        .wheel-center {
+        
+        .wheel-section {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 50%;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            color: var(--primary);
-            z-index: 5;
-            box-shadow: var(--shadow);
-        }
-        .wheel .segment {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            transform: rotate(calc(60deg * var(--i)));
-        }
-        .wheel .segment span {
-            display: inline-block;
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
             color: white;
-            font-size: 22px;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         .tap-area {
@@ -292,6 +265,113 @@
             transform: scale(0.95);
         }
         
+        .coin-flip-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        #coin {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        
+        .coin-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #f0932b, #e84118);
+            border: 5px solid #d35400;
+        }
+        
+        .tails {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            border-color: #005f9e;
+        }
+        
+        .roulette-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #roulette-wheel {
+            width: 100%;
+            height: 100%;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 0 15px rgba(0,0,0,0.3);
+        }
+        
+        .roulette-section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            left: 50%;
+            top: 50%;
+            transform-origin: 0% 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 4.7%, 0% 0%);
+            box-sizing: border-box;
+            padding-right: 15px;
+        }
+        
+        .roulette-section span {
+             transform: rotate(-65deg);
+        }
+
+        #roulette-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 18px solid var(--danger);
+            z-index: 10;
+        }
+
+        .betting-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .bet-btn {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
         .alert {
             padding: 15px;
             border-radius: 12px;
@@ -302,6 +382,13 @@
         .alert-warning {
             background: rgba(255, 154, 0, 0.2);
             border-left: 4px solid var(--warning);
+        }
+        
+        .alert-danger {
+            background: rgba(255, 65, 108, 0.2);
+            border-left: 4px solid var(--danger);
+            border: 2px solid var(--danger);
+            animation: pulse 2s infinite;
         }
         
         .alert-info {
@@ -331,25 +418,54 @@
             color: var(--primary);
         }
         
-        .invite-box {
-            background: var(--gradient);
+        .vpn-banner {
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
             color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            border: 3px solid #ff0000;
+            animation: shake 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(-3px); }
+            100% { transform: translateX(3px); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+        
+        .vpn-banner h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .vpn-banner p {
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+        
+        .withdraw-number {
+            background: var(--light);
             padding: 15px;
             border-radius: 12px;
+            margin: 15px 0;
             text-align: center;
-            margin-top: 20px;
+            font-weight: bold;
+            border: 2px dashed var(--primary);
         }
         
-        .invite-code {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-family: monospace;
-            font-size: 18px;
-            letter-spacing: 2px;
-        }
-        
+        /* --- NEW PROFESSIONAL & ANIMATED POPUP STYLES --- */
         .modal {
             display: none;
             position: fixed;
@@ -357,52 +473,85 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
             z-index: 100;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
         }
         
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 0; /* Remove padding for full control */
             border-radius: 20px;
             max-width: 90%;
+            width: 350px;
             text-align: center;
-            animation: popIn 0.5s;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden; /* Hide overflowing elements from animation */
+            animation: swoopIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
 
-        .modal-content p {
-            line-height: 1.6;
+        .modal-header {
+            background: var(--gradient);
+            padding: 20px;
+            color: white;
         }
 
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .modal-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
-        }
-
-        .modal-icon.win {
-            color: var(--success);
-        }
-
-        .modal-icon.lose {
-            color: var(--warning);
+        .modal-content .fas {
+            font-size: 40px; /* Adjusted size */
+            animation: icon-ring 2.5s ease-in-out infinite;
         }
         
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .modal-body {
+            padding: 25px 30px;
+        }
+
+        .modal-content h2 {
+            font-size: 24px;
+            color: var(--dark);
+            margin-top: 10px; /* Space from icon */
+        }
+        
+        .modal-content p {
+            color: #6c757d;
+            font-size: 16px;
+            margin: 10px 0 20px 0;
+        }
+        
+        @keyframes swoopIn {
+            0% { transform: scale(0.3) translateY(-500px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes icon-ring {
+            0% { transform: scale(1) rotate(0deg); }
+            10% { transform: scale(1.1) rotate(-10deg); }
+            20% { transform: scale(1.1) rotate(10deg); }
+            30% { transform: scale(1.1) rotate(-10deg); }
+            40% { transform: scale(1.1) rotate(10deg); }
+            50% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); }
         }
         
         .coins {
             color: #ffcd56;
             font-weight: 700;
+        }
+        
+        .ad-container, .ad-banner-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .confetti {
@@ -419,169 +568,34 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
-
-        .whatsapp-support {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 100;
-            transition: transform 0.3s;
-            text-decoration: none;
-        }
-
-        .whatsapp-support:hover {
-            transform: scale(1.1);
-        }
-
-        .coin-flip-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            perspective: 1000px;
-        }
-        .coin {
-            width: 150px;
-            height: 150px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 1s;
-            margin: 20px 0;
-        }
-        .coin.flipping {
-            transform: rotateY(1800deg);
-        }
-        .coin-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        }
-        .heads {
-            background: linear-gradient(135deg, #ff9a00, #ffcd56);
-        }
-        .tails {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            transform: rotateY(180deg);
-        }
-        .bet-options {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-        .bet-options .btn {
-            flex: 1;
-        }
-        #flipResult {
-            margin-top: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            height: 30px;
-        }
-        .win-text { color: var(--success); }
-        .lose-text { color: var(--danger); }
-
-        .checkin-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .day-item {
-            background: var(--light);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .day-item.completed {
-            background-color: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-        .day-item.today {
-            border-color: var(--primary);
-            transform: scale(1.05);
-            font-weight: bold;
-        }
-        .day-item .day-number {
-            font-weight: 700;
-            font-size: 18px;
-        }
-        .day-item .day-reward {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        .day-item.completed .fa-check-circle {
-            font-size: 24px;
-        }
-        
-        .ad-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 15px 0;
-            padding: 0 10px;
-            min-height: 50px;
-        }
-
-        .ad-banner {
-            width: 100%;
-            text-align: center;
-            margin: 10px 0;
-        }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Welcome Modal -->
-        <div id="welcomeModal" class="modal" style="display: flex;">
+        <!-- Win Modal (Remains the same) -->
+        <div id="winModal" class="modal">
             <div class="modal-content">
-                <h2 style="margin-bottom: 15px;">🎉 Stay Tuned With Us! 🎉</h2>
-                <p style="margin-bottom: 20px; font-size: 18px;">We're constantly adding new features and exciting updates to make your earning experience even better!</p>
-                <button class="btn btn-primary" onclick="closeWelcomeModal()">Let's Get Started! 🚀</button>
+                 <div class="modal-header">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="modal-body">
+                    <h2 style="margin-bottom: 10px;">Congratulations!</h2>
+                    <p style="margin-bottom: 20px; font-size: 18px;">You won <span id="winAmount" class="coins">0</span> coins!</p>
+                    <button class="btn btn-success" onclick="closeWinModal()">Awesome!</button>
+                </div>
             </div>
         </div>
 
-        <!-- Spin Reward Modal -->
-        <div id="rewardModal" class="modal">
+        <!-- NEW Professional & Animated Welcome Modal -->
+        <div id="welcomeModal" class="modal">
             <div class="modal-content">
-                <div id="rewardModalIcon" class="modal-icon"></div>
-                <h2 id="rewardModalTitle" style="margin-bottom: 15px;"></h2>
-                <p id="rewardModalMessage" style="margin-bottom: 20px; font-size: 18px;"></p>
-                <button class="btn btn-primary" onclick="closeRewardModal()">Awesome!</button>
-            </div>
-        </div>
-
-        <!-- Withdraw Confirmation Modal -->
-        <div id="confirmWithdrawModal" class="modal">
-            <div class="modal-content">
-                <div id="confirmModalIcon" class="modal-icon"><i class="fas fa-wallet" style="color: var(--primary);"></i></div>
-                <h2 id="confirmModalTitle" style="margin-bottom: 15px;">Confirm Withdrawal</h2>
-                <p id="confirmModalMessage" style="margin-bottom: 20px; font-size: 16px;"></p>
-                <div class="modal-buttons">
-                    <button id="cancelWithdrawBtn" class="btn btn-danger">Cancel</button>
-                    <button id="confirmWithdrawBtn" class="btn btn-success">Confirm</button>
+                <div class="modal-header">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="modal-body">
+                    <h2>Exciting News!</h2>
+                    <p>We're always adding new ways for you to earn more. Keep playing and look out for new updates coming soon!</p>
+                    <button class="btn btn-primary" onclick="closeWelcomeModal()">Let's Go!</button>
                 </div>
             </div>
         </div>
@@ -615,23 +629,18 @@
                 </form>
             </div>
             
-            <!-- BANNER ADS - Login Section -->
+            <!-- Adsterra Vertical Ad -->
             <div class="ad-container">
                 <script type="text/javascript">
-                    atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
+                    atOptions = {
+                        'key' : 'd5a356bd31aca7e4181cbac200b1bbe1',
+                        'format' : 'iframe',
+                        'height' : 300,
+                        'width' : 160,
+                        'params' : {}
+                    };
                 </script>
                 <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>
-            </div>
-            
-            <div class="ad-container">
-                <script type="text/javascript">
-                    atOptions = { 'key' : '76e7056cf71d83911fb0aaf9e2cb675c', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
-                </script>
-                <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
-            </div>
-            
-            <div class="ad-container">
-                <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
             </div>
         </div>
         
@@ -642,15 +651,21 @@
                 <p>Welcome, <span id="userName">User</span>! 🎉</p>
                 <p>Coins: <span id="totalCoins" class="coins">0</span> 💰</p>
             </div>
-
-            <!-- BANNER ADS - Top of App -->
-            <div class="ad-container">
+            
+            <!-- Adsterra Horizontal Banner Ad -->
+            <div class="ad-banner-container">
                 <script type="text/javascript">
-                    atOptions = { 'key' : '01efd94df9ed3ed4a270aa47108fe17e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+                    atOptions = {
+                        'key' : '01efd94df9ed3ed4a270aa47108fe17e',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                    };
                 </script>
                 <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
             </div>
-            
+
             <div class="nav">
                 <button class="nav-btn active" data-section="spinsSection">
                     <i class="fas fa-sync-alt"></i>
@@ -662,11 +677,11 @@
                 </button>
                 <button class="nav-btn" data-section="coinFlipSection">
                     <i class="fas fa-coins"></i>
-                    <span>Flip</span>
+                    <span>Coin Flip</span>
                 </button>
-                <button class="nav-btn" data-section="checkInSection">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Check-in</span>
+                <button class="nav-btn" data-section="rouletteSection">
+                    <i class="fas fa-compact-disc"></i>
+                    <span>Roulette</span>
                 </button>
                 <button class="nav-btn" data-section="profileSection">
                     <i class="fas fa-user"></i>
@@ -687,32 +702,20 @@
                     <div class="wheel-container">
                         <div class="wheel-pointer"></div>
                         <div class="wheel" id="wheel">
-                            <div class="segment" style="--i:0;"><span>15</span></div>
-                            <div class="segment" style="--i:1;"><span>2</span></div>
-                            <div class="segment" style="--i:2;"><span>10</span></div>
-                            <div class="segment" style="--i:3;"><span>0</span></div>
-                            <div class="segment" style="--i:4;"><span>5</span></div>
-                            <div class="segment" style="--i:5;"><span>1</span></div>
+                            <div class="wheel-section" style="transform: rotate(0deg);">0 🪙</div>
+                            <div class="wheel-section" style="transform: rotate(60deg);">5 🪙</div>
+                            <div class="wheel-section" style="transform: rotate(120deg);">10 🪙</div>
+                            <div class="wheel-section" style="transform: rotate(180deg);">15 🪙</div>
+                            <div class="wheel-section" style="transform: rotate(240deg);">25 🪙</div>
+                            <div class="wheel-section" style="transform: rotate(300deg);">50 🪙</div>
                         </div>
-                        <div class="wheel-center">SPIN</div>
                     </div>
                     
                     <button id="spinBtn" class="btn btn-primary">Spin Now! 🎯</button>
-                </div>
-                
-                <!-- BANNER ADS - Spins Section -->
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>
-                </div>
-                
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : '76e7056cf71d83911fb0aaf9e2cb675c', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
+                    
+                    <div class="alert alert-info" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i> Spin the wheel to win coins! 10 spins per day.
+                    </div>
                 </div>
             </div>
             
@@ -737,71 +740,66 @@
                         TAP ME!<br>
                         <small>10 taps = 1 coin</small>
                     </div>
-                </div>
-                
-                <!-- BANNER ADS - Taps Section -->
-                <div class="ad-container">
-                    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
-                </div>
-                
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : '01efd94df9ed3ed4a270aa47108fe17e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Tap the circle to earn coins! 10 taps = 1 coin.
+                    </div>
                 </div>
             </div>
-
+            
             <!-- Coin Flip Section -->
             <div id="coinFlipSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Coin Flip 🪙</h2>
-                    
                     <div class="coin-flip-container">
-                        <div id="coin" class="coin">
-                            <div class="coin-face heads">H</div>
-                            <div class="coin-face tails">T</div>
+                        <div id="coin">
+                            <div class="coin-face heads"><i class="fas fa-heading"></i></div>
+                            <div class="coin-face tails"><i class="fas fa-list-ol"></i></div>
                         </div>
-                        <div id="flipResult"></div>
+
+                        <div id="coinFlipResult" style="font-weight: bold; min-height: 24px;"></div>
+                        
                         <div class="form-group" style="width: 100%;">
-                            <label for="betAmount">Bet Amount (Min: 10)</label>
-                            <input type="number" id="betAmount" class="form-control" placeholder="Enter coins to bet" min="10">
+                            <label for="flipBetAmount">Bet Amount:</label>
+                            <input type="number" id="flipBetAmount" class="form-control" placeholder="Enter bet" min="1">
                         </div>
-                        <div class="bet-options">
-                            <button id="headsBtn" class="btn btn-warning">Bet on Heads</button>
-                            <button id="tailsBtn" class="btn btn-primary">Bet on Tails</button>
+                        
+                        <div class="stats" style="width: 100%;">
+                            <button id="flipHeadsBtn" class="btn btn-primary" style="margin: 0 5px;">Bet on Heads</button>
+                            <button id="flipTailsBtn" class="btn btn-secondary" style="margin: 0 5px; background: #0984e3;">Bet on Tails</button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- BANNER ADS - Coin Flip Section -->
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>
+                    <div class="alert alert-info" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i> Bet coins on Heads or Tails. If you win, you double your bet!
+                    </div>
                 </div>
             </div>
 
-            <!-- Check-in Section -->
-            <div id="checkInSection" class="section">
+            <!-- Roulette Section -->
+            <div id="rouletteSection" class="section">
                 <div class="card">
-                    <h2 style="text-align: center; margin-bottom: 20px;">Daily Check-in Rewards 🗓️</h2>
-                    <div class="checkin-container" id="checkinContainer">
+                    <h2 style="text-align: center; margin-bottom: 15px;">Roulette 🎲</h2>
+                    <div class="roulette-container">
+                        <div id="roulette-pointer"></div>
+                        <div id="roulette-wheel"></div>
                     </div>
-                    <button id="checkInBtn" class="btn btn-success">Claim Today's Reward</button>
-                </div>
-                
-                <!-- BANNER ADS - Check-in Section -->
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : '76e7056cf71d83911fb0aaf9e2cb675c', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
-                </div>
-                
-                <div class="ad-container">
-                    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
+
+                    <div id="rouletteResult" style="text-align: center; font-weight: bold; margin-top: 15px; min-height: 24px;"></div>
+
+                    <div class="form-group">
+                        <label for="rouletteBetAmount">Bet Amount:</label>
+                        <input type="number" id="rouletteBetAmount" class="form-control" placeholder="Enter bet" min="1">
+                    </div>
+
+                    <div class="betting-options">
+                        <button class="btn bet-btn btn-danger" data-bet="red">Bet Red (2x)</button>
+                        <button class="btn bet-btn" style="background: black; color: white;" data-bet="black">Bet Black (2x)</button>
+                        <button class="btn bet-btn btn-success" data-bet="green">Bet Green (14x)</button>
+                    </div>
+
+                    <div class="alert alert-warning" style="margin-top: 15px;">
+                        <i class="fas fa-exclamation-triangle"></i> Place your bet and spin the wheel! High risk, high reward.
+                    </div>
                 </div>
             </div>
             
@@ -827,21 +825,6 @@
                         <p><strong>UID:</strong> <span id="profileUID">-</span></p>
                         <p><strong>Joined:</strong> <span id="profileJoined">-</span></p>
                     </div>
-                    
-                    <div class="invite-box">
-                        <h3>Invite Friends 👥</h3>
-                        <p>Share your invite code and get +5 spins and +20 coins daily when they join!</p>
-                        <div class="invite-code" id="inviteCode">COINMASTER-XXXX</div>
-                        <button class="btn btn-warning" onclick="copyInviteCode()">Copy Invite Code</button>
-                    </div>
-                </div>
-                
-                <!-- BANNER ADS - Profile Section -->
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : '01efd94df9ed3ed4a270aa47108fe17e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
                 </div>
             </div>
             
@@ -850,14 +833,24 @@
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Withdraw Earnings 💸</h2>
                     
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i> You need to connect a VPN to withdraw otherwise your withdraw will be rejected.
+                    <div class="vpn-banner">
+                        <h3>⚠️ VPN REQUIREMENT ⚠️</h3>
+                        <p><i class="fas fa-shield-alt"></i> You MUST connect a VPN before withdrawing!</p>
+                        <p><strong>❌ WITHOUT VPN = WITHDRAWAL REJECTED ❌</strong></p>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>DANGER:</strong> Your withdrawal will be automatically rejected if you don't use VPN!
                     </div>
                     
                     <div style="margin-bottom: 20px;">
                         <p><strong>Your Coins:</strong> <span id="withdrawCoins" class="coins">0</span></p>
-                        <p><strong>Minimum Withdrawal:</strong> 50 coins (10 coins = 1 PKR)</p>
+                        <p><strong>Minimum Withdrawal:</strong> 200 coins (10 coins = 1 PKR)</p>
                         <p><strong>Withdrawal Amount:</strong> <span id="withdrawAmount">0</span> PKR</p>
+                    </div>
+                    
+                    <div class="withdraw-number">
+                        <i class="fas fa-mobile-alt"></i> Withdraw will be sent to: <span id="withdrawPhoneNumber">-</span>
                     </div>
                     
                     <div class="form-group">
@@ -879,40 +872,20 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="accountNumber">Account Number</label>
-                        <input type="text" id="accountNumber" class="form-control" placeholder="Enter your account number">
+                        <label for="withdrawCoinsInput">Coins to Withdraw (Min: 200)</label>
+                        <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="200">
                     </div>
                     
-                    <div class="form-group">
-                        <label for="withdrawCoinsInput">Coins to Withdraw (Min: 50)</label>
-                        <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="50">
-                    </div>
-                    
-                    <button id="withdrawBtn" class="btn btn-success" disabled>Request Withdrawal</button>
-                </div>
-                
-                <!-- BANNER ADS - Withdraw Section -->
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : '01efd94df9ed3ed4a270aa47108fe17e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
-                </div>
-                
-                <div class="ad-container">
-                    <script type="text/javascript">
-                        atOptions = { 'key' : 'd5a356bd31aca7e4181cbac200b1bbe1', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/d5a356bd31aca7e4181cbac200b1bbe1/invoke.js"></script>
+                    <button id="withdrawBtn" class="btn btn-success">Request Withdrawal</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <a href="https://wa.me/923449292933?text=Assalam-O-Alaikum%20Haroon%20bhai" class="whatsapp-support" target="_blank" title="Chat on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
+    <!-- Adsterra Popunder and other ads -->
+    <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
+    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
+    
     <!-- Firebase Configuration -->
     <script>
         const firebaseConfig = {
@@ -929,20 +902,22 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        const TELEGRAM_BOT_TOKEN = "8391533206:AAEm04eUKh9rbS4uHHwcj03gvTXlVmA_xqc";
+        const TELEGRAM_BOT_TOKEN = "8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k";
         const TELEGRAM_CHAT_ID = "7122620719";
     </script>
 
     <script>
-        // All JavaScript logic remains the same as before
+        // Global variables
         let currentUser = null;
         let userData = null;
         let spinsRemaining = 10;
         let tapsToday = 0;
         let tapCoins = 0;
         let selectedWithdrawMethod = null;
-        let isFlipping = false;
-
+        let isGameInProgress = false;
+        let navClickCounter = 0;
+        
+        // DOM elements
         const loginSection = document.getElementById('loginSection');
         const appSection = document.getElementById('appSection');
         const loginForm = document.getElementById('loginForm');
@@ -961,72 +936,71 @@
         const profilePhoneSpan = document.getElementById('profilePhone');
         const profileUIDSpan = document.getElementById('profileUID');
         const profileJoinedSpan = document.getElementById('profileJoined');
-        const inviteCodeSpan = document.getElementById('inviteCode');
         const withdrawCoinsSpan = document.getElementById('withdrawCoins');
         const withdrawAmountSpan = document.getElementById('withdrawAmount');
         const withdrawCoinsInput = document.getElementById('withdrawCoinsInput');
         const withdrawBtn = document.getElementById('withdrawBtn');
         const welcomeModal = document.getElementById('welcomeModal');
-        const rewardModal = document.getElementById('rewardModal');
-        const betAmountInput = document.getElementById('betAmount');
-        const headsBtn = document.getElementById('headsBtn');
-        const tailsBtn = document.getElementById('tailsBtn');
-        const coin = document.getElementById('coin');
-        const flipResult = document.getElementById('flipResult');
-        const checkinContainer = document.getElementById('checkinContainer');
-        const checkInBtn = document.getElementById('checkInBtn');
-        const confirmWithdrawModal = document.getElementById('confirmWithdrawModal');
-        const confirmModalMessage = document.getElementById('confirmModalMessage');
-        const cancelWithdrawBtn = document.getElementById('cancelWithdrawBtn');
-        const confirmWithdrawBtn = document.getElementById('confirmWithdrawBtn');
+        const winModal = document.getElementById('winModal');
+        const winAmountSpan = document.getElementById('winAmount');
+        const withdrawPhoneNumberSpan = document.getElementById('withdrawPhoneNumber');
         
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedUserPhone = localStorage.getItem('coinMasterUserPhone');
-            if (savedUserPhone) {
-                autoLogin(savedUserPhone);
-            } else {
-                loginSection.classList.add('active');
-            }
+        const coin = document.getElementById('coin');
+        const flipHeadsBtn = document.getElementById('flipHeadsBtn');
+        const flipTailsBtn = document.getElementById('flipTailsBtn');
+        const flipBetAmountInput = document.getElementById('flipBetAmount');
+        const coinFlipResult = document.getElementById('coinFlipResult');
 
-            setupNavigation();
-            setupEventListeners();
-            
-            if (!localStorage.getItem('welcomeShown')) {
-                setTimeout(() => {
-                    welcomeModal.style.display = 'flex';
-                }, 1000);
-            } else {
-                 welcomeModal.style.display = 'none';
-            }
+        const rouletteWheel = document.getElementById('roulette-wheel');
+        const rouletteBetAmountInput = document.getElementById('rouletteBetAmount');
+        const rouletteResult = document.getElementById('rouletteResult');
+
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = '';
         });
 
-        function autoLogin(phoneNumber) {
-            database.ref('users/' + phoneNumber).once('value').then(snapshot => {
-                if (snapshot.exists()) {
-                    currentUser = { name: snapshot.val().name, phone: phoneNumber, uid: snapshot.val().uid };
-                    loadUserData();
-                    showApp();
-                } else {
-                    localStorage.removeItem('coinMasterUserPhone');
-                    loginSection.classList.add('active');
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = localStorage.getItem('coinMasterUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loadUserData();
+                showApp();
+            }
+            
+            setupNavigation();
+            setupEventListeners();
+            initializeRoulette();
+
+            setTimeout(() => {
+                if (!winModal.classList.contains('show')) {
+                    welcomeModal.classList.add('show');
                 }
-            }).catch(error => {
-                console.error('Auto-login error:', error);
-                loginSection.classList.add('active');
-            });
-        }
+            }, 1000);
+        });
         
         function setupNavigation() {
             const navBtns = document.querySelectorAll('.nav-btn');
-            const sections = document.querySelectorAll('.section:not(#loginSection):not(#appSection)');
+            const sections = document.querySelectorAll('.section');
             
             navBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
+                    if (isGameInProgress) return;
+
+                    navClickCounter++;
+                    if (navClickCounter % 3 === 0) {
+                        openAdsterraPopunder();
+                    }
+
                     const targetSection = this.getAttribute('data-section');
                     navBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     sections.forEach(s => {
-                        s.classList.toggle('active', s.id === targetSection);
+                        if (s.id === targetSection) {
+                            s.classList.add('active');
+                        } else if (s.id !== 'appSection' && s.id !== 'loginSection') {
+                            s.classList.remove('active');
+                        }
                     });
                 });
             });
@@ -1036,25 +1010,23 @@
             loginForm.addEventListener('submit', handleLogin);
             spinBtn.addEventListener('click', handleSpin);
             tapArea.addEventListener('click', handleTap);
-            headsBtn.addEventListener('click', () => handleCoinFlip('Heads'));
-            tailsBtn.addEventListener('click', () => handleCoinFlip('Tails'));
-            checkInBtn.addEventListener('click', handleCheckIn);
             
             document.querySelectorAll('.withdraw-option').forEach(option => {
                 option.addEventListener('click', function() {
                     document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
                     selectedWithdrawMethod = this.getAttribute('data-method');
-                    updateWithdrawAmount();
                 });
             });
             
             withdrawCoinsInput.addEventListener('input', updateWithdrawAmount);
-            document.getElementById('accountNumber').addEventListener('input', updateWithdrawAmount);
-            withdrawBtn.addEventListener('click', showWithdrawConfirmation);
+            withdrawBtn.addEventListener('click', handleWithdraw);
 
-            cancelWithdrawBtn.addEventListener('click', () => {
-                confirmWithdrawModal.style.display = 'none';
+            flipHeadsBtn.addEventListener('click', () => handleCoinFlip('heads'));
+            flipTailsBtn.addEventListener('click', () => handleCoinFlip('tails'));
+
+            document.querySelectorAll('.bet-btn').forEach(btn => {
+                btn.addEventListener('click', () => handleRoulette(btn.dataset.bet));
             });
         }
         
@@ -1068,45 +1040,41 @@
                 return;
             }
             
-            database.ref('users/' + phoneNumber).once('value').then(snapshot => {
-                if (snapshot.exists()) {
-                    currentUser = { name: snapshot.val().name, phone: phoneNumber, uid: snapshot.val().uid };
-                } else {
-                    const uid = 'CM' + Date.now();
-                    currentUser = { name: fullName, phone: phoneNumber, uid: uid };
-                    database.ref('users/' + phoneNumber).set({
-                        name: fullName, phone: phoneNumber, uid: uid, coins: 0,
-                        joined: new Date().toISOString(), spinsUsed: 0, tapsToday: 0, tapCoins: 0,
-                        lastReset: new Date().toISOString(), invitedBy: null, hasInvited: false,
-                        lastCheckIn: null, checkInStreak: 0
-                    });
-                    const message = `
-🎉✨ <b>A New Star Has Joined CoinMaster!</b> ✨🎉
-A new user has just registered on the app.
-<b><u>User Details:</u></b>
-👤 <b>Full Name:</b>
-<code>${fullName}</code>
-📱 <b>Phone Number:</b>
-<code>${phoneNumber}</code>
-Let's give them a warm welcome to the community! 🚀💰
-                    `;
-                    sendTelegramMessage(message);
-                }
-                localStorage.setItem('coinMasterUserPhone', phoneNumber);
-                loadUserData();
-                showApp();
-            }).catch(error => {
-                console.error('Login error:', error);
-                alert('Login failed. Please try again.');
-            });
+            database.ref('users/' + phoneNumber).once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        currentUser = {
+                            name: snapshot.val().name,
+                            phone: phoneNumber,
+                            uid: snapshot.val().uid
+                        };
+                    } else {
+                        const uid = 'CM' + Date.now();
+                        currentUser = { name: fullName, phone: phoneNumber, uid: uid };
+                        
+                        database.ref('users/' + phoneNumber).set({
+                            name: fullName, phone: phoneNumber, uid: uid, coins: 0,
+                            joined: new Date().toISOString(), spinsUsed: 0, tapsToday: 0, tapCoins: 0,
+                            lastReset: new Date().toISOString(), withdrawMethod: null
+                        });
+                        
+                        sendTelegramMessage(`New user registered!\nName: ${fullName}\nPhone: ${phoneNumber}\nUID: ${uid}`);
+                    }
+                    
+                    localStorage.setItem('coinMasterUser', JSON.stringify(currentUser));
+                    loadUserData();
+                    showApp();
+                    openAdsterraPopunder();
+                })
+                .catch(error => alert('Login failed. Please try again.'));
         }
         
         function loadUserData() {
             database.ref('users/' + currentUser.phone).on('value', snapshot => {
                 if (snapshot.exists()) {
                     userData = snapshot.val();
-                    checkDailyReset();
                     updateUI();
+                    checkDailyReset();
                 }
             });
         }
@@ -1114,372 +1082,298 @@ Let's give them a warm welcome to the community! 🚀💰
         function checkDailyReset() {
             const lastReset = new Date(userData.lastReset);
             const now = new Date();
-            if (lastReset.toDateString() !== now.toDateString()) {
-                const updates = { spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: now.toISOString() };
-                database.ref('users/' + currentUser.phone).update(updates);
-                userData = {...userData, ...updates};
+            
+            if (lastReset.getDate() !== now.getDate() || 
+                lastReset.getMonth() !== now.getMonth() || 
+                lastReset.getFullYear() !== now.getFullYear()) {
+                
+                database.ref('users/' + currentUser.phone).update({
+                    spinsUsed: 0, tapsToday: 0, tapCoins: 0,
+                    lastReset: now.toISOString()
+                });
             }
         }
         
         function updateUI() {
             if (!userData) return;
-            const currentCoins = userData.coins || 0;
-            totalCoinsSpan.textContent = currentCoins;
-            profileCoinsSpan.textContent = currentCoins;
-            withdrawCoinsSpan.textContent = currentCoins;
+            totalCoinsSpan.textContent = userData.coins || 0;
+            profileCoinsSpan.textContent = userData.coins || 0;
+            withdrawCoinsSpan.textContent = userData.coins || 0;
             spinsRemaining = 10 - (userData.spinsUsed || 0);
-            if (userData.hasInvited) spinsRemaining += 5;
-            spinsRemainingSpan.textContent = `${spinsRemaining}/${spinsRemaining > 10 ? 15 : 10}`;
+            spinsRemainingSpan.textContent = spinsRemaining;
             profileSpinsSpan.textContent = spinsRemaining;
             tapsToday = userData.tapsToday || 0;
             tapCoins = userData.tapCoins || 0;
             tapsTodaySpan.textContent = `${tapsToday}/1000`;
             tapCoinsSpan.textContent = tapCoins;
-            const progress = Math.min(100, (tapCoins));
+            const progress = Math.min(100, (tapsToday / 10));
             tapProgressSpan.textContent = `${progress}%`;
             userNameSpan.textContent = userData.name;
             profileNameSpan.textContent = userData.name;
             profilePhoneSpan.textContent = userData.phone;
             profileUIDSpan.textContent = userData.uid;
             profileJoinedSpan.textContent = new Date(userData.joined).toLocaleDateString();
-            inviteCodeSpan.textContent = `COINMASTER-${userData.uid}`;
+            withdrawPhoneNumberSpan.textContent = userData.phone;
             spinBtn.disabled = spinsRemaining <= 0;
-            spinBtn.textContent = spinsRemaining > 0 ? 'Spin Now! 🎯' : 'No Spins Left Today 😔';
-
-            renderCheckInUI();
+            spinBtn.textContent = spinsRemaining <= 0 ? 'No Spins Left Today 😔' : 'Spin Now! 🎯';
         }
         
         function showApp() {
             loginSection.classList.remove('active');
             appSection.classList.add('active');
         }
-
-        function renderCheckInUI() {
-            const streak = userData.checkInStreak || 0;
-            const lastCheckIn = userData.lastCheckIn ? new Date(userData.lastCheckIn) : null;
-            const today = new Date();
-            
-            let canClaim = false;
-            if (!lastCheckIn || lastCheckIn.toDateString() !== today.toDateString()) {
-                canClaim = true;
-            }
-
-            checkinContainer.innerHTML = '';
-            for (let i = 1; i <= 7; i++) {
-                const dayItem = document.createElement('div');
-                dayItem.classList.add('day-item');
-
-                if (i <= streak) {
-                     dayItem.classList.add('completed');
-                     dayItem.innerHTML = `<div class="day-number">Day ${i}</div><i class="fas fa-check-circle"></i>`;
-                } else if (i === streak + 1 && canClaim) {
-                    dayItem.classList.add('today');
-                    dayItem.innerHTML = `<div class="day-number">Day ${i}</div><div class="day-reward">+50 <i class="fas fa-coins"></i></div>`;
-                } else {
-                    dayItem.innerHTML = `<div class="day-number">Day ${i}</div><div class="day-reward">+50 <i class="fas fa-coins"></i></div>`;
-                }
-                checkinContainer.appendChild(dayItem);
-            }
-
-            if (canClaim && (streak < 7)) {
-                checkInBtn.disabled = false;
-                checkInBtn.textContent = `Claim Day ${streak + 1} Reward`;
-            } else {
-                checkInBtn.disabled = true;
-                checkInBtn.textContent = canClaim ? "Streak Complete! Resets tomorrow." : "Already Claimed Today";
-            }
-        }
-
-        function handleCheckIn() {
-            const today = new Date();
-            const yesterday = new Date();
-            yesterday.setDate(today.getDate() - 1);
-
-            let currentStreak = userData.checkInStreak || 0;
-            const lastCheckIn = userData.lastCheckIn ? new Date(userData.lastCheckIn) : null;
-            
-            if (lastCheckIn && lastCheckIn.toDateString() === today.toDateString()) {
-                alert("You've already claimed your reward for today!");
-                return;
-            }
-
-            if (lastCheckIn && lastCheckIn.toDateString() !== yesterday.toDateString()) {
-                currentStreak = 0;
-            }
-
-            if (currentStreak >= 7) {
-                currentStreak = 0;
-            }
-            
-            const newStreak = currentStreak + 1;
-            const reward = 50;
-            const newCoins = (userData.coins || 0) + reward;
-
-            const updates = {
-                coins: newCoins,
-                checkInStreak: newStreak,
-                lastCheckIn: today.toISOString()
-            };
-
-            database.ref('users/' + currentUser.phone).update(updates).then(() => {
-                showRewardModal(reward, true);
-            });
-        }
         
         function handleSpin() {
-            if (spinsRemaining <= 0) {
-                showRewardModal(-1);
-                return;
-            }
+            if (isGameInProgress || spinsRemaining <= 0) return;
+            isGameInProgress = true;
             spinBtn.disabled = true;
             spinBtn.textContent = 'Spinning...';
-
-            const rewards = [15, 2, 10, 0, 5, 1];
-            const rewardIndex = Math.floor(Math.random() * rewards.length);
-            const reward = rewards[rewardIndex];
-
-            const currentRotation = parseInt(wheel.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
-            const extraRotation = 360 * 5; 
-            const segmentAngle = 360 / rewards.length;
-            const targetSegmentCenter = (segmentAngle * rewardIndex) + (segmentAngle / 2);
-            const finalRotation = extraRotation + (360 - targetSegmentCenter);
             
-            wheel.style.transform = `rotate(${currentRotation + finalRotation}deg)`;
+            const reward = [0, 5, 10, 15, 25, 50][Math.floor(Math.random() * 6)];
+            const degrees = [0, 60, 120, 180, 240, 300];
+            const winningDegree = degrees.find(d => d === (reward === 0 ? 0 : (reward === 5 ? 300 : (reward === 10 ? 240 : (reward === 15 ? 180 : (reward === 25 ? 120 : 60))))));
             
-            const newSpinsUsed = (userData.spinsUsed || 0) + 1;
-            database.ref('users/' + currentUser.phone).update({ spinsUsed: newSpinsUsed });
+            const extraRotation = 360 * 5;
+            const targetRotation = extraRotation + (360 - winningDegree);
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            
+            database.ref('users/' + currentUser.phone).update({
+                spinsUsed: (userData.spinsUsed || 0) + 1
+            });
             
             setTimeout(() => {
                 if (reward > 0) {
                     const newCoins = (userData.coins || 0) + reward;
                     database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+                    showWinPopup(reward);
+                } else {
+                    alert('Better luck next time! No coins won this spin. 😔');
                 }
-                showRewardModal(reward);
                 
-                // Open Adsterra popunder ad after spin
+                isGameInProgress = false;
                 openAdsterraPopunder();
-            }, 4100);
+            }, 3000);
         }
         
-        // Function to open Adsterra popunder ad
-        function openAdsterraPopunder() {
-            // Create and append the Adsterra popunder script
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.innerHTML = `
-                atOptions = {
-                    'key' : '9cbc681ebce5bc26688dd3025f0cbdef',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            `;
-            document.head.appendChild(script);
-            
-            const script2 = document.createElement('script');
-            script2.type = 'text/javascript';
-            script2.src = '//www.highperformanceformat.com/9cbc681ebce5bc26688dd3025f0cbdef/invoke.js';
-            document.head.appendChild(script2);
-            
-            // Open in new tab after a short delay
-            setTimeout(() => {
-                window.open('https://www.highperformanceformat.com/9cbc681ebce5bc26688dd3025f0cbdef/invoke.html', '_blank');
-            }, 1000);
-        }
-        
-        function handleTap(event) {
+        function handleTap() {
             if (tapCoins >= 100) return;
+            
             tapsToday++;
-            const updates = { tapsToday: tapsToday };
+            database.ref('users/' + currentUser.phone).update({ tapsToday: tapsToday });
+            
             if (tapsToday % 10 === 0) {
                 tapCoins++;
                 const newCoins = (userData.coins || 0) + 1;
-                updates.coins = newCoins;
-                updates.tapCoins = tapCoins;
+                database.ref('users/' + currentUser.phone).update({
+                    coins: newCoins,
+                    tapCoins: tapCoins
+                });
+                showWinPopup(1);
             }
-            database.ref('users/' + currentUser.phone).update(updates);
+            if (tapsToday % 50 === 0) openAdsterraPopunder();
+            updateUI();
         }
 
-        function handleCoinFlip(userChoice) {
-            if (isFlipping) return;
+        function handleCoinFlip(choice) {
+            if (isGameInProgress) return;
+            const betAmount = parseInt(flipBetAmountInput.value);
 
-            const betAmount = parseInt(betAmountInput.value);
-            const currentCoins = userData.coins || 0;
-
-            if (isNaN(betAmount) || betAmount < 10) {
-                alert('Minimum bet is 10 coins.');
-                return;
+            if (isNaN(betAmount) || betAmount <= 0) {
+                alert("Please enter a valid bet amount."); return;
             }
-            if (betAmount > currentCoins) {
-                alert("You don't have enough coins to make this bet.");
-                return;
+            if (betAmount > (userData.coins || 0)) {
+                alert("You don't have enough coins for this bet."); return;
             }
 
-            isFlipping = true;
-            flipResult.textContent = '';
-            headsBtn.disabled = true;
-            tailsBtn.disabled = true;
+            isGameInProgress = true;
+            coinFlipResult.textContent = 'Flipping...';
+            const result = Math.random() < 0.5 ? 'heads' : 'tails';
             
-            coin.classList.add('flipping');
-            
+            coin.style.transform = `rotateY(${Math.random() > 0.5 ? 1800 : 1980}deg)`;
+
             setTimeout(() => {
-                const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
-                let newCoins;
-
-                if (userChoice === result) {
-                    newCoins = currentCoins + betAmount;
-                    flipResult.textContent = `You Won ${betAmount * 2} Coins! 🎉`;
-                    flipResult.className = 'win-text';
-                } else {
-                    newCoins = currentCoins - betAmount;
-                    flipResult.textContent = `You Lost ${betAmount} Coins! 😔`;
-                    flipResult.className = 'lose-text';
-                }
-                
+                const win = choice === result;
+                const newCoins = (userData.coins || 0) + (win ? betAmount : -betAmount);
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins });
 
-                coin.classList.remove('flipping');
-                headsBtn.disabled = false;
-                tailsBtn.disabled = false;
-                isFlipping = false;
+                if (win) {
+                    coinFlipResult.textContent = `It's ${result}! You won!`;
+                    showWinPopup(betAmount);
+                } else {
+                    coinFlipResult.textContent = `It's ${result}. You lost.`;
+                    alert('You lost your bet. Better luck next time!');
+                }
+                
+                isGameInProgress = false;
+                openAdsterraPopunder();
             }, 1500);
         }
-        
+
+        const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        const numberColors = {
+            red: [32, 19, 21, 25, 34, 27, 36, 30, 23, 5, 16, 1, 14, 9, 18, 7, 12, 3],
+            black: [15, 4, 2, 17, 6, 13, 11, 8, 10, 24, 33, 20, 31, 22, 29, 28, 35, 26],
+            green: [0]
+        };
+
+        function initializeRoulette() {
+            const wheelFragment = document.createDocumentFragment();
+            const angleStep = 360 / rouletteNumbers.length;
+            rouletteNumbers.forEach((num, i) => {
+                const section = document.createElement('div');
+                section.className = 'roulette-section';
+                const numSpan = document.createElement('span');
+                numSpan.textContent = num;
+                section.appendChild(numSpan);
+                const angle = angleStep * i;
+                section.style.transform = `rotate(${angle}deg)`;
+                if (numberColors.red.includes(num)) section.style.background = 'red';
+                else if (numberColors.black.includes(num)) section.style.background = 'black';
+                else section.style.background = 'green';
+                wheelFragment.appendChild(section);
+            });
+            rouletteWheel.appendChild(wheelFragment);
+        }
+
+        // --- ROULETTE LOGIC MODIFIED FOR 40% WIN RATE ---
+        function handleRoulette(betChoice) {
+            if (isGameInProgress) return;
+            const betAmount = parseInt(rouletteBetAmountInput.value);
+
+            if (isNaN(betAmount) || betAmount <= 0) {
+                alert("Please enter a valid bet amount."); return;
+            }
+            if (betAmount > (userData.coins || 0)) {
+                alert("You don't have enough coins for this bet."); return;
+            }
+            
+            isGameInProgress = true;
+            rouletteResult.textContent = 'Spinning...';
+            
+            let winningNumber;
+            let playerWins = false;
+
+            if (betChoice === 'red' || betChoice === 'black') {
+                playerWins = Math.random() <= 0.40; // 40% chance to win
+                if (playerWins) {
+                    const winningArray = numberColors[betChoice];
+                    winningNumber = winningArray[Math.floor(Math.random() * winningArray.length)];
+                } else {
+                    const losingColors = betChoice === 'red' ? ['black', 'green'] : ['red', 'green'];
+                    const losingArray = [...numberColors[losingColors[0]], ...numberColors[losingColors[1]]];
+                    winningNumber = losingArray[Math.floor(Math.random() * losingArray.length)];
+                }
+            } else { // Green bet
+                const rand = Math.floor(Math.random() * rouletteNumbers.length);
+                winningNumber = rouletteNumbers[rand];
+                playerWins = winningNumber === 0;
+            }
+
+            const winningIndex = rouletteNumbers.indexOf(winningNumber);
+            
+            const sectionAngle = 360 / rouletteNumbers.length;
+            const randomOffset = (Math.random() - 0.5) * sectionAngle * 0.8;
+            
+            rouletteWheel.style.transition = 'none';
+            rouletteWheel.style.transform = `rotate(0deg)`;
+            rouletteWheel.offsetHeight; 
+
+            const targetRotation = (360 * 8) - (winningIndex * sectionAngle) - randomOffset;
+            rouletteWheel.style.transition = 'transform 5s cubic-bezier(0.25, 1, 0.5, 1)';
+            rouletteWheel.style.transform = `rotate(${targetRotation}deg)`;
+
+            setTimeout(() => {
+                const winningColor = numberColors.red.includes(winningNumber) ? 'red' : numberColors.black.includes(winningNumber) ? 'black' : 'green';
+                let winnings = 0;
+                
+                if (playerWins) {
+                    winnings = betChoice === 'green' ? betAmount * 14 : betAmount * 2;
+                }
+
+                const finalWinnings = winnings - betAmount;
+                const newCoins = (userData.coins || 0) + finalWinnings;
+                database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+                
+                rouletteResult.textContent = `Landed on ${winningNumber} (${winningColor})!`;
+                if (winnings > 0) {
+                    showWinPopup(winnings);
+                } else {
+                    alert('You lost your bet. Better luck next time!');
+                }
+
+                isGameInProgress = false;
+                openAdsterraPopunder();
+            }, 5500);
+        }
+
         function updateWithdrawAmount() {
             const coins = parseInt(withdrawCoinsInput.value) || 0;
             const amount = coins / 10;
             withdrawAmountSpan.textContent = amount.toFixed(2);
-            const accountNumber = document.getElementById('accountNumber').value.trim();
-            withdrawBtn.disabled = coins < 50 || coins > (userData.coins || 0) || !selectedWithdrawMethod || accountNumber === '';
+            withdrawBtn.disabled = coins < 200 || coins > (userData.coins || 0) || !selectedWithdrawMethod;
         }
         
-        function showWithdrawConfirmation() {
+        function handleWithdraw() {
             const coins = parseInt(withdrawCoinsInput.value);
-            const amount = (coins / 10).toFixed(2);
-            const accountNumber = document.getElementById('accountNumber').value;
-            const method = selectedWithdrawMethod;
-
-            confirmModalMessage.innerHTML = `Are you sure you want to withdraw <b>${coins} coins</b> (<b>${amount} PKR</b>) to your <b>${method}</b> account?<br><br>Account Number: <b>${accountNumber}</b>`;
-            confirmWithdrawModal.style.display = 'flex';
-
-            confirmWithdrawBtn.onclick = () => {
-                handleWithdraw(coins, accountNumber, method);
-            };
-        }
-        
-        async function handleWithdraw(coins, accountNumber, method) {
-            confirmWithdrawModal.style.display = 'none';
-
-            const usedNumberRef = database.ref('usedWithdrawalNumbers/' + accountNumber);
-            try {
-                const snapshot = await usedNumberRef.once('value');
-
-                if (snapshot.exists()) {
-                    rewardModalIcon.innerHTML = '🚫';
-                    rewardModalIcon.className = 'modal-icon lose';
-                    rewardModalTitle.textContent = 'Withdrawal Failed';
-                    rewardModalMessage.textContent = 'This account number has already been used for a withdrawal. Please use a different one.';
-                    rewardModal.style.display = 'flex';
-                    return; 
-                }
-
+            
+            if (coins < 200) { alert('Minimum withdrawal is 200 coins!'); return; }
+            if (coins > (userData.coins || 0)) { alert('You don\'t have enough coins!'); return; }
+            if (!selectedWithdrawMethod) { alert('Please select a withdrawal method!'); return; }
+            
+            if (confirm(`Withdraw ${coins} coins (${coins/10} PKR) to ${selectedWithdrawMethod} (${currentUser.phone})?`)) {
                 const newCoins = (userData.coins || 0) - coins;
-                await database.ref('users/' + currentUser.phone).update({ coins: newCoins });
-
-                await usedNumberRef.set({ usedBy: currentUser.phone, date: new Date().toISOString() });
-
-                const message = `
-    💸 <b>New Withdrawal Request!</b> 💸
-    A user has requested a withdrawal. Please process it soon.
-    <b><u>User Details:</u></b>
-    👤 <b>Name:</b>
-    <code>${userData.name}</code>
-    📱 <b>Phone:</b>
-    <code>${userData.phone}</code>
-    🆔 <b>UID:</b>
-    <code>${userData.uid}</code>
-    <b><u>Withdrawal Info:</u></b>
-    🏦 <b>Method:</b> ${method}
-    #️⃣ <b>Account:</b>
-    <code>${accountNumber}</code>
-    💰 <b>Coins:</b> ${coins}
-    🇵🇰 <b>Amount:</b> ${coins/10} PKR
-                `;
-
-                sendTelegramMessage(message);
-
-                rewardModalIcon.innerHTML = '✅';
-                rewardModalIcon.className = 'modal-icon win';
-                rewardModalTitle.textContent = 'Request Submitted!';
-                rewardModalMessage.textContent = 'Your withdrawal request has been sent. We will process it within 24 hours.';
-                rewardModal.style.display = 'flex';
-
+                database.ref('users/' + currentUser.phone).update({
+                    coins: newCoins, withdrawMethod: selectedWithdrawMethod
+                });
+                
+                sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
+                alert('Withdrawal request submitted! Processing within 24 hours.');
+                openAdsterraPopunder();
+                
                 withdrawCoinsInput.value = '';
-                document.getElementById('accountNumber').value = '';
                 document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
                 selectedWithdrawMethod = null;
                 updateWithdrawAmount();
-
-            } catch(error) {
-                console.error("Withdrawal error:", error);
-                alert("An error occurred during withdrawal. Please try again.");
             }
         }
         
-        function copyInviteCode() {
-            navigator.clipboard.writeText(inviteCodeSpan.textContent)
-                .then(() => alert('Invite code copied to clipboard!'))
-                .catch(err => console.error('Failed to copy: ', err));
+        function openAdsterraPopunder() {
+            const scriptSrc = '//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js';
+            
+            if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.innerHTML = `atOptions = {'key' : '76e7056cf71d83911fb0aaf9e2cb675c','format' : 'iframe','height' : 250,'width' : 300,'params' : {}};`;
+                
+                const script2 = document.createElement('script');
+                script2.type = 'text/javascript';
+                script2.src = scriptSrc;
+
+                document.body.appendChild(script);
+                document.body.appendChild(script2);
+            }
         }
         
         function sendTelegramMessage(message) {
-             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
             }).catch(error => console.error('Telegram error:', error));
+        }
+
+        function showWinPopup(amount) {
+            winAmountSpan.textContent = amount;
+            winModal.classList.add('show');
+            createConfetti();
+        }
+
+        function closeWinModal() {
+            winModal.classList.remove('show');
         }
         
         function closeWelcomeModal() {
-            welcomeModal.style.display = 'none';
-            localStorage.setItem('welcomeShown', 'true');
-        }
-
-        function showRewardModal(reward, isCheckIn = false) {
-            const icon = document.getElementById('rewardModalIcon');
-            const title = document.getElementById('rewardModalTitle');
-            const message = document.getElementById('rewardModalMessage');
-            icon.className = 'modal-icon';
-
-            if (isCheckIn) {
-                icon.innerHTML = '🗓️';
-                icon.classList.add('win');
-                title.textContent = 'Daily Check-in Complete!';
-                message.innerHTML = `You have received <span class="coins">${reward}</span> coins!`;
-                createConfetti();
-            } else if (reward > 0) {
-                icon.innerHTML = '🎉';
-                icon.classList.add('win');
-                title.textContent = 'Congratulations!';
-                message.innerHTML = `You won <span class="coins">${reward}</span> coins!`;
-                createConfetti();
-            } else if (reward === 0) {
-                icon.innerHTML = '😔';
-                icon.classList.add('lose');
-                title.textContent = 'Better Luck Next Time!';
-                message.textContent = 'No coins won this spin. Keep trying!';
-            } else {
-                icon.innerHTML = '🚫';
-                icon.classList.add('lose');
-                title.textContent = 'No Spins Left!';
-                message.textContent = 'You have used all your spins for today. Come back tomorrow!';
-            }
-            rewardModal.style.display = 'flex';
-        }
-
-        function closeRewardModal() {
-            rewardModal.style.display = 'none';
+            welcomeModal.classList.remove('show');
         }
         
         function createConfetti() {
@@ -1491,7 +1385,7 @@ Let's give them a warm welcome to the community! 🚀💰
                     confetti.style.backgroundColor = getRandomColor();
                     document.body.appendChild(confetti);
                     setTimeout(() => confetti.remove(), 5000);
-                }, i * 100);
+                }, i * 50);
             }
         }
         
@@ -1501,4 +1395,4 @@ Let's give them a warm welcome to the community! 🚀💰
         }
     </script>
 </body>
-</html>
+                            </html>
