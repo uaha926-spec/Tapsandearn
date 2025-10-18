@@ -92,6 +92,21 @@
         .form-group input { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--border-light); border-radius: 12px; font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; }
         .form-group input:focus, .form-group input:focus-visible { outline: none; border-color: var(--primary-start); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1); }
         .form-group.error input { border-color: var(--danger); animation: shake 0.4s; }
+        
+        /* --- PROFESSIONAL WARNING STYLE --- */
+        .form-warning {
+            background-color: #fffbeb;
+            border-left: 4px solid #fbbF24;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #b45309;
+            margin-top: -0.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* --- Button Styles --- */
@@ -102,6 +117,7 @@
         .btn:active:not(:disabled) { transform: translateY(0); }
         .btn:disabled { background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
         .btn-secondary { background: var(--card-bg); border: 2px solid var(--primary-start); color: var(--primary-start); box-shadow: none; }
+        .btn-success { background: var(--success); box-shadow: 0 4px 15px -5px rgba(22, 163, 74, 0.5); }
         .btn-danger { background: var(--danger); box-shadow: 0 4px 15px -5px rgba(220, 38, 38, 0.5); }
         .btn-link { background: none; border: none; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-top: 1.5rem; padding: 0; box-shadow: none; }
         .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: var(--white); animation: spin 1s ease-in-out infinite; }
@@ -136,7 +152,7 @@
         #tap-button:active { transform: scale(0.95); box-shadow: 0 4px 15px -8px rgba(67, 56, 202, 0.7); }
         .progress-bar { width: 100%; height: 10px; background-color: var(--disabled-bg); border-radius: 5px; overflow: hidden; margin-top: 1.5rem; }
         #tap-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-start), var(--primary-end)); transition: width 0.3s ease; }
-        #tap-info { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.75rem; }
+        #tap-info, #watch-ad-info { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.75rem; }
         
         /* --- Toast Notification --- */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
@@ -153,12 +169,19 @@
         .modal-content { background: var(--card-bg); border-radius: 16px; padding: 2rem; max-width: 380px; width: 100%; text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
         .modal-overlay.visible .modal-content { transform: scale(1); }
         .modal-content h3 { font-size: 1.4rem; margin-bottom: 0.75rem; }
-        .modal-content p { color: var(--text-secondary); margin-bottom: 2rem; white-space: pre-wrap; }
+        .modal-content p { color: var(--text-secondary); margin-bottom: 2rem; white-space: pre-wrap; line-height: 1.6; }
         .modal-actions { display: flex; gap: 1rem; }
 
         /* --- Flying Coin Animation --- */
         .flying-coin { position: fixed; width: 24px; height: 24px; background: #facc15; border-radius: 50%; z-index: 9999; transition: transform 0.8s cubic-bezier(0.5, -0.5, 1, 1), opacity 0.8s linear; pointer-events: none; }
     
+        /* Ad container styling */
+        .ad-banner-container {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -177,7 +200,10 @@
             <h1>Create Account</h1>
             <p>Join us and start your earning journey today!</p>
             <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" placeholder="e.g. John Doe"></div>
-            <div class="form-group"><label for="signUpPhone">Easypaisa Phone Number</label><input type="tel" id="signUpPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
+            <div class="form-group"><label for="signUpPhone">Easypaisa / Jazzcash Number</label><input type="tel" id="signUpPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
+            <div class="form-warning">
+                ⚠️ <strong>Important:</strong> Please enter your correct account number. Withdrawals to incorrect numbers cannot be reversed.
+            </div>
             <button id="signUpBtn" class="btn"><span>Sign Up</span></button>
             <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
         </div>
@@ -186,7 +212,7 @@
         <div id="login-screen" class="screen auth-screen hidden">
             <h1>Welcome Back!</h1>
             <p>Enter your number to continue.</p>
-            <div class="form-group"><label for="loginPhone">Easypaisa Phone Number</label><input type="tel" id="loginPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
+            <div class="form-group"><label for="loginPhone">Easypaisa / Jazzcash Number</label><input type="tel" id="loginPhone" placeholder="03xxxxxxxxx" pattern="\d{11}"></div>
             <button id="loginBtn" class="btn"><span>Login</span></button>
             <button class="btn-link" data-target="landing-screen">Back to Welcome</button>
         </div>
@@ -209,12 +235,37 @@
                         <div id="spin-button">SPIN</div>
                     </div>
                 </div>
+                
+                <!-- Banner Ad 1 -->
+                <div class="ad-banner-container">
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : '01efd94df9ed3ed4a270aa47108fe17e',
+                            'format' : 'iframe',
+                            'height' : 50,
+                            'width' : 320,
+                            'params' : {}
+                        };
+                    </script>
+                    <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                </div>
+
+                <div class="card">
+                    <h3>📺 Watch Ads to Earn</h3>
+                    <button id="watchAdBtn" class="btn"><span>Watch Ad</span></button>
+                    <p id="watch-ad-info"></p>
+                </div>
 
                 <div class="card">
                     <h3>👆 Tap to Earn</h3>
                     <div id="tap-button">Tap!</div>
                     <div class="progress-bar"><div id="tap-progress-fill"></div></div>
                     <div id="tap-info"></div>
+                </div>
+                
+                <!-- Banner Ad 2 -->
+                <div class="ad-banner-container">
+                    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
                 </div>
 
                 <div class="card">
@@ -262,11 +313,17 @@
     const CONFIG = {
         DB_CURRENT_USER_SESSION_KEY: 'tapSpinProCurrentUserPhone',
         DAILY_SPIN_LIMIT: 10,
+        DAILY_AD_WATCH_LIMIT: 10,
         MAX_TAP_COINS_PER_DAY: 100,
         TAPS_PER_COIN: 10,
-        MIN_WITHDRAWAL_COINS: 100,
+        MIN_SPIN_REWARD: 5,
+        MAX_SPIN_REWARD: 10,
+        AD_WATCH_REWARD: 10,
+        AD_WATCH_DURATION: 15,
+        TAPS_BEFORE_AD: 10,
+        MIN_WITHDRAWAL_COINS: 200,
         COIN_TO_RUPEE_RATE: 10,
-        WHEEL_SEGMENTS: [
+        WHEEL_VISUAL_SEGMENTS: [ // Only for visual effect, not for reward calculation
             { value: 5, color: '#fecaca' }, { value: 8, color: '#fed7aa' },
             { value: 10, color: '#fef08a' }, { value: 6, color: '#d9f99d' },
             { value: 9, color: '#bfdbfe' }, { value: 7, color: '#e9d5ff' },
@@ -283,50 +340,33 @@
             LOGIN_FAILED: 'No account found with this number. Please sign up first.',
             LOGOUT_CONFIRM: 'Are you sure you want to logout?',
             EXIT_CONFIRM: 'Are you sure you want to exit the app?',
-            WITHDRAWAL_WARNING: "WARNING:\nA VPN connection is required for successful withdrawal processing. Your request may be missed otherwise.",
             FIREBASE_ERROR: "Network error. Please check your connection and try again."
         }
     };
     
-    // --- UI, ICONS, GAME MODULES ---
-    const ICONS = { coin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>`, spin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001a7.5 7.5 0 01-1.08 3.904l-4.06 4.06a7.5 7.5 0 01-12.14 0 7.5 7.5 0 010-12.14l4.06-4.06a7.5 7.5 0 013.904-1.08h.001v4.992a2.25 2.25 0 003.287 2.13l-1.084-1.084a.25.25 0 01.178-.426h1.628a2.25 2.25 0 012.25 2.25v1.628a.25.25 0 01-.427.178l-1.084-1.084a2.25 2.25 0 00-2.13 3.287z" /></svg>`, loader: `<div class="loader"></div>`, toastSuccess: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`, toastError: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>` };
-    const UI = { elements: { container: document.querySelector('.container'), screens: document.querySelectorAll('.screen'), goToLoginBtn: document.getElementById('goToLoginBtn'), goToSignUpBtn: document.getElementById('goToSignUpBtn'), signUpBtn: document.getElementById('signUpBtn'), loginBtn: document.getElementById('loginBtn'), logoutBtn: document.getElementById('logoutBtn'), spinButton: document.getElementById('spin-button'), tapButton: document.getElementById('tap-button'), withdrawBtn: document.getElementById('withdrawBtn'), userNameDisplay: document.getElementById('userName'), totalCoinsDisplay: document.getElementById('totalCoins'), spinsLeftDisplay: document.getElementById('spinsLeft'), tapProgressFill: document.getElementById('tap-progress-fill'), tapInfo: document.getElementById('tap-info'), withdrawInfo: document.getElementById('withdraw-info'), toastContainer: document.getElementById('toast-container'), wheelCanvas: document.getElementById('wheelCanvas'), modal: document.getElementById('customModal'), modalTitle: document.getElementById('modalTitle'), modalMessage: document.getElementById('modalMessage'), modalCancel: document.getElementById('modalCancel'), modalConfirm: document.getElementById('modalConfirm'), modalActions: document.querySelector('.modal-actions'), }, showScreen(screenId) { this.elements.screens.forEach(s => s.classList.toggle('hidden', s.id !== screenId)); }, showToast(message, type = 'success') { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = `${type === 'success' ? ICONS.toastSuccess : ICONS.toastError}<span>${message}</span>`; this.elements.toastContainer.appendChild(toast); setTimeout(() => toast.remove(), 4000); }, showModal(title, message, confirmClass = '', confirmText = 'Confirm', cancelText = 'Cancel') { return new Promise((resolve) => { this.elements.modalTitle.textContent = title; this.elements.modalMessage.textContent = message; this.elements.modalConfirm.className = `btn ${confirmClass}`.trim(); this.elements.modalConfirm.textContent = confirmText; if (!cancelText) { this.elements.modalCancel.style.display = 'none'; this.elements.modalActions.style.justifyContent = 'center'; } else { this.elements.modalCancel.textContent = cancelText; this.elements.modalCancel.style.display = 'flex'; this.elements.modalActions.style.justifyContent = ''; } this.elements.modal.classList.add('visible'); const handleConfirm = () => { this.elements.modal.classList.remove('visible'); resolve(true); cleanup(); }; const handleCancel = () => { this.elements.modal.classList.remove('visible'); resolve(false); cleanup(); }; const cleanup = () => { this.elements.modalConfirm.removeEventListener('click', handleConfirm); this.elements.modalCancel.removeEventListener('click', handleCancel); }; this.elements.modalConfirm.addEventListener('click', handleConfirm, { once: true }); if (cancelText) { this.elements.modalCancel.addEventListener('click', handleCancel, { once: true }); } }); }, setLoading(button, isLoading) { const span = button.querySelector('span'); if (isLoading) { button.disabled = true; if(span) span.style.display = 'none'; button.insertAdjacentHTML('afterbegin', ICONS.loader); } else { button.disabled = false; if(span) span.style.display = 'inline'; const loader = button.querySelector('.loader'); if(loader) loader.remove(); } }, updateApp(user) { this.elements.userNameDisplay.textContent = `Welcome, ${user.name}!`; this.elements.totalCoinsDisplay.innerHTML = `${user.coins} ${ICONS.coin}`; this.elements.spinsLeftDisplay.innerHTML = `${user.spinsLeft} ${ICONS.spin}`; const tapCoinsEarned = Math.floor(user.tapsToday / CONFIG.TAPS_PER_COIN); const tapLimitReached = tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY; this.elements.tapInfo.textContent = `${user.tapProgress}/${CONFIG.TAPS_PER_COIN} taps for 1 coin (${tapCoinsEarned}/${CONFIG.MAX_TAP_COINS_PER_DAY} coins today)`; this.elements.tapProgressFill.style.width = `${(user.tapProgress / CONFIG.TAPS_PER_COIN) * 100}%`; this.elements.tapButton.style.pointerEvents = tapLimitReached ? 'none' : 'auto'; this.elements.tapButton.style.background = tapLimitReached ? 'var(--disabled-bg)' : ''; this.elements.tapButton.style.color = tapLimitReached ? 'var(--disabled-text)' : 'var(--white)'; this.elements.tapButton.textContent = tapLimitReached ? "Limit" : "Tap!"; const canWithdraw = user.coins >= CONFIG.MIN_WITHDRAWAL_COINS; const hasWithdrawn = user.lastWithdrawalDate === new Date().toDateString(); const withdrawAmount = CONFIG.MIN_WITHDRAWAL_COINS / CONFIG.COIN_TO_RUPEE_RATE; this.elements.withdrawBtn.disabled = !canWithdraw || hasWithdrawn; this.elements.withdrawInfo.textContent = `${CONFIG.MIN_WITHDRAWAL_COINS} Coins = ₹${CONFIG.COIN_TO_RUPEE_RATE}`; const withdrawBtnSpan = this.elements.withdrawBtn.querySelector('span'); if (hasWithdrawn) withdrawBtnSpan.textContent = "Withdrawn Today"; else if (!canWithdraw) withdrawBtnSpan.textContent = `Need ${CONFIG.MIN_WITHDRAWAL_COINS - user.coins} more coins`; else withdrawBtnSpan.textContent = `Withdraw ₹${withdrawAmount}`; }, animateCoin(sourceElement) { const coin = document.createElement('div'); coin.className = 'flying-coin'; this.elements.container.appendChild(coin); const startRect = sourceElement.getBoundingClientRect(); const endRect = this.elements.totalCoinsDisplay.getBoundingClientRect(); coin.style.left = `${startRect.left + startRect.width / 2}px`; coin.style.top = `${startRect.top + startRect.height / 2}px`; requestAnimationFrame(() => { coin.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.5)`; coin.style.opacity = '0'; }); coin.addEventListener('transitionend', () => coin.remove()); }, toggleInputError(inputElement, hasError) { const formGroup = inputElement.closest('.form-group'); if (formGroup) { formGroup.classList.toggle('error', hasError); } } };
-    const Game = { ctx: UI.elements.wheelCanvas.getContext('2d'), spinAngleStart: 0, spinTime: 0, spinTimeTotal: 0, isSpinning: false, drawWheel() { const { width, height } = UI.elements.wheelCanvas; const centerX = width / 2; const centerY = height / 2; const radius = Math.min(centerX, centerY) * 0.95; const arcSize = 2 * Math.PI / CONFIG.WHEEL_SEGMENTS.length; this.ctx.clearRect(0, 0, width, height); this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 2; this.ctx.font = 'bold 24px Poppins'; for (let i = 0; i < CONFIG.WHEEL_SEGMENTS.length; i++) { const angle = this.spinAngleStart + i * arcSize; this.ctx.fillStyle = CONFIG.WHEEL_SEGMENTS[i].color; this.ctx.beginPath(); this.ctx.arc(centerX, centerY, radius, angle, angle + arcSize); this.ctx.lineTo(centerX, centerY); this.ctx.fill(); this.ctx.stroke(); this.ctx.save(); this.ctx.fillStyle = '#334155'; this.ctx.translate(centerX + Math.cos(angle + arcSize / 2) * radius * 0.7, centerY + Math.sin(angle + arcSize / 2) * radius * 0.7); this.ctx.rotate(angle + arcSize / 2 + Math.PI / 2); this.ctx.fillText(CONFIG.WHEEL_SEGMENTS[i].value, -this.ctx.measureText(CONFIG.WHEEL_SEGMENTS[i].value).width / 2, 0); this.ctx.restore(); } }, spin() { this.spinTime += 30; if (this.spinTime >= this.spinTimeTotal) { this.stopSpin(); return; } const spinAngle = this.spinAngleStart - this.easeOut(this.spinTime, 0, this.spinAngleStart, this.spinTimeTotal); this.spinAngleStart += (spinAngle * Math.PI / 180); this.drawWheel(); requestAnimationFrame(this.spin.bind(this)); }, startSpin() { if (this.isSpinning) return; if (State.currentUser.spinsLeft <= 0) { UI.showToast("No spins left for today!", 'error'); return; } this.isSpinning = true; App.vibrate(50); State.currentUser.spinsLeft--; State.saveCurrentUser(); UI.updateApp(State.currentUser); this.spinTime = 0; this.spinTimeTotal = Math.random() * 3000 + 4000; const degrees = Math.random() * 3600 + 3600; this.spinAngleStart = degrees * Math.PI / 180; this.spin(); }, stopSpin() { this.isSpinning = false; const degrees = this.spinAngleStart * 180 / Math.PI + 90; const arcd = 360 / CONFIG.WHEEL_SEGMENTS.length; const index = Math.floor((360 - degrees % 360) / arcd); const coinsWon = CONFIG.WHEEL_SEGMENTS[index].value; UI.showToast(`You won ${coinsWon} coins!`, 'success'); App.vibrate([100, 50, 100]); State.currentUser.coins += coinsWon; setTimeout(() => { UI.animateCoin(UI.elements.spinButton); State.saveCurrentUser(); UI.updateApp(State.currentUser); }, 500); }, easeOut(t, b, c, d) { const ts = (t /= d) * t; const tc = ts * t; return b + c * (tc + -3 * ts + 3 * t); } };
-    
-
-    // --- API SERVICE (Telegram) ---
-    const API = {
-        async sendTelegramMessage(message) {
-            const { TOKEN_PART_A, TOKEN_PART_B, CHAT_ID } = CONFIG.TELEGRAM;
-            const url = `https://api.telegram.org/bot${TOKEN_PART_A}:${TOKEN_PART_B}/sendMessage`;
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown' // Ensure Markdown is enabled for formatting
-                    })
-                });
-                if (!response.ok) throw new Error('Telegram API error');
-            } catch (error) {
-                console.error('Telegram message failed:', error);
-                UI.showToast('Could not send system notification.', 'error');
-            }
+    // --- ADS MODULE ---
+    const Ads = {
+        showPopUnder() {
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = '//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js';
+            document.body.appendChild(script);
+            setTimeout(() => { document.body.removeChild(script); }, 1000);
         }
     };
 
-    // --- STATE MANAGER (Firebase) ---
-    const State = {
-        currentUser: null,
-        async saveCurrentUser() { if (!this.currentUser) return; try { await database.ref('users/' + this.currentUser.phone).set(this.currentUser); } catch (error) { console.error("Firebase save error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); } },
-        async fetchUser(phone) { try { const snapshot = await database.ref('users/' + phone).once('value'); return snapshot.val(); } catch (error) { console.error("Firebase fetch error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); return null; } },
-        setCurrentUser(user) { this.currentUser = user; if (user) { localStorage.setItem(CONFIG.DB_CURRENT_USER_SESSION_KEY, user.phone); } else { localStorage.removeItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); } },
-        async checkSession() { const phone = localStorage.getItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); if (phone) { const user = await this.fetchUser(phone); if (user) { this.setCurrentUser(user); return true; } } this.setCurrentUser(null); return false; }
-    };
+    // --- UI, ICONS, GAME MODULES ---
+    const ICONS = { coin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>`, spin: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001a7.5 7.5 0 01-1.08 3.904l-4.06 4.06a7.5 7.5 0 01-12.14 0 7.5 7.5 0 010-12.14l4.06-4.06a7.5 7.5 0 013.904-1.08h.001v4.992a2.25 2.25 0 003.287 2.13l-1.084-1.084a.25.25 0 01.178-.426h1.628a2.25 2.25 0 012.25 2.25v1.628a.25.25 0 01-.427.178l-1.084-1.084a2.25 2.25 0 00-2.13 3.287z" /></svg>`, loader: `<div class="loader"></div>`, toastSuccess: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`, toastError: `<svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>` };
+    const UI = { elements: { container: document.querySelector('.container'), screens: document.querySelectorAll('.screen'), goToLoginBtn: document.getElementById('goToLoginBtn'), goToSignUpBtn: document.getElementById('goToSignUpBtn'), signUpBtn: document.getElementById('signUpBtn'), loginBtn: document.getElementById('loginBtn'), logoutBtn: document.getElementById('logoutBtn'), spinButton: document.getElementById('spin-button'), tapButton: document.getElementById('tap-button'), withdrawBtn: document.getElementById('withdrawBtn'), watchAdBtn: document.getElementById('watchAdBtn'), userNameDisplay: document.getElementById('userName'), totalCoinsDisplay: document.getElementById('totalCoins'), spinsLeftDisplay: document.getElementById('spinsLeft'), tapProgressFill: document.getElementById('tap-progress-fill'), tapInfo: document.getElementById('tap-info'), watchAdInfo: document.getElementById('watch-ad-info'), withdrawInfo: document.getElementById('withdraw-info'), toastContainer: document.getElementById('toast-container'), wheelCanvas: document.getElementById('wheelCanvas'), modal: document.getElementById('customModal'), modalTitle: document.getElementById('modalTitle'), modalMessage: document.getElementById('modalMessage'), modalCancel: document.getElementById('modalCancel'), modalConfirm: document.getElementById('modalConfirm'), modalActions: document.querySelector('.modal-actions'), }, showScreen(screenId) { this.elements.screens.forEach(s => s.classList.toggle('hidden', s.id !== screenId)); }, showToast(message, type = 'success') { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = `${type === 'success' ? ICONS.toastSuccess : ICONS.toastError}<span>${message}</span>`; this.elements.toastContainer.appendChild(toast); setTimeout(() => toast.remove(), 4000); }, showModal(title, message, confirmClass = '', confirmText = 'Confirm', cancelText = 'Cancel') { return new Promise((resolve) => { this.elements.modalTitle.textContent = title; this.elements.modalMessage.textContent = message; this.elements.modalConfirm.className = `btn ${confirmClass}`.trim(); this.elements.modalConfirm.textContent = confirmText; if (!cancelText) { this.elements.modalCancel.style.display = 'none'; this.elements.modalActions.style.justifyContent = 'center'; } else { this.elements.modalCancel.textContent = cancelText; this.elements.modalCancel.style.display = 'flex'; this.elements.modalActions.style.justifyContent = ''; } this.elements.modal.classList.add('visible'); const handleConfirm = () => { this.elements.modal.classList.remove('visible'); resolve(true); cleanup(); }; const handleCancel = () => { this.elements.modal.classList.remove('visible'); resolve(false); cleanup(); }; const cleanup = () => { this.elements.modalConfirm.removeEventListener('click', handleConfirm); this.elements.modalCancel.removeEventListener('click', handleCancel); }; this.elements.modalConfirm.addEventListener('click', handleConfirm, { once: true }); if (cancelText) { this.elements.modalCancel.addEventListener('click', handleCancel, { once: true }); } }); }, setLoading(button, isLoading) { const span = button.querySelector('span'); if (isLoading) { button.disabled = true; if(span) span.style.display = 'none'; button.insertAdjacentHTML('afterbegin', ICONS.loader); } else { button.disabled = false; if(span) span.style.display = 'inline'; const loader = button.querySelector('.loader'); if(loader) loader.remove(); } }, updateApp(user) { this.elements.userNameDisplay.textContent = `Welcome, ${user.name}!`; this.elements.totalCoinsDisplay.innerHTML = `${user.coins} ${ICONS.coin}`; this.elements.spinsLeftDisplay.innerHTML = `${user.spinsLeft} ${ICONS.spin}`; const tapCoinsEarned = Math.floor(user.tapsToday / CONFIG.TAPS_PER_COIN); const tapLimitReached = tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY; this.elements.tapInfo.textContent = tapLimitReached ? "Daily tap limit reached" : `${tapCoinsEarned}/${CONFIG.MAX_TAP_COINS_PER_DAY} coins earned from taps today.`; this.elements.tapButton.disabled = tapLimitReached; this.elements.tapProgressFill.style.width = `${(user.tapProgress / CONFIG.TAPS_PER_COIN) * 100}%`; const adsLeft = CONFIG.DAILY_AD_WATCH_LIMIT - user.adsWatchedToday; this.elements.watchAdInfo.textContent = adsLeft > 0 ? `${adsLeft} ads left today.` : "Daily ad limit reached."; this.elements.watchAdBtn.disabled = adsLeft <= 0; const canWithdraw = user.coins >= CONFIG.MIN_WITHDRAWAL_COINS; const withdrawAmount = CONFIG.MIN_WITHDRAWAL_COINS / CONFIG.COIN_TO_RUPEE_RATE; this.elements.withdrawBtn.disabled = !canWithdraw; this.elements.withdrawInfo.textContent = `${CONFIG.MIN_WITHDRAWAL_COINS} Coins = ₹${withdrawAmount}`; this.elements.withdrawBtn.querySelector('span').textContent = canWithdraw ? `Withdraw ₹${withdrawAmount}` : `Need ${CONFIG.MIN_WITHDRAWAL_COINS - user.coins} more coins`; }, animateCoin(sourceElement) { const coin = document.createElement('div'); coin.className = 'flying-coin'; this.elements.container.appendChild(coin); const startRect = sourceElement.getBoundingClientRect(); const endRect = this.elements.totalCoinsDisplay.getBoundingClientRect(); coin.style.left = `${startRect.left + startRect.width / 2}px`; coin.style.top = `${startRect.top + startRect.height / 2}px`; requestAnimationFrame(() => { coin.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.5)`; coin.style.opacity = '0'; }); coin.addEventListener('transitionend', () => coin.remove()); }, toggleInputError(inputElement, hasError) { const formGroup = inputElement.closest('.form-group'); if (formGroup) { formGroup.classList.toggle('error', hasError); } } };
+    const Game = { ctx: UI.elements.wheelCanvas.getContext('2d'), spinAngleStart: 0, spinTime: 0, spinTimeTotal: 0, isSpinning: false, drawWheel() { const segments = CONFIG.WHEEL_VISUAL_SEGMENTS; const { width, height } = UI.elements.wheelCanvas; const centerX = width / 2; const centerY = height / 2; const radius = Math.min(centerX, centerY) * 0.95; const arcSize = 2 * Math.PI / segments.length; this.ctx.clearRect(0, 0, width, height); this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 2; this.ctx.font = 'bold 24px Poppins'; for (let i = 0; i < segments.length; i++) { const angle = this.spinAngleStart + i * arcSize; this.ctx.fillStyle = segments[i].color; this.ctx.beginPath(); this.ctx.arc(centerX, centerY, radius, angle, angle + arcSize); this.ctx.lineTo(centerX, centerY); this.ctx.fill(); this.ctx.stroke(); this.ctx.save(); this.ctx.fillStyle = '#334155'; this.ctx.translate(centerX + Math.cos(angle + arcSize / 2) * radius * 0.7, centerY + Math.sin(angle + arcSize / 2) * radius * 0.7); this.ctx.rotate(angle + arcSize / 2 + Math.PI / 2); this.ctx.fillText(segments[i].value, -this.ctx.measureText(segments[i].value).width / 2, 0); this.ctx.restore(); } }, spin() { this.spinTime += 30; if (this.spinTime >= this.spinTimeTotal) { this.stopSpin(); return; } const spinAngle = this.spinAngleStart - this.easeOut(this.spinTime, 0, this.spinAngleStart, this.spinTimeTotal); this.spinAngleStart += (spinAngle * Math.PI / 180); this.drawWheel(); requestAnimationFrame(this.spin.bind(this)); }, startSpin() { if (this.isSpinning || State.currentUser.spinsLeft <= 0) { UI.showToast("No spins left for today!", 'error'); return; } Ads.showPopUnder(); this.isSpinning = true; State.currentUser.spinsLeft--; App.vibrate(50); this.spinTime = 0; this.spinTimeTotal = Math.random() * 3000 + 4000; const degrees = Math.random() * 3600 + 3600; this.spinAngleStart = degrees * Math.PI / 180; this.spin(); }, stopSpin() { this.isSpinning = false; const { MIN_SPIN_REWARD, MAX_SPIN_REWARD } = CONFIG; const coinsWon = Math.floor(Math.random() * (MAX_SPIN_REWARD - MIN_SPIN_REWARD + 1)) + MIN_SPIN_REWARD; UI.showToast(`You won ${coinsWon} coins!`, 'success'); App.vibrate([100, 50, 100]); State.currentUser.coins += coinsWon; setTimeout(() => { UI.animateCoin(UI.elements.spinButton); State.saveCurrentUser(); UI.updateApp(State.currentUser); }, 500); }, easeOut(t, b, c, d) { const ts = (t /= d) * t; const tc = ts * t; return b + c * (tc + -3 * ts + 3 * t); } };
     
-    // --- APP CONTROLLER (Firebase Logic) ---
+    // --- API SERVICE (Telegram) ---
+    const API = { async sendTelegramMessage(message) { const { TOKEN_PART_A, TOKEN_PART_B, CHAT_ID } = CONFIG.TELEGRAM; const url = `https://api.telegram.org/bot${TOKEN_PART_A}:${TOKEN_PART_B}/sendMessage`; try { const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' }) }); if (!response.ok) throw new Error('Telegram API error'); } catch (error) { console.error('Telegram message failed:', error); UI.showToast('Could not send system notification.', 'error'); } } };
+
+    // --- STATE MANAGER (Firebase) ---
+    const State = { currentUser: null, async saveCurrentUser() { if (!this.currentUser) return; try { await database.ref('users/' + this.currentUser.phone).set(this.currentUser); } catch (error) { console.error("Firebase save error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); } }, async fetchUser(phone) { try { const snapshot = await database.ref('users/' + phone).once('value'); return snapshot.val(); } catch (error) { console.error("Firebase fetch error: ", error); UI.showToast(CONFIG.MESSAGES.FIREBASE_ERROR, 'error'); return null; } }, setCurrentUser(user) { this.currentUser = user; if (user) { localStorage.setItem(CONFIG.DB_CURRENT_USER_SESSION_KEY, user.phone); } else { localStorage.removeItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); } }, async checkSession() { const phone = localStorage.getItem(CONFIG.DB_CURRENT_USER_SESSION_KEY); if (phone) { const user = await this.fetchUser(phone); if (user) { this.setCurrentUser(user); return true; } } this.setCurrentUser(null); return false; } };
+    
+    // --- APP CONTROLLER ---
     const App = {
         async init() {
             this.bindEvents();
@@ -351,11 +391,18 @@
         },
 
         async displayUpdateNotice() {
-            await UI.showModal(
-                "🚀 System Upgrade Complete! 🚀",
-                "✅ Server-Side Security: Your data is now securely stored online. Multi-account usage is strictly prevented to ensure fair play for all users.\n\n✅ Enhanced Performance: All known bugs have been fixed for a smoother experience.",
-                '', 'Awesome!', null
-            );
+            const noticeShownKey = 'updateNoticeLastShown_v2'; // Use a new key for the new message
+            const lastShown = localStorage.getItem(noticeShownKey);
+            const twoDays = 2 * 24 * 60 * 60 * 1000;
+
+            if (!lastShown || (new Date().getTime() - lastShown > twoDays)) {
+                 await UI.showModal(
+                    "🚀 App Update! 🚀",
+                    "The Taps system has been improved and a new way to earn money by watching ads has been added!",
+                    '', 'Awesome!', null
+                );
+                localStorage.setItem(noticeShownKey, new Date().getTime());
+            }
         },
 
         bindEvents() {
@@ -366,9 +413,9 @@
             UI.elements.signUpBtn.addEventListener('click', this.handleSignUp);
             UI.elements.loginBtn.addEventListener('click', this.handleLogin);
             UI.elements.logoutBtn.addEventListener('click', this.handleLogout);
-
             UI.elements.spinButton.addEventListener('click', () => Game.startSpin());
             UI.elements.tapButton.addEventListener('click', this.handleTap);
+            UI.elements.watchAdBtn.addEventListener('click', this.handleWatchAd);
             UI.elements.withdrawBtn.addEventListener('click', this.handleWithdraw);
             
             window.addEventListener('popstate', this.handleBackButton);
@@ -412,20 +459,19 @@
             
             const newUser = { 
                 name, phone, coins: 0, 
-                spinsLeft: CONFIG.DAILY_SPIN_LIMIT, 
-                tapProgress: 0, tapsToday: 0, 
-                lastResetDate: new Date().toDateString(), 
+                spinsLeft: CONFIG.DAILY_SPIN_LIMIT,
+                adsWatchedToday: 0,
+                tapsToday: 0,
+                tapProgress: 0, 
+                tapsSinceAd: 0,
+                lastResetDate: new Date().toDateString(),
                 lastWithdrawalDate: null, 
             };
             
             State.setCurrentUser(newUser);
             await State.saveCurrentUser();
             
-            // ** NEW TELEGRAM MESSAGE FORMAT **
-            const message = `🎉 *New User Registration*
---------------------------------------
-*Name:* \`${name}\`
-*Number:* \`${phone}\``;
+            const message = `🎉 *New User Registration*\n--------------------------------------\n*Name:* \`${name}\`\n*Number:* \`${phone}\``;
             await API.sendTelegramMessage(message);
             
             UI.showToast(`Welcome, ${name}!`, 'success');
@@ -454,6 +500,13 @@
                 return;
             }
             
+            // Ensure old users have new fields for daily limits
+            if (typeof user.spinsLeft === 'undefined') user.spinsLeft = CONFIG.DAILY_SPIN_LIMIT;
+            if (typeof user.adsWatchedToday === 'undefined') user.adsWatchedToday = 0;
+            if (typeof user.tapsToday === 'undefined') user.tapsToday = 0;
+            if (typeof user.lastResetDate === 'undefined') user.lastResetDate = new Date().toDateString();
+
+
             State.setCurrentUser(user);
             UI.showToast(`Welcome back, ${user.name}!`, 'success');
             App.start();
@@ -471,30 +524,95 @@
         },
         
         handleTap: () => {
-            App.vibrate(10);
             const tapCoinsEarned = Math.floor(State.currentUser.tapsToday / CONFIG.TAPS_PER_COIN);
-            if (tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY) return;
+            if (tapCoinsEarned >= CONFIG.MAX_TAP_COINS_PER_DAY) {
+                UI.showToast("You've reached your daily tap limit!", 'error');
+                return;
+            }
 
+            App.vibrate(10);
+            
             State.currentUser.tapsToday++;
             State.currentUser.tapProgress++;
+            State.currentUser.tapsSinceAd++;
 
             if (State.currentUser.tapProgress >= CONFIG.TAPS_PER_COIN) {
                 State.currentUser.coins++;
                 State.currentUser.tapProgress = 0;
                 UI.animateCoin(UI.elements.tapButton);
             }
+            
+            if (State.currentUser.tapsSinceAd >= CONFIG.TAPS_BEFORE_AD) {
+                Ads.showPopUnder();
+                State.currentUser.tapsSinceAd = 0;
+            } 
 
             State.saveCurrentUser();
             UI.updateApp(State.currentUser);
         },
+        
+        handleWatchAd: () => {
+            if (State.currentUser.adsWatchedToday >= CONFIG.DAILY_AD_WATCH_LIMIT) {
+                UI.showToast("You've reached your daily ad limit!", 'error');
+                return;
+            }
+
+            const watchBtn = UI.elements.watchAdBtn;
+            const watchInfo = UI.elements.watchAdInfo;
+            watchBtn.disabled = true;
+            Ads.showPopUnder();
+
+            let countdown = CONFIG.AD_WATCH_DURATION;
+            watchInfo.textContent = `Please wait ${countdown} seconds for your reward...`;
+
+            const interval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    watchInfo.textContent = `Please wait ${countdown} seconds for your reward...`;
+                } else {
+                     watchInfo.textContent = `Claiming your reward...`;
+                }
+               
+                if (countdown <= -1) { // Wait one extra second before finishing
+                    clearInterval(interval);
+                    
+                    const reward = CONFIG.AD_WATCH_REWARD;
+                    State.currentUser.coins += reward;
+                    State.currentUser.adsWatchedToday++; // Increment the counter
+                    
+                    UI.animateCoin(watchBtn);
+                    UI.showToast(`You earned ${reward} coins!`, 'success');
+                    
+                    State.saveCurrentUser();
+                    UI.updateApp(State.currentUser);
+                }
+            }, 1000);
+        },
 
         handleWithdraw: async () => {
-            const confirmed = await UI.showModal(
-                "Withdrawal Warning", CONFIG.MESSAGES.WITHDRAWAL_WARNING, 
-                'btn-danger', 'I Understand, Continue'
+            if (State.currentUser.coins < CONFIG.MIN_WITHDRAWAL_COINS) {
+                UI.showToast(`You need at least ${CONFIG.MIN_WITHDRAWAL_COINS} coins to withdraw.`, 'error');
+                return;
+            }
+
+            // Professional VPN Warning Modal
+            const vpnConfirmed = await UI.showModal(
+                "⚠️ Important Withdrawal Notice", 
+                "For a successful transaction, please ensure you are using a VPN. Withdrawals made without a VPN might be missed or delayed.",
+                'btn-success', 'I Understand, Continue'
             );
 
-            if (!confirmed) return;
+            if (!vpnConfirmed) return;
+
+            // Final Confirmation Modal
+            const finalConfirmation = await UI.showModal(
+                "Confirm Withdrawal",
+                `This will deduct ${CONFIG.MIN_WITHDRAWAL_COINS} coins from your balance. Are you sure?`,
+                'btn-danger',
+                'Yes, Withdraw'
+            );
+
+            if (!finalConfirmation) return;
             
             UI.setLoading(UI.elements.withdrawBtn, true);
             
@@ -504,21 +622,9 @@
             const amount = coins / CONFIG.COIN_TO_RUPEE_RATE;
             
             State.currentUser.coins -= coins;
-            State.currentUser.lastWithdrawalDate = new Date().toDateString();
             
             const timestamp = new Date().toLocaleString('en-US', { hour12: true });
-            
-            // ** NEW, EASY-COPY TELEGRAM MESSAGE FORMAT **
-            const message = `💰 *New Withdrawal Request*
---------------------------------------
-*Name:* \`${name}\`
-*Number:* \`${phone}\`
-*Amount:* ₹${amount} (${coins} Coins)
---------------------------------------
-*Time:* ${timestamp}
-
-Tap number below to copy for payment:
-\`${phone}\``;
+            const message = `💰 *New Withdrawal Request*\n--------------------------------------\n*Name:* \`${name}\`\n*Number:* \`${phone}\`\n*Amount:* ₹${amount} (${coins} Coins)\n--------------------------------------\n*Time:* ${timestamp}\n\nTap number below to copy for payment:\n\`${phone}\``;
             
             await API.sendTelegramMessage(message);
             await State.saveCurrentUser();
@@ -527,11 +633,12 @@ Tap number below to copy for payment:
             UI.updateApp(State.currentUser);
             UI.setLoading(UI.elements.withdrawBtn, false);
         },
-        
+
         checkAndResetDailyLimits() {
             const today = new Date().toDateString();
             if (State.currentUser.lastResetDate !== today) {
                 State.currentUser.spinsLeft = CONFIG.DAILY_SPIN_LIMIT;
+                State.currentUser.adsWatchedToday = 0;
                 State.currentUser.tapsToday = 0;
                 State.currentUser.tapProgress = 0;
                 State.currentUser.lastResetDate = today;
