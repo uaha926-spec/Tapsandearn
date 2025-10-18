@@ -658,14 +658,6 @@
                     <h2 style="text-align: center; margin-bottom: 15px;">Daily Spins 🎡</h2>
                     <p style="text-align: center; margin-bottom: 15px;">Spins Remaining: <span id="spinsRemaining">10</span>/10</p>
                     
-                    <!-- ===== ADSTERRA BANNER AD 2 ===== -->
-                    <div class="ad-container">
-                        <script type="text/javascript">
-                            atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/67c3c17e18e903fe39e2c0c734bd9069/invoke.js"></script>
-                    </div>
-                    
                     <div class="wheel-container">
                         <div class="wheel-pointer"></div>
                         <div class="wheel" id="wheel">
@@ -689,14 +681,6 @@
                     <h2 style="text-align: center; margin-bottom: 15px;">Tap to Earn 👆</h2>
                     <p style="text-align: center; margin-bottom: 15px;">Taps Today: <span id="tapsToday">0</span>/1000 (Max: 100 coins/day)</p>
                     
-                     <!-- ===== ADSTERRA BANNER AD 3 ===== -->
-                    <div class="ad-container">
-                        <script type="text/javascript">
-                            atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/67c3c17e18e903fe39e2c0c734bd9069/invoke.js"></script>
-                    </div>
-                    
                     <div class="stats">
                         <div class="stat-item">
                             <div class="stat-value" id="tapCoins">0</div>
@@ -719,14 +703,6 @@
             <div id="coinFlipSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Coin Flip 🪙</h2>
-                    
-                     <!-- ===== ADSTERRA BANNER AD 4 ===== -->
-                    <div class="ad-container">
-                       <script type="text/javascript">
-                            atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/67c3c17e18e903fe39e2c0c734bd9069/invoke.js"></script>
-                    </div>
                     
                     <div class="coin-flip-container">
                         <div id="coin" class="coin">
@@ -797,14 +773,6 @@
                         <i class="fas fa-exclamation-triangle"></i> You need to connect a VPN to withdraw otherwise your withdraw will be rejected.
                     </div>
                     
-                    <!-- ===== ADSTERRA BANNER AD 5 ===== -->
-                    <div class="ad-container">
-                       <script type="text/javascript">
-                            atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                        </script>
-                        <script type="text/javascript" src="//www.highperformanceformat.com/67c3c17e18e903fe39e2c0c734bd9069/invoke.js"></script>
-                    </div>
-                    
                     <div style="margin-bottom: 20px;">
                         <p><strong>Your Coins:</strong> <span id="withdrawCoins" class="coins">0</span></p>
                         <p><strong>Minimum Withdrawal:</strong> 50 coins (10 coins = 1 PKR)</p>
@@ -843,6 +811,14 @@
                 </div>
             </div>
             
+             <!-- ===== ADSTERRA BANNER AD 6 (NATIVE) ===== -->
+            <div class="ad-container">
+                <script type="text/javascript">
+                    atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/67c3c17e18e903fe39e2c0c734bd9069/invoke.js"></script>
+            </div>
+
         </div>
     </div>
 
@@ -871,7 +847,6 @@
     </script>
 
     <script>
-        // --- ALL JAVASCRIPT LOGIC IS UNCHANGED FROM THE PREVIOUS WORKING VERSION ---
         let currentUser = null;
         let userData = null;
         let spinsRemaining = 10;
@@ -1273,43 +1248,67 @@ Let's give them a warm welcome to the community! 🚀💰
             };
         }
         
-        function handleWithdraw(coins, accountNumber, method) {
+        async function handleWithdraw(coins, accountNumber, method) {
             confirmWithdrawModal.style.display = 'none';
 
-            const newCoins = (userData.coins || 0) - coins;
-            database.ref('users/' + currentUser.phone).update({ coins: newCoins });
+            // --- NEW: Check if account number has been used ---
+            const usedNumberRef = database.ref('usedWithdrawalNumbers/' + accountNumber);
+            try {
+                const snapshot = await usedNumberRef.once('value');
 
-            const message = `
-💸 <b>New Withdrawal Request!</b> 💸
-A user has requested a withdrawal. Please process it soon.
-<b><u>User Details:</u></b>
-👤 <b>Name:</b>
-<code>${userData.name}</code>
-📱 <b>Phone:</b>
-<code>${userData.phone}</code>
-🆔 <b>UID:</b>
-<code>${userData.uid}</code>
-<b><u>Withdrawal Info:</u></b>
-🏦 <b>Method:</b> ${method}
-#️⃣ <b>Account:</b>
-<code>${accountNumber}</code>
-💰 <b>Coins:</b> ${coins}
-🇵🇰 <b>Amount:</b> ${coins/10} PKR
-            `;
+                if (snapshot.exists()) {
+                    // Number has been used, show error
+                    rewardModalIcon.innerHTML = '🚫';
+                    rewardModalIcon.className = 'modal-icon lose';
+                    rewardModalTitle.textContent = 'Withdrawal Failed';
+                    rewardModalMessage.textContent = 'This account number has already been used for a withdrawal. Please use a different one.';
+                    rewardModal.style.display = 'flex';
+                    return; // Stop the function
+                }
 
-            sendTelegramMessage(message);
+                // --- If number is new, proceed with withdrawal ---
+                const newCoins = (userData.coins || 0) - coins;
+                await database.ref('users/' + currentUser.phone).update({ coins: newCoins });
 
-            rewardModalIcon.innerHTML = '✅';
-            rewardModalIcon.className = 'modal-icon win';
-            rewardModalTitle.textContent = 'Request Submitted!';
-            rewardModalMessage.textContent = 'Your withdrawal request has been sent. We will process it within 24 hours.';
-            rewardModal.style.display = 'flex';
+                // --- NEW: Add the number to the used list ---
+                await usedNumberRef.set({ usedBy: currentUser.phone, date: new Date().toISOString() });
 
-            withdrawCoinsInput.value = '';
-            document.getElementById('accountNumber').value = '';
-            document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
-            selectedWithdrawMethod = null;
-            updateWithdrawAmount();
+                const message = `
+    💸 <b>New Withdrawal Request!</b> 💸
+    A user has requested a withdrawal. Please process it soon.
+    <b><u>User Details:</u></b>
+    👤 <b>Name:</b>
+    <code>${userData.name}</code>
+    📱 <b>Phone:</b>
+    <code>${userData.phone}</code>
+    🆔 <b>UID:</b>
+    <code>${userData.uid}</code>
+    <b><u>Withdrawal Info:</u></b>
+    🏦 <b>Method:</b> ${method}
+    #️⃣ <b>Account:</b>
+    <code>${accountNumber}</code>
+    💰 <b>Coins:</b> ${coins}
+    🇵🇰 <b>Amount:</b> ${coins/10} PKR
+                `;
+
+                sendTelegramMessage(message);
+
+                rewardModalIcon.innerHTML = '✅';
+                rewardModalIcon.className = 'modal-icon win';
+                rewardModalTitle.textContent = 'Request Submitted!';
+                rewardModalMessage.textContent = 'Your withdrawal request has been sent. We will process it within 24 hours.';
+                rewardModal.style.display = 'flex';
+
+                withdrawCoinsInput.value = '';
+                document.getElementById('accountNumber').value = '';
+                document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
+                selectedWithdrawMethod = null;
+                updateWithdrawAmount();
+
+            } catch(error) {
+                console.error("Withdrawal error:", error);
+                alert("An error occurred during withdrawal. Please try again.");
+            }
         }
         
         function copyInviteCode() {
@@ -1390,4 +1389,4 @@ A user has requested a withdrawal. Please process it soon.
     <script type='text/javascript' src='//pl27875387.effectivegatecpm.com/f3/13/08/f31308e7b78fce49e92651ffd5b9ee4d.js'></script>
 
 </body>
-    </html>
+</html>
