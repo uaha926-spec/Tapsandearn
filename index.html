@@ -541,6 +541,7 @@
             align-items: center;
             margin: 15px 0;
             padding: 0 10px;
+            min-height: 50px; /* Ensures space is reserved for ads */
         }
 
     </style>
@@ -607,7 +608,7 @@
                     <button type="submit" class="btn btn-primary">Login & Start Earning 🚀</button>
                 </form>
             </div>
-             <!-- ===== NEW AD PLACEMENT (Popup Ad) ===== -->
+             <!-- POPUP AD (Can be less intrusive) -->
             <div class="ad-container">
                 <script type="text/javascript">
                     atOptions = { 'key' : '6eb6015aa058a2bcd9555cb7e5ef4461', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
@@ -624,7 +625,7 @@
                 <p>Coins: <span id="totalCoins" class="coins">0</span> 💰</p>
             </div>
 
-            <!-- ===== NEW AD PLACEMENT (Banner Ad) ===== -->
+            <!-- BANNER AD (User-Friendly) -->
             <div class="ad-container">
                 <script type="text/javascript">
                     atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
@@ -680,7 +681,7 @@
                     
                     <button id="spinBtn" class="btn btn-primary">Spin Now! 🎯</button>
                 </div>
-                <!-- ===== NEW AD PLACEMENT (Vertical Banner) ===== -->
+                <!-- VERTICAL BANNER AD (User-Friendly) -->
                 <div class="ad-container">
                      <script type="text/javascript">
                         atOptions = { 'key' : '26cecbc200212fa405c77682a293c28d', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
@@ -711,7 +712,7 @@
                         <small>10 taps = 1 coin</small>
                     </div>
                 </div>
-                 <!-- ===== NEW AD PLACEMENT (Horizontal Banner) ===== -->
+                 <!-- HORIZONTAL BANNER AD (User-Friendly) -->
                 <div class="ad-container">
                     <script type="text/javascript">
                         atOptions = { 'key' : 'd5dd361501b753af4380296e22c2afbf', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
@@ -751,7 +752,7 @@
                     </div>
                     <button id="checkInBtn" class="btn btn-success">Claim Today's Reward</button>
                 </div>
-                 <!-- ===== AD REPLACEMENT (Banner Ad) ===== -->
+                 <!-- BANNER AD (User-Friendly) -->
                 <div class="ad-container">
                     <script type="text/javascript">
                         atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
@@ -839,7 +840,7 @@
                 </div>
             </div>
             
-             <!-- ===== AD REPLACEMENT (Banner Ad) ===== -->
+             <!-- BANNER AD (User-Friendly) -->
             <div class="ad-container">
                  <script type="text/javascript">
                     atOptions = { 'key' : '67c3c17e18e903fe39e2c0c734bd9069', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
@@ -875,6 +876,7 @@
     </script>
 
     <script>
+        // All JavaScript logic remains the same as before
         let currentUser = null;
         let userData = null;
         let spinsRemaining = 10;
@@ -1278,9 +1280,6 @@ Let's give them a warm welcome to the community! 🚀💰
             };
         }
         
-        // =============================================================
-        // ===== NEW & IMPROVED: handleWithdraw Function =====
-        // =============================================================
         async function handleWithdraw(coins, accountNumber, method) {
             confirmWithdrawModal.style.display = 'none';
 
@@ -1289,20 +1288,17 @@ Let's give them a warm welcome to the community! 🚀💰
                 const snapshot = await usedNumberRef.once('value');
 
                 if (snapshot.exists()) {
-                    // Number has been used, show error
                     rewardModalIcon.innerHTML = '🚫';
                     rewardModalIcon.className = 'modal-icon lose';
                     rewardModalTitle.textContent = 'Withdrawal Failed';
                     rewardModalMessage.textContent = 'This account number has already been used for a withdrawal. Please use a different one.';
                     rewardModal.style.display = 'flex';
-                    return; // Stop the function
+                    return; 
                 }
 
-                // --- If number is new, proceed with withdrawal ---
                 const newCoins = (userData.coins || 0) - coins;
                 await database.ref('users/' + currentUser.phone).update({ coins: newCoins });
 
-                // --- NEW: Add the number to the used list ---
                 await usedNumberRef.set({ usedBy: currentUser.phone, date: new Date().toISOString() });
 
                 const message = `
@@ -1405,7 +1401,7 @@ Let's give them a warm welcome to the community! 🚀💰
                     confetti.className = 'confetti';
                     confetti.style.left = Math.random() * 100 + 'vw';
                     confetti.style.backgroundColor = getRandomColor();
-                    document.body.appendChild(conf confetti);
+                    document.body.appendChild(confetti);
                     setTimeout(() => confetti.remove(), 5000);
                 }, i * 100);
             }
@@ -1417,8 +1413,10 @@ Let's give them a warm welcome to the community! 🚀💰
         }
     </script>
     
-    <!-- ===== ALL NEW ADSTERRA POP-UNDER & REDIRECT SCRIPTS ===== -->
-    <script type='text/javascript' src='//pl27875387.effectivegatecpm.com/f3/13/08/f31308e7b78fce49e92651ffd5b9ee4d.js'></script>
-    
+    <!-- 
+        NOTE: The aggressive ad scripts that were causing the clicking problem have been removed from here.
+        This provides a much better user experience.
+    -->
+
 </body>
     </html>
