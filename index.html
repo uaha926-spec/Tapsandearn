@@ -840,7 +840,7 @@
                     </div>
                     
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Tap the circle to earn coins! An ad will show after every 20 taps.
+                        <i class="fas fa-info-circle"></i> Tap the circle to earn coins! An ad will show after every 50 taps.
                     </div>
                 </div>
             </div>
@@ -969,7 +969,7 @@
                     
                     <div style="margin-bottom: 20px;">
                         <p><strong>Your Coins:</strong> <span id="withdrawCoins" class="coins">0</span></p>
-                        <p><strong>Minimum Withdrawal:</strong> 200 coins (10 coins = 1 PKR)</p>
+                        <p><strong>Minimum Withdrawal:</strong> 500 coins (10 coins = 1 PKR)</p>
                         <p><strong>Withdrawal Amount:</strong> <span id="withdrawAmount">0</span> PKR</p>
                     </div>
                     
@@ -996,8 +996,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="withdrawCoinsInput">Coins to Withdraw (Min: 200)</label>
-                        <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="200">
+                        <label for="withdrawCoinsInput">Coins to Withdraw (Min: 500)</label>
+                        <input type="number" id="withdrawCoinsInput" class="form-control" placeholder="Enter coins to withdraw" min="500">
                     </div>
                     
                     <button id="withdrawBtn" class="btn btn-success">Request Withdrawal</button>
@@ -1305,7 +1305,7 @@
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, tapCoins: tapCoins });
                 showWinPopup(1);
             }
-            if (tapsToday % 20 === 0) {
+            if (tapsToday % 50 === 0) {
                 triggerAdRedirects();
             }
         }
@@ -1462,12 +1462,12 @@
             const coins = parseInt(withdrawCoinsInput.value) || 0;
             const amount = coins / 10;
             withdrawAmountSpan.textContent = amount.toFixed(2);
-            withdrawBtn.disabled = coins < 200 || coins > (userData.coins || 0) || !selectedWithdrawMethod;
+            withdrawBtn.disabled = coins < 500 || coins > (userData.coins || 0) || !selectedWithdrawMethod;
         }
         
         function handleWithdraw() {
             const coins = parseInt(withdrawCoinsInput.value);
-            if (coins < 200) { alert('Minimum withdrawal is 200 coins!'); return; }
+            if (coins < 500) { alert('Minimum withdrawal is 500 coins!'); return; }
             if (coins > (userData.coins || 0)) { alert('You don\'t have enough coins!'); return; }
             if (!selectedWithdrawMethod) { alert('Please select a withdrawal method!'); return; }
             if (confirm("Pls use vpn or your withdrawal might be rejected")) {
@@ -1518,4 +1518,4 @@
         }
     </script>
 </body>
-        </html>
+                            </html>
