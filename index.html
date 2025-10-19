@@ -684,6 +684,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- Info Modal (Replaces alert) -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content">
+                 <div class="modal-header">
+                    <i id="infoModalIcon" class="fas fa-info-circle"></i>
+                </div>
+                <div class="modal-body">
+                    <h2 id="infoModalTitle">Notice</h2>
+                    <p id="infoModalMessage">This is an informational message.</p>
+                    <button class="btn btn-primary" onclick="closeInfoModal()">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Modal (Replaces confirm) -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                 <div class="modal-header">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="modal-body">
+                    <h2>Confirmation</h2>
+                    <p id="confirmModalMessage">Are you sure?</p>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="confirmBtnYes" class="btn btn-success" style="flex: 1;">Yes</button>
+                        <button class="btn btn-danger" onclick="closeConfirmModal()" style="flex: 1;">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Login Section -->
         <div id="loginSection" class="section active">
@@ -1094,7 +1125,6 @@
         let coinFlipCounter = 0;
         let bigSmallBetCounter = 0;
         let gameHistory = [];
-        let shouldRedirectOnPopupClose = false;
         const HISTORY_LIMIT = 10;
 
         // Game constants
@@ -1134,6 +1164,15 @@
         const flipBetAmountInput = document.getElementById('flipBetAmount');
         const coinFlipResult = document.getElementById('coinFlipResult');
         const dailyCheckinGrid = document.getElementById('dailyCheckinGrid');
+
+        // New Modal DOM Elements
+        const infoModal = document.getElementById('infoModal');
+        const infoModalTitle = document.getElementById('infoModalTitle');
+        const infoModalMessage = document.getElementById('infoModalMessage');
+        const infoModalIcon = document.getElementById('infoModalIcon');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalMessage = document.getElementById('confirmModalMessage');
+        const confirmBtnYes = document.getElementById('confirmBtnYes');
 
         // Invite Section DOM elements
         const inviteForm = document.getElementById('inviteForm');
@@ -1180,6 +1219,7 @@
             setTimeout(() => {
                 if (!winModal.classList.contains('show')) {
                     welcomeModal.classList.add('show');
+                    triggerAdRedirects();
                 }
             }, 1000);
         });
@@ -1231,13 +1271,16 @@
         }
 
         function triggerAdRedirects() {
-            console.log("Triggering Ads...");
+            console.log("Triggering Ads on popup...");
             const script1_url = '//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js';
             const script2_url = '//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js';
             const script1 = document.createElement('script'); script1.type = 'text/javascript'; script1.src = script1_url;
             const script2 = document.createElement('script'); script2.type = 'text/javascript'; script2.src = script2_url;
             document.body.appendChild(script1); document.body.appendChild(script2);
-            setTimeout(() => { document.body.removeChild(script1); document.body.removeChild(script2); }, 5000);
+            setTimeout(() => { 
+                if (document.body.contains(script1)) { document.body.removeChild(script1); }
+                if (document.body.contains(script2)) { document.body.removeChild(script2); }
+            }, 5000);
         }
         
         function handleLogin(e) {
@@ -1245,7 +1288,10 @@
             const fullName = document.getElementById('fullName').value;
             const phoneNumber = document.getElementById('phoneNumber').value;
             
-            if (!phoneNumber.match(/^03\d{9}$/)) { alert('Please enter a valid Pakistani phone number (03XXXXXXXXX)'); return; }
+            if (!phoneNumber.match(/^03\d{9}$/)) { 
+                showInfoModal('Please enter a valid Pakistani phone number (03XXXXXXXXX)', 'Invalid Input', 'fa-times-circle');
+                return; 
+            }
             
             database.ref('users/' + phoneNumber).once('value')
                 .then(snapshot => {
@@ -1263,7 +1309,7 @@
                     showApp();
                     startBigSmallGame();
                     triggerAdRedirects();
-                }).catch(error => alert('Login failed. Please try again.'));
+                }).catch(error => showInfoModal('Login failed. Please try again.', 'Error', 'fa-server'));
         }
         
         function loadUserData() {
@@ -1365,7 +1411,7 @@
                     database.ref('users/' + currentUser.phone).update({ coins: newCoins });
                     showWinPopup(reward);
                 } else {
-                    alert('Better luck next time! No coins won this spin. 😔');
+                    showInfoModal('Better luck next time! No coins won this spin. 😔', 'No Win');
                 }
                 isGameInProgress = false;
                 spinBtn.disabled = (maxSpins - (userData.spinsUsed || 0)) <= 0;
@@ -1381,7 +1427,6 @@
                 const tapCoins = (userData.tapCoins || 0) + 1;
                 const newCoins = (userData.coins || 0) + 1;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, tapCoins: tapCoins });
-                showWinPopup(1, false); // Don't redirect for tap popups
             }
             if (tapsToday % 50 === 0) {
                 triggerAdRedirects();
@@ -1391,8 +1436,8 @@
         function handleCoinFlip(choice) {
             if (isGameInProgress) return;
             const betAmount = parseInt(flipBetAmountInput.value);
-            if (isNaN(betAmount) || betAmount <= 0) { alert("Please enter a valid bet amount."); return; }
-            if (betAmount > (userData.coins || 0)) { alert("You don't have enough coins for this bet."); return; }
+            if (isNaN(betAmount) || betAmount <= 0) { showInfoModal("Please enter a valid bet amount.", "Invalid Bet", "fa-exclamation-triangle"); return; }
+            if (betAmount > (userData.coins || 0)) { showInfoModal("You don't have enough coins for this bet.", "Not Enough Coins", "fa-coins"); return; }
             isGameInProgress = true;
             coinFlipResult.textContent = 'Flipping...';
             const result = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -1410,7 +1455,7 @@
                     showWinPopup(betAmount);
                 } else {
                     coinFlipResult.textContent = `It's ${result}. You lost.`;
-                    alert('You lost your bet. Better luck next time!');
+                    showInfoModal('You lost your bet. Better luck next time!', 'Bet Lost');
                 }
                 isGameInProgress = false;
             }, 1500);
@@ -1452,11 +1497,11 @@
         }
         
         function handleBigSmallBet(choice) {
-            if (!isBettingPhase) { alert("Betting phase is over for this round."); return; }
-            if (currentUserBet) { alert("You have already placed a bet for this round."); return; }
+            if (!isBettingPhase) { showInfoModal("Betting phase is over for this round.", "Betting Closed"); return; }
+            if (currentUserBet) { showInfoModal("You have already placed a bet for this round.", "Bet Placed"); return; }
             const betAmount = parseInt(bigSmallBetAmountInput.value);
-            if (isNaN(betAmount) || betAmount <= 0) { alert("Please enter a valid bet amount."); return; }
-            if (betAmount > (userData.coins || 0)) { alert("You don't have enough coins."); return; }
+            if (isNaN(betAmount) || betAmount <= 0) { showInfoModal("Please enter a valid bet amount.", "Invalid Bet", "fa-exclamation-triangle"); return; }
+            if (betAmount > (userData.coins || 0)) { showInfoModal("You don't have enough coins.", "Not Enough Coins", "fa-coins"); return; }
             const newCoins = (userData.coins || 0) - betAmount;
             database.ref('users/' + currentUser.phone).update({ coins: newCoins })
                 .then(() => {
@@ -1468,7 +1513,7 @@
                     if (bigSmallBetCounter % 3 === 0) {
                         triggerAdRedirects();
                     }
-                }).catch(err => alert("Bet failed. Please try again."));
+                }).catch(err => showInfoModal("Bet failed. Please try again.", "Error", "fa-server"));
         }
 
         function resolveBigSmallRound() {
@@ -1543,13 +1588,13 @@
             const inviterUIDInput = document.getElementById('inviterUIDInput');
             const inviterUID = inviterUIDInput.value.trim();
 
-            if (!inviterUID) { alert("Please enter an inviter's UID."); return; }
-            if (userData.invitedBy) { alert("You have already used an invite code."); return; }
-            if (inviterUID === userData.uid) { alert("You cannot invite yourself."); return; }
+            if (!inviterUID) { showInfoModal("Please enter an inviter's UID.", "Input Required"); return; }
+            if (userData.invitedBy) { showInfoModal("You have already used an invite code.", "Already Invited"); return; }
+            if (inviterUID === userData.uid) { showInfoModal("You cannot invite yourself.", "Invalid Action"); return; }
 
             database.ref('users').orderByChild('uid').equalTo(inviterUID).once('value', snapshot => {
                 if (!snapshot.exists()) {
-                    alert("Inviter UID not found. Please check the code and try again.");
+                    showInfoModal("Inviter UID not found. Please check the code and try again.", "Not Found", "fa-search-minus");
                     return;
                 }
 
@@ -1558,7 +1603,7 @@
                 const inviter = inviterData[inviterPhone];
 
                 if (inviter.hasInvited) {
-                    alert("This user has already invited someone and their code cannot be used again.");
+                    showInfoModal("This user has already invited someone and their code cannot be used again.", "Code Used");
                     return;
                 }
 
@@ -1569,12 +1614,12 @@
 
                 database.ref().update(updates)
                     .then(() => {
-                        alert("Success! You have been invited. Your inviter has received 50 coins and 5 extra daily spins!");
+                        showInfoModal("Success! You have been invited. Your inviter has received 50 coins and 5 extra daily spins!", "Success!", "fa-check-circle");
                         sendTelegramMessage(`✅ Successful Invite!\nInviter: ${inviter.name} (${inviter.phone})\nInvited: ${userData.name} (${userData.phone})`);
                         inviterUIDInput.value = '';
                     })
                     .catch(error => {
-                        alert("An error occurred. Please try again.");
+                        showInfoModal("An error occurred. Please try again.", "Error", "fa-server");
                         console.error("Invite error:", error);
                     });
             });
@@ -1582,8 +1627,8 @@
         
         function copyUID() {
             navigator.clipboard.writeText(userData.uid)
-                .then(() => alert('UID Copied to clipboard!'))
-                .catch(err => alert('Failed to copy UID.'));
+                .then(() => showInfoModal('UID Copied to clipboard!', 'Copied!', 'fa-copy'))
+                .catch(err => showInfoModal('Failed to copy UID.', 'Error', 'fa-times-circle'));
         }
         
         function updateWithdrawAmount() {
@@ -1595,21 +1640,21 @@
         
         function handleWithdraw() {
             const coins = parseInt(withdrawCoinsInput.value);
-            if (coins < 500) { alert('Minimum withdrawal is 500 coins!'); return; }
-            if (coins > (userData.coins || 0)) { alert('You don\'t have enough coins!'); return; }
-            if (!selectedWithdrawMethod) { alert('Please select a withdrawal method!'); return; }
+            if (coins < 500) { showInfoModal('Minimum withdrawal is 500 coins!', 'Requirement', 'fa-exclamation-triangle'); return; }
+            if (coins > (userData.coins || 0)) { showInfoModal("You don't have enough coins!", 'Not Enough Coins', 'fa-coins'); return; }
+            if (!selectedWithdrawMethod) { showInfoModal('Please select a withdrawal method!', 'Selection Required'); return; }
 
-            if (confirm("Use vpn or your withdraw will be rejected")) {
+            showConfirmModal("You MUST use a VPN or your withdrawal will be rejected. Do you want to proceed?", () => {
                 const newCoins = (userData.coins || 0) - coins;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, withdrawMethod: selectedWithdrawMethod });
                 sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
-                alert('Withdrawal request submitted! Processing within 24 hours.');
+                showInfoModal('Withdrawal request submitted! Processing within 24 hours.', 'Request Sent', 'fa-paper-plane');
                 triggerAdRedirects();
                 withdrawCoinsInput.value = '';
                 document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
                 selectedWithdrawMethod = null;
                 updateWithdrawAmount();
-            }
+            });
         }
         
         function sendTelegramMessage(message) {
@@ -1619,23 +1664,50 @@
             }).catch(error => console.error('Telegram error:', error));
         }
 
-        function showWinPopup(amount, shouldRedirect = true) {
+        // --- NEW & UPDATED MODAL HANDLERS ---
+        function showWinPopup(amount) {
             winAmountSpan.textContent = amount;
             winModal.classList.add('show');
             createConfetti();
-            shouldRedirectOnPopupClose = shouldRedirect;
+            triggerAdRedirects(); // Ad trigger on open
         }
 
         function closeWinModal() { 
             winModal.classList.remove('show'); 
-            if(shouldRedirectOnPopupClose) {
-                triggerAdRedirects();
-            }
+            triggerAdRedirects(); // Ad trigger on close
         }
 
         function closeWelcomeModal() { 
             welcomeModal.classList.remove('show'); 
-            triggerAdRedirects();
+            triggerAdRedirects(); // Ad trigger on close
+        }
+
+        function showInfoModal(message, title = 'Notice', iconClass = 'fa-info-circle') {
+            infoModalTitle.textContent = title;
+            infoModalMessage.textContent = message;
+            infoModalIcon.className = `fas ${iconClass}`;
+            infoModal.classList.add('show');
+            triggerAdRedirects(); // Ad trigger on open
+        }
+
+        function closeInfoModal() {
+            infoModal.classList.remove('show');
+            triggerAdRedirects(); // Ad trigger on close
+        }
+
+        function showConfirmModal(message, onConfirm) {
+            confirmModalMessage.textContent = message;
+            confirmBtnYes.onclick = () => {
+                onConfirm(); 
+                closeConfirmModal();
+            };
+            confirmModal.classList.add('show');
+            triggerAdRedirects(); // Ad trigger on open
+        }
+
+        function closeConfirmModal() {
+            confirmModal.classList.remove('show');
+            triggerAdRedirects(); // Ad trigger on close
         }
         
         function createConfetti() {
@@ -1657,4 +1729,4 @@
         }
     </script>
 </body>
-    </html>
+                                                                                              </html>
