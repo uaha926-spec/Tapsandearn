@@ -654,80 +654,9 @@
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
-        /* --- NEW IN-PAGE AD OVERLAY STYLES --- */
-        #adOverlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #adOverlayContent {
-            position: relative;
-            width: 95%;
-            height: 90%;
-            max-width: 480px;
-            max-height: 720px;
-            background: #fff;
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        #adIframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #adTimer {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        #adCloseBtn {
-            display: none; /* Hidden until timer finishes */
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            font-size: 18px;
-            cursor: pointer;
-            line-height: 30px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
-    <!-- NEW IN-PAGE AD OVERLAY HTML STRUCTURE -->
-    <div id="adOverlay">
-        <div id="adOverlayContent">
-            <iframe id="adIframe" src="about:blank"></iframe>
-            <div id="adTimer">Ad will close in 10s</div>
-            <button id="adCloseBtn" onclick="hideInPageAd()">&times;</button>
-        </div>
-    </div>
-
     <div class="container">
         <!-- Win Modal -->
         <div id="winModal" class="modal">
@@ -1208,72 +1137,29 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        const TELEGRAM_BOT_TOKEN = "8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k";
+        // --- UPDATED TELEGRAM CONFIG ---
+        const TELEGRAM_BOT_TOKEN = "7797824226:AAE-EOiN4bfhIuzS-awQMDqOcc8VUZozpeY";
         const TELEGRAM_CHAT_ID = "7122620719";
     </script>
 
     <script>
         // --- ADVERTISEMENT CONFIGURATION ---
         /**
-         * CRITICAL: Replace the URL below with your actual Adsterra ad link.
-         * This can be a Direct Link or a link for a specific ad format.
-         * This is the ad that will appear in the in-page pop-up overlay.
+         * CRITICAL: Replace the URL below with your actual Adsterra Direct Link.
+         * This link will be opened in a new tab.
          */
-        const AD_IFRAME_URL = "https://example.com/your-adsterra-link";
+        const AD_DIRECT_LINK_URL = "https://example.com/your-adsterra-direct-link";
 
         /**
-         * The number of seconds the user must wait before they can close the in-page ad.
+         * This is the core ad triggering function. It opens the direct link in a new tab.
+         * This behaves like a pop-up and redirects the user as requested.
          */
-        const AD_TIMER_SECONDS = 10;
-        
-        // --- IN-PAGE AD SYSTEM ---
-        const adOverlay = document.getElementById('adOverlay');
-        const adIframe = document.getElementById('adIframe');
-        const adTimerSpan = document.getElementById('adTimer');
-        const adCloseBtn = document.getElementById('adCloseBtn');
-        let adCountdownInterval;
-
-        /**
-         * This is the core ad triggering function for the in-page overlay.
-         * It shows the overlay, loads the ad into the iframe, and starts the countdown.
-         */
-        function showInPageAd() {
-            if (!AD_IFRAME_URL || AD_IFRAME_URL.includes("example.com")) {
-                console.warn("AD_IFRAME_URL is not set. Please update it with your Adsterra ad link.");
+        function triggerAdAction() {
+            if (!AD_DIRECT_LINK_URL || AD_DIRECT_LINK_URL.includes("example.com")) {
+                console.warn("AD_DIRECT_LINK_URL is not set. Please update it with your Adsterra ad link.");
                 return; // Don't show the ad if the link isn't configured.
             }
-
-            // Load the ad into the iframe
-            adIframe.src = AD_IFRAME_URL;
-            
-            // Show the overlay
-            adOverlay.style.display = 'flex';
-            
-            // Reset and start the timer
-            let timeLeft = AD_TIMER_SECONDS;
-            adTimerSpan.textContent = `Ad will close in ${timeLeft}s`;
-            adTimerSpan.style.display = 'block';
-            adCloseBtn.style.display = 'none';
-
-            adCountdownInterval = setInterval(() => {
-                timeLeft--;
-                adTimerSpan.textContent = `Ad will close in ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    clearInterval(adCountdownInterval);
-                    adTimerSpan.style.display = 'none';
-                    adCloseBtn.style.display = 'block';
-                }
-            }, 1000);
-        }
-
-        /**
-         * Hides the in-page ad overlay and stops the ad from running.
-         * This function is called when the user clicks the close button.
-         */
-        function hideInPageAd() {
-            adOverlay.style.display = 'none';
-            adIframe.src = 'about:blank'; // Important: Stops the ad from consuming resources
-            clearInterval(adCountdownInterval); // Ensure the timer is stopped
+            window.open(AD_DIRECT_LINK_URL, '_blank');
         }
 
 
@@ -1282,7 +1168,8 @@
         let userData = null;
         let selectedWithdrawMethod = null;
         let isGameInProgress = false;
-        let coinFlipCounter = 0;
+        let tapCounter = 0; // For ad trigger
+        let coinFlipCounter = 0; // For ad trigger
         let bigSmallBetCounter = 0;
         let gameHistory = [];
         const HISTORY_LIMIT = 10;
@@ -1390,6 +1277,12 @@
             navBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (isGameInProgress && this.getAttribute('data-section') !== 'bigSmallSection') return;
+                    
+                    // --- AD TRIGGER ON NAVIGATION ---
+                    if (!this.classList.contains('active')) {
+                        triggerAdAction();
+                    }
+                    
                     const targetSection = this.getAttribute('data-section');
                     navBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
@@ -1445,10 +1338,24 @@
                         currentUser = { name: snapshot.val().name, phone: phoneNumber, uid: snapshot.val().uid };
                     } else {
                         const uid = 'har-' + Math.floor(1000 + Math.random() * 9000);
-                        const now = new Date().toISOString();
+                        const now = new Date();
+                        const joinDate = now.toISOString();
+                        const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'});
+
                         currentUser = { name: fullName, phone: phoneNumber, uid: uid };
-                        database.ref('users/' + phoneNumber).set({ name: fullName, phone: phoneNumber, uid: uid, coins: 0, joined: now, spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: now, withdrawMethod: null, lastCheckin: "1970-01-01", checkinStreak: 0 });
-                        sendTelegramMessage(`New user registered!\nName: ${fullName}\nPhone: ${phoneNumber}\nUID: ${uid}`);
+                        database.ref('users/' + phoneNumber).set({ name: fullName, phone: phoneNumber, uid: uid, coins: 0, joined: joinDate, spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: joinDate, withdrawMethod: null, lastCheckin: "1970-01-01", checkinStreak: 0 });
+                        
+                        // --- ENHANCED TELEGRAM MESSAGE FOR NEW USER ---
+                        const message = `
+✅* New User Registration *✅
+━━━━━━━━━━━━━━━
+👤 *Name:* \`${fullName}\`
+📞 *Phone:* \`${phoneNumber}\`
+🆔 *UID:* ${uid}
+📅 *Joined On:* ${formattedDate}
+━━━━━━━━━━━━━━━
+                        `;
+                        sendTelegramMessage(message, true); // Send with Markdown
                     }
                     localStorage.setItem('coinMasterUser', JSON.stringify(currentUser));
                     loadUserData();
@@ -1541,7 +1448,7 @@
             if (isGameInProgress || (maxSpins - (userData.spinsUsed || 0)) <= 0) return;
             
             // --- AD TRIGGER ---
-            showInPageAd();
+            triggerAdAction();
 
             isGameInProgress = true;
             spinBtn.disabled = true;
@@ -1570,6 +1477,12 @@
         
         function handleTap() {
             if ((userData.tapCoins || 0) >= 200) return;
+            
+            tapCounter++;
+            if (tapCounter % 50 === 0) {
+                triggerAdAction();
+            }
+
             const tapsToday = (userData.tapsToday || 0) + 1;
             database.ref('users/' + currentUser.phone).update({ tapsToday: tapsToday });
             if (tapsToday % 10 === 0) {
@@ -1584,13 +1497,17 @@
             const betAmount = parseInt(flipBetAmountInput.value);
             if (isNaN(betAmount) || betAmount <= 0) { showInfoModal("Please enter a valid bet amount.", "Invalid Bet", "fa-exclamation-triangle"); return; }
             if (betAmount > (userData.coins || 0)) { showInfoModal("You don't have enough coins for this bet.", "Not Enough Coins", "fa-coins"); return; }
+            
+            coinFlipCounter++;
+            if (coinFlipCounter % 3 === 0) {
+                triggerAdAction();
+            }
+
             isGameInProgress = true;
             coinFlipResult.textContent = 'Flipping...';
             const result = Math.random() < 0.5 ? 'heads' : 'tails';
             coin.style.transform = `rotateY(${Math.random() > 0.5 ? 1800 : 1980}deg)`;
             
-            coinFlipCounter++;
-
             setTimeout(() => {
                 const win = choice === result;
                 const newCoins = (userData.coins || 0) + (win ? betAmount : -betAmount);
@@ -1756,7 +1673,8 @@
                 database.ref().update(updates)
                     .then(() => {
                         showInfoModal("Success! You have been invited. Your inviter has received 50 coins and 5 extra daily spins!", "Success!", "fa-check-circle");
-                        sendTelegramMessage(`✅ Successful Invite!\nInviter: ${inviter.name} (${inviter.phone})\nInvited: ${userData.name} (${userData.phone})`);
+                        const message = `✅ *Successful Invite!* ✅\n\n*Inviter:* ${inviter.name} (\`${inviter.phone}\`)\n*Invited:* ${userData.name} (\`${userData.phone}\`)`;
+                        sendTelegramMessage(message, true);
                         inviterUIDInput.value = '';
                     })
                     .catch(error => {
@@ -1788,7 +1706,22 @@
             showConfirmModal("You MUST use a VPN or your withdrawal will be rejected. Do you want to proceed?", () => {
                 const newCoins = (userData.coins || 0) - coins;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, withdrawMethod: selectedWithdrawMethod });
-                sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
+                
+                // --- ENHANCED TELEGRAM MESSAGE FOR WITHDRAWAL ---
+                const amountPKR = coins / 10;
+                const message = `
+💸* Withdrawal Request *💸
+━━━━━━━━━━━━━━━━
+👤 *User:* \`${userData.name}\`
+📞 *Phone:* \`${userData.phone}\`
+🆔 *UID:* ${userData.uid}
+💳 *Method:* ${selectedWithdrawMethod.toUpperCase()}
+💰 *Coins:* ${coins.toLocaleString()}
+🇵🇰 *Amount:* ${amountPKR.toFixed(2)} PKR
+━━━━━━━━━━━━━━━━
+                `;
+                sendTelegramMessage(message, true); // Send with Markdown
+
                 showInfoModal('Withdrawal request submitted! Processing within 24 hours.', 'Request Sent', 'fa-paper-plane');
                 withdrawCoinsInput.value = '';
                 document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
@@ -1797,10 +1730,18 @@
             });
         }
         
-        function sendTelegramMessage(message) {
+        function sendTelegramMessage(message, useMarkdown = false) {
+            const payload = {
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+            };
+            if (useMarkdown) {
+                payload.parse_mode = 'Markdown';
+            }
             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             }).catch(error => console.error('Telegram error:', error));
         }
 
@@ -1813,12 +1754,12 @@
 
         function closeWinModal() { 
             winModal.classList.remove('show'); 
-            showInPageAd();
+            triggerAdAction();
         }
 
         function closeWelcomeModal() { 
             welcomeModal.classList.remove('show'); 
-            showInPageAd();
+            triggerAdAction();
         }
 
         function showInfoModal(message, title = 'Notice', iconClass = 'fa-info-circle') {
@@ -1830,7 +1771,7 @@
 
         function closeInfoModal() {
             infoModal.classList.remove('show');
-            showInPageAd();
+            triggerAdAction();
         }
 
         function showConfirmModal(message, onConfirm) {
@@ -1844,7 +1785,7 @@
 
         function closeConfirmModal() {
             confirmModal.classList.remove('show');
-            showInPageAd();
+            triggerAdAction();
         }
         
         function createConfetti() {
@@ -1866,4 +1807,4 @@
         }
     </script>
 </body>
-</html>
+                </html>
