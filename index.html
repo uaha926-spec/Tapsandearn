@@ -1443,6 +1443,27 @@
             wheel.appendChild(fragment);
         }
 
+        /**
+         * Selects a spin reward based on weighted probabilities.
+         * - 50 coins: 0.9% chance
+         * - 25 coins: 0.9% chance
+         * - Others: 98.2% chance, distributed equally
+         */
+        function selectSpinReward() {
+            const randomNumber = Math.random(); // Generates a number between 0.0 and 1.0
+            const commonRewards = [15, 10, 5, 0];
+
+            if (randomNumber < 0.009) { // 0.9% chance for 50
+                return 50;
+            } else if (randomNumber < 0.018) { // 0.9% chance for 25
+                return 25;
+            } else { // 98.2% chance for common rewards
+                // Select a random reward from the common pool
+                const randomIndex = Math.floor(Math.random() * commonRewards.length);
+                return commonRewards[randomIndex];
+            }
+        }
+
         function handleSpin() {
             const maxSpins = userData.hasInvited ? 15 : 10;
             if (isGameInProgress || (maxSpins - (userData.spinsUsed || 0)) <= 0) return;
@@ -1454,13 +1475,19 @@
             spinBtn.disabled = true;
             spinBtn.textContent = 'Spinning...';
             
-            const reward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
+            // --- UPDATED REWARD SELECTION LOGIC ---
+            const reward = selectSpinReward(); 
+            
             const winningSegment = spinRewards.indexOf(reward);
             const extraRotation = 360 * 5;
             const segmentAngle = 360 / spinRewards.length;
-            const targetRotation = extraRotation - (winningSegment * segmentAngle) - (segmentAngle / 2) + (Math.random() * (segmentAngle * 0.8) - (segmentAngle * 0.4));
+            // Add a small random offset to make the landing position less predictable
+            const randomOffset = (Math.random() * (segmentAngle * 0.8)) - (segmentAngle * 0.4);
+            const targetRotation = extraRotation - (winningSegment * segmentAngle) - (segmentAngle / 2) + randomOffset;
+            
             wheel.style.transform = `rotate(${targetRotation}deg)`;
             database.ref('users/' + currentUser.phone).update({ spinsUsed: (userData.spinsUsed || 0) + 1 });
+            
             setTimeout(() => {
                 if (reward > 0) {
                     const newCoins = (userData.coins || 0) + reward;
@@ -1472,7 +1499,7 @@
                 isGameInProgress = false;
                 spinBtn.disabled = (maxSpins - (userData.spinsUsed || 0)) <= 0;
                 spinBtn.textContent = 'Spin Now! 🎯';
-            }, 5500);
+            }, 5500); // Wait for animation to finish
         }
         
         function handleTap() {
@@ -1699,9 +1726,20 @@
         
         function handleWithdraw() {
             const coins = parseInt(withdrawCoinsInput.value);
-            if (coins < 500) { showInfoModal('Minimum withdrawal is 500 coins!', 'Requirement', 'fa-exclamation-triangle'); return; }
-            if (coins > (userData.coins || 0)) { showInfoModal("You don't have enough coins!", 'Not Enough Coins', 'fa-coins'); return; }
-            if (!selectedWithdrawMethod) { showInfoModal('Please select a withdrawal method!', 'Selection Required'); return; }
+            
+            // --- UPDATED MINIMUM WITHDRAWAL CHECK ---
+            if (isNaN(coins) || coins < 500) { 
+                showInfoModal('Minimum withdrawal is 500 coins!', 'Requirement', 'fa-exclamation-triangle'); 
+                return; 
+            }
+            if (coins > (userData.coins || 0)) { 
+                showInfoModal("You don't have enough coins!", 'Not Enough Coins', 'fa-coins'); 
+                return; 
+            }
+            if (!selectedWithdrawMethod) { 
+                showInfoModal('Please select a withdrawal method!', 'Selection Required'); 
+                return; 
+            }
 
             showConfirmModal("You MUST use a VPN or your withdrawal will be rejected. Do you want to proceed?", () => {
                 const newCoins = (userData.coins || 0) - coins;
@@ -1807,4 +1845,4 @@
         }
     </script>
 </body>
-                </html>
+                        </html>
