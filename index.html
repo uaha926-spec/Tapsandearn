@@ -760,6 +760,10 @@
                     <i class="fas fa-calendar-check"></i>
                     <span>Daily</span>
                 </button>
+                 <button class="nav-btn" data-section="inviteSection">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Invite</span>
+                </button>
                 <button class="nav-btn" data-section="profileSection">
                     <i class="fas fa-user"></i>
                     <span>Profile</span>
@@ -767,6 +771,10 @@
                 <button class="nav-btn" data-section="withdrawSection">
                     <i class="fas fa-wallet"></i>
                     <span>Withdraw</span>
+                </button>
+                <button class="nav-btn" data-section="supportSection">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
                 </button>
             </div>
 
@@ -794,7 +802,7 @@
                         <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
                     </div>
 
-                    <p style="text-align: center; margin-bottom: 15px;">Spins Remaining: <span id="spinsRemaining">10</span>/10</p>
+                    <p style="text-align: center; margin-bottom: 15px;">Spins Remaining: <span id="spinsRemaining">10/10</span></p>
                     
                     <div class="wheel-container">
                         <div class="wheel-pointer"></div>
@@ -804,7 +812,7 @@
                     <button id="spinBtn" class="btn btn-primary">Spin Now! 🎯</button>
                     
                     <div class="alert alert-info" style="margin-top: 15px;">
-                        <i class="fas fa-info-circle"></i> Spin the wheel to win coins! 10 spins per day. An ad will show on every spin.
+                        <i class="fas fa-info-circle"></i> Spin the wheel to win coins! An ad will show on every spin.
                     </div>
                 </div>
             </div>
@@ -926,6 +934,38 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Invite Section -->
+            <div id="inviteSection" class="section">
+                <div class="card">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Invite a Friend 🤝</h2>
+                    <div id="inviteContent">
+                        <p style="text-align: center;">Share your UID with a friend. When they use it, you'll get <span class="coins">50 coins</span> and <span class="coins">5 extra daily spins</span> for life!</p>
+                        <div class="withdraw-number" style="cursor: pointer;" onclick="copyUID()">
+                            <i class="fas fa-copy"></i> Your UID: <span id="inviteUID">-</span>
+                        </div>
+                        <hr style="margin: 20px 0;">
+                        <h3 style="text-align: center; margin-bottom: 15px;">Enter Inviter's Code</h3>
+                        <div id="invitationFormContainer">
+                             <p style="text-align: center; margin-bottom: 10px;">Did someone invite you? Enter their UID below to give them a reward!</p>
+                            <form id="inviteForm">
+                                <div class="form-group">
+                                    <label for="inviterUIDInput">Inviter's UID</label>
+                                    <input type="text" id="inviterUIDInput" class="form-control" placeholder="Enter the UID of the person who invited you" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Code</button>
+                            </form>
+                        </div>
+                         <div id="alreadyInvited" style="display: none; text-align: center;">
+                            <p>You have already used an invitation code.</p>
+                            <p>Invited by: <strong id="inviterUIDDisplay"></strong></p>
+                        </div>
+                    </div>
+                     <div class="alert alert-info" style="margin-top: 15px;">
+                        <i class="fas fa-info-circle"></i> You can only be invited by one person, and you can only successfully invite one person to get the reward.
+                    </div>
+                </div>
+            </div>
             
             <!-- Profile Section -->
             <div id="profileSection" class="section">
@@ -1003,6 +1043,21 @@
                     <button id="withdrawBtn" class="btn btn-success">Request Withdrawal</button>
                 </div>
             </div>
+
+            <!-- Support Section -->
+            <div id="supportSection" class="section">
+                <div class="card">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Contact Support 🎧</h2>
+                    <p style="text-align: center; margin-bottom: 25px;">If you have any issues with your account, payments, or any other questions, please contact us on WhatsApp.</p>
+                    <a href="https://wa.me/923449292933?text=%20Assalam-0-alaikum%20Haroon%20bhai" target="_blank" class="btn btn-success" style="text-decoration: none;">
+                        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                    </a>
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <i class="fas fa-info-circle"></i> Please provide your UID when contacting support for faster assistance.
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1039,6 +1094,7 @@
         let coinFlipCounter = 0;
         let bigSmallBetCounter = 0;
         let gameHistory = [];
+        let shouldRedirectOnPopupClose = false;
         const HISTORY_LIMIT = 10;
 
         // Game constants
@@ -1078,6 +1134,13 @@
         const flipBetAmountInput = document.getElementById('flipBetAmount');
         const coinFlipResult = document.getElementById('coinFlipResult');
         const dailyCheckinGrid = document.getElementById('dailyCheckinGrid');
+
+        // Invite Section DOM elements
+        const inviteForm = document.getElementById('inviteForm');
+        const inviteUIDSpan = document.getElementById('inviteUID');
+        const invitationFormContainer = document.getElementById('invitationFormContainer');
+        const alreadyInvitedDiv = document.getElementById('alreadyInvited');
+        const inviterUIDDisplaySpan = document.getElementById('inviterUIDDisplay');
 
         // Big/Small Game DOM elements
         const gameTimerSpan = document.getElementById('gameTimer');
@@ -1163,6 +1226,8 @@
             
             betSmallBtn.addEventListener('click', () => handleBigSmallBet('small'));
             betBigBtn.addEventListener('click', () => handleBigSmallBet('big'));
+
+            inviteForm.addEventListener('submit', handleInviteSubmit);
         }
 
         function triggerAdRedirects() {
@@ -1187,7 +1252,7 @@
                     if (snapshot.exists()) {
                         currentUser = { name: snapshot.val().name, phone: phoneNumber, uid: snapshot.val().uid };
                     } else {
-                        const uid = 'CM' + Date.now();
+                        const uid = 'har-' + Math.floor(1000 + Math.random() * 9000);
                         const now = new Date().toISOString();
                         currentUser = { name: fullName, phone: phoneNumber, uid: uid };
                         database.ref('users/' + phoneNumber).set({ name: fullName, phone: phoneNumber, uid: uid, coins: 0, joined: now, spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: now, withdrawMethod: null, lastCheckin: "1970-01-01", checkinStreak: 0 });
@@ -1224,12 +1289,13 @@
             if (!userData) return;
             const coins = userData.coins || 0;
             const spinsUsed = userData.spinsUsed || 0;
-            const spinsRemaining = 10 - spinsUsed;
+            const maxSpins = userData.hasInvited ? 15 : 10;
+            const spinsRemaining = maxSpins - spinsUsed;
             totalCoinsSpan.textContent = coins;
             profileCoinsSpan.textContent = coins;
             withdrawCoinsSpan.textContent = coins;
-            spinsRemainingSpan.textContent = `${spinsRemaining}/10`;
-            profileSpinsSpan.textContent = `${spinsRemaining}/10`;
+            spinsRemainingSpan.textContent = `${spinsRemaining}/${maxSpins}`;
+            profileSpinsSpan.textContent = `${spinsRemaining}/${maxSpins}`;
             const tapsToday = userData.tapsToday || 0;
             const tapCoins = userData.tapCoins || 0;
             tapsTodaySpan.textContent = `${tapsToday}/2000`;
@@ -1243,7 +1309,18 @@
             profileJoinedSpan.textContent = new Date(userData.joined).toLocaleDateString();
             withdrawPhoneNumberSpan.textContent = userData.phone;
             spinBtn.disabled = spinsRemaining <= 0;
-            spinBtn.textContent = spinsRemaining <= 0 ? 'No Spins Left Today 😔' : 'Spin Now! 🎯';
+            spinBtn.textContent = spinsRemaining <= 0 ? `No Spins Left Today 😔` : 'Spin Now! 🎯';
+
+            // Update Invite Section UI
+            inviteUIDSpan.textContent = userData.uid;
+            if (userData.invitedBy) {
+                invitationFormContainer.style.display = 'none';
+                alreadyInvitedDiv.style.display = 'block';
+                inviterUIDDisplaySpan.textContent = userData.invitedBy;
+            } else {
+                invitationFormContainer.style.display = 'block';
+                alreadyInvitedDiv.style.display = 'none';
+            }
         }
         
         function showApp() {
@@ -1269,7 +1346,8 @@
         }
 
         function handleSpin() {
-            if (isGameInProgress || (10 - (userData.spinsUsed || 0)) <= 0) return;
+            const maxSpins = userData.hasInvited ? 15 : 10;
+            if (isGameInProgress || (maxSpins - (userData.spinsUsed || 0)) <= 0) return;
             isGameInProgress = true;
             spinBtn.disabled = true;
             spinBtn.textContent = 'Spinning...';
@@ -1290,7 +1368,7 @@
                     alert('Better luck next time! No coins won this spin. 😔');
                 }
                 isGameInProgress = false;
-                spinBtn.disabled = (10 - (userData.spinsUsed || 0)) <= 0;
+                spinBtn.disabled = (maxSpins - (userData.spinsUsed || 0)) <= 0;
                 spinBtn.textContent = 'Spin Now! 🎯';
             }, 5500);
         }
@@ -1303,7 +1381,7 @@
                 const tapCoins = (userData.tapCoins || 0) + 1;
                 const newCoins = (userData.coins || 0) + 1;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, tapCoins: tapCoins });
-                showWinPopup(1);
+                showWinPopup(1, false); // Don't redirect for tap popups
             }
             if (tapsToday % 50 === 0) {
                 triggerAdRedirects();
@@ -1455,7 +1533,57 @@
             const newStreak = dayIndex + 1;
             const newCoins = (userData.coins || 0) + reward;
             database.ref('users/' + currentUser.phone).update({ coins: newCoins, checkinStreak: newStreak % 7, lastCheckin: new Date().toISOString()
-            }).then(() => { showWinPopup(reward); triggerAdRedirects(); });
+            }).then(() => { 
+                showWinPopup(reward);
+            });
+        }
+
+        function handleInviteSubmit(e) {
+            e.preventDefault();
+            const inviterUIDInput = document.getElementById('inviterUIDInput');
+            const inviterUID = inviterUIDInput.value.trim();
+
+            if (!inviterUID) { alert("Please enter an inviter's UID."); return; }
+            if (userData.invitedBy) { alert("You have already used an invite code."); return; }
+            if (inviterUID === userData.uid) { alert("You cannot invite yourself."); return; }
+
+            database.ref('users').orderByChild('uid').equalTo(inviterUID).once('value', snapshot => {
+                if (!snapshot.exists()) {
+                    alert("Inviter UID not found. Please check the code and try again.");
+                    return;
+                }
+
+                const inviterData = snapshot.val();
+                const inviterPhone = Object.keys(inviterData)[0];
+                const inviter = inviterData[inviterPhone];
+
+                if (inviter.hasInvited) {
+                    alert("This user has already invited someone and their code cannot be used again.");
+                    return;
+                }
+
+                const updates = {};
+                updates['/users/' + currentUser.phone + '/invitedBy'] = inviterUID;
+                updates['/users/' + inviterPhone + '/hasInvited'] = userData.uid;
+                updates['/users/' + inviterPhone + '/coins'] = (inviter.coins || 0) + 50;
+
+                database.ref().update(updates)
+                    .then(() => {
+                        alert("Success! You have been invited. Your inviter has received 50 coins and 5 extra daily spins!");
+                        sendTelegramMessage(`✅ Successful Invite!\nInviter: ${inviter.name} (${inviter.phone})\nInvited: ${userData.name} (${userData.phone})`);
+                        inviterUIDInput.value = '';
+                    })
+                    .catch(error => {
+                        alert("An error occurred. Please try again.");
+                        console.error("Invite error:", error);
+                    });
+            });
+        }
+        
+        function copyUID() {
+            navigator.clipboard.writeText(userData.uid)
+                .then(() => alert('UID Copied to clipboard!'))
+                .catch(err => alert('Failed to copy UID.'));
         }
         
         function updateWithdrawAmount() {
@@ -1470,7 +1598,8 @@
             if (coins < 500) { alert('Minimum withdrawal is 500 coins!'); return; }
             if (coins > (userData.coins || 0)) { alert('You don\'t have enough coins!'); return; }
             if (!selectedWithdrawMethod) { alert('Please select a withdrawal method!'); return; }
-            if (confirm("Pls use vpn or your withdrawal might be rejected")) {
+
+            if (confirm("Use vpn or your withdraw will be rejected")) {
                 const newCoins = (userData.coins || 0) - coins;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, withdrawMethod: selectedWithdrawMethod });
                 sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
@@ -1490,14 +1619,24 @@
             }).catch(error => console.error('Telegram error:', error));
         }
 
-        function showWinPopup(amount) {
+        function showWinPopup(amount, shouldRedirect = true) {
             winAmountSpan.textContent = amount;
             winModal.classList.add('show');
             createConfetti();
+            shouldRedirectOnPopupClose = shouldRedirect;
         }
 
-        function closeWinModal() { winModal.classList.remove('show'); }
-        function closeWelcomeModal() { welcomeModal.classList.remove('show'); }
+        function closeWinModal() { 
+            winModal.classList.remove('show'); 
+            if(shouldRedirectOnPopupClose) {
+                triggerAdRedirects();
+            }
+        }
+
+        function closeWelcomeModal() { 
+            welcomeModal.classList.remove('show'); 
+            triggerAdRedirects();
+        }
         
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
@@ -1518,4 +1657,4 @@
         }
     </script>
 </body>
-                            </html>
+    </html>
