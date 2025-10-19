@@ -653,9 +653,81 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
+
+        /* --- NEW IN-PAGE AD OVERLAY STYLES --- */
+        #adOverlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #adOverlayContent {
+            position: relative;
+            width: 95%;
+            height: 90%;
+            max-width: 480px;
+            max-height: 720px;
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #adIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #adTimer {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #adCloseBtn {
+            display: none; /* Hidden until timer finishes */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <!-- NEW IN-PAGE AD OVERLAY HTML STRUCTURE -->
+    <div id="adOverlay">
+        <div id="adOverlayContent">
+            <iframe id="adIframe" src="about:blank"></iframe>
+            <div id="adTimer">Ad will close in 10s</div>
+            <button id="adCloseBtn" onclick="hideInPageAd()">&times;</button>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Win Modal -->
         <div id="winModal" class="modal">
@@ -813,6 +885,12 @@
             <div id="dailySection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 15px;">Daily Check-in 🎁</h2>
+                    <div class="ad-banner-container">
+                        <script type="text/javascript">
+                           atOptions = {'key' : '01efd94df9ed3ed4a270aa47108fe17e','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    </div>
                     <p style="text-align: center;">Claim your daily reward! If you miss a day, the streak resets.</p>
                     <div id="dailyCheckinGrid" class="daily-checkin-grid"></div>
                      <div class="alert alert-info" style="margin-top: 15px;">
@@ -970,6 +1048,12 @@
             <div id="inviteSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Invite a Friend 🤝</h2>
+                    <div class="ad-banner-container">
+                        <script type="text/javascript">
+                           atOptions = {'key' : '01efd94df9ed3ed4a270aa47108fe17e','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    </div>
                     <div id="inviteContent">
                         <p style="text-align: center;">Share your UID with a friend. When they use it, you'll get <span class="coins">50 coins</span> and <span class="coins">5 extra daily spins</span> for life!</p>
                         <div class="withdraw-number" style="cursor: pointer;" onclick="copyUID()">
@@ -1002,7 +1086,12 @@
             <div id="profileSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Your Profile 👤</h2>
-                    
+                    <div class="ad-banner-container">
+                        <script type="text/javascript">
+                           atOptions = {'key' : '01efd94df9ed3ed4a270aa47108fe17e','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    </div>
                     <div class="stats">
                         <div class="stat-item">
                             <div class="stat-value" id="profileCoins">0</div>
@@ -1027,7 +1116,12 @@
             <div id="withdrawSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Withdraw Earnings 💸</h2>
-                    
+                    <div class="ad-banner-container">
+                        <script type="text/javascript">
+                           atOptions = {'key' : '01efd94df9ed3ed4a270aa47108fe17e','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    </div>
                     <div class="vpn-banner">
                         <h3>⚠️ VPN REQUIREMENT ⚠️</h3>
                         <p><i class="fas fa-shield-alt"></i> You MUST connect a VPN before withdrawing!</p>
@@ -1079,6 +1173,12 @@
             <div id="supportSection" class="section">
                 <div class="card">
                     <h2 style="text-align: center; margin-bottom: 20px;">Contact Support 🎧</h2>
+                    <div class="ad-banner-container">
+                        <script type="text/javascript">
+                           atOptions = {'key' : '01efd94df9ed3ed4a270aa47108fe17e','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/01efd94df9ed3ed4a270aa47108fe17e/invoke.js"></script>
+                    </div>
                     <p style="text-align: center; margin-bottom: 25px;">If you have any issues with your account, payments, or any other questions, please contact us on WhatsApp.</p>
                     <a href="https://wa.me/923449292933?text=%20Assalam-0-alaikum%20Haroon%20bhai" target="_blank" class="btn btn-success" style="text-decoration: none;">
                         <i class="fab fa-whatsapp"></i> Chat on WhatsApp
@@ -1091,10 +1191,6 @@
 
         </div>
     </div>
-
-    <!-- Adsterra Popunder and other ads -->
-    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
-    <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
     
     <!-- Firebase Configuration -->
     <script>
@@ -1117,6 +1213,70 @@
     </script>
 
     <script>
+        // --- ADVERTISEMENT CONFIGURATION ---
+        /**
+         * CRITICAL: Replace the URL below with your actual Adsterra ad link.
+         * This can be a Direct Link or a link for a specific ad format.
+         * This is the ad that will appear in the in-page pop-up overlay.
+         */
+        const AD_IFRAME_URL = "https://example.com/your-adsterra-link";
+
+        /**
+         * The number of seconds the user must wait before they can close the in-page ad.
+         */
+        const AD_TIMER_SECONDS = 10;
+        
+        // --- IN-PAGE AD SYSTEM ---
+        const adOverlay = document.getElementById('adOverlay');
+        const adIframe = document.getElementById('adIframe');
+        const adTimerSpan = document.getElementById('adTimer');
+        const adCloseBtn = document.getElementById('adCloseBtn');
+        let adCountdownInterval;
+
+        /**
+         * This is the core ad triggering function for the in-page overlay.
+         * It shows the overlay, loads the ad into the iframe, and starts the countdown.
+         */
+        function showInPageAd() {
+            if (!AD_IFRAME_URL || AD_IFRAME_URL.includes("example.com")) {
+                console.warn("AD_IFRAME_URL is not set. Please update it with your Adsterra ad link.");
+                return; // Don't show the ad if the link isn't configured.
+            }
+
+            // Load the ad into the iframe
+            adIframe.src = AD_IFRAME_URL;
+            
+            // Show the overlay
+            adOverlay.style.display = 'flex';
+            
+            // Reset and start the timer
+            let timeLeft = AD_TIMER_SECONDS;
+            adTimerSpan.textContent = `Ad will close in ${timeLeft}s`;
+            adTimerSpan.style.display = 'block';
+            adCloseBtn.style.display = 'none';
+
+            adCountdownInterval = setInterval(() => {
+                timeLeft--;
+                adTimerSpan.textContent = `Ad will close in ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(adCountdownInterval);
+                    adTimerSpan.style.display = 'none';
+                    adCloseBtn.style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        /**
+         * Hides the in-page ad overlay and stops the ad from running.
+         * This function is called when the user clicks the close button.
+         */
+        function hideInPageAd() {
+            adOverlay.style.display = 'none';
+            adIframe.src = 'about:blank'; // Important: Stops the ad from consuming resources
+            clearInterval(adCountdownInterval); // Ensure the timer is stopped
+        }
+
+
         // Global variables
         let currentUser = null;
         let userData = null;
@@ -1219,7 +1379,6 @@
             setTimeout(() => {
                 if (!winModal.classList.contains('show')) {
                     welcomeModal.classList.add('show');
-                    triggerAdRedirects();
                 }
             }, 1000);
         });
@@ -1270,19 +1429,6 @@
             inviteForm.addEventListener('submit', handleInviteSubmit);
         }
 
-        function triggerAdRedirects() {
-            console.log("Triggering Ads on popup...");
-            const script1_url = '//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js';
-            const script2_url = '//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js';
-            const script1 = document.createElement('script'); script1.type = 'text/javascript'; script1.src = script1_url;
-            const script2 = document.createElement('script'); script2.type = 'text/javascript'; script2.src = script2_url;
-            document.body.appendChild(script1); document.body.appendChild(script2);
-            setTimeout(() => { 
-                if (document.body.contains(script1)) { document.body.removeChild(script1); }
-                if (document.body.contains(script2)) { document.body.removeChild(script2); }
-            }, 5000);
-        }
-        
         function handleLogin(e) {
             e.preventDefault();
             const fullName = document.getElementById('fullName').value;
@@ -1308,7 +1454,6 @@
                     loadUserData();
                     showApp();
                     startBigSmallGame();
-                    triggerAdRedirects();
                 }).catch(error => showInfoModal('Login failed. Please try again.', 'Error', 'fa-server'));
         }
         
@@ -1394,10 +1539,14 @@
         function handleSpin() {
             const maxSpins = userData.hasInvited ? 15 : 10;
             if (isGameInProgress || (maxSpins - (userData.spinsUsed || 0)) <= 0) return;
+            
+            // --- AD TRIGGER ---
+            showInPageAd();
+
             isGameInProgress = true;
             spinBtn.disabled = true;
             spinBtn.textContent = 'Spinning...';
-            triggerAdRedirects();
+            
             const reward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
             const winningSegment = spinRewards.indexOf(reward);
             const extraRotation = 360 * 5;
@@ -1428,9 +1577,6 @@
                 const newCoins = (userData.coins || 0) + 1;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, tapCoins: tapCoins });
             }
-            if (tapsToday % 50 === 0) {
-                triggerAdRedirects();
-            }
         }
 
         function handleCoinFlip(choice) {
@@ -1442,10 +1588,9 @@
             coinFlipResult.textContent = 'Flipping...';
             const result = Math.random() < 0.5 ? 'heads' : 'tails';
             coin.style.transform = `rotateY(${Math.random() > 0.5 ? 1800 : 1980}deg)`;
+            
             coinFlipCounter++;
-            if (coinFlipCounter % 3 === 0) {
-                triggerAdRedirects();
-            }
+
             setTimeout(() => {
                 const win = choice === result;
                 const newCoins = (userData.coins || 0) + (win ? betAmount : -betAmount);
@@ -1509,10 +1654,6 @@
                     betStatusSpan.textContent = `You bet ${betAmount} coins on ${choice.toUpperCase()}!`;
                     betSmallBtn.disabled = true;
                     betBigBtn.disabled = true;
-                    bigSmallBetCounter++;
-                    if (bigSmallBetCounter % 3 === 0) {
-                        triggerAdRedirects();
-                    }
                 }).catch(err => showInfoModal("Bet failed. Please try again.", "Error", "fa-server"));
         }
 
@@ -1619,8 +1760,8 @@
                         inviterUIDInput.value = '';
                     })
                     .catch(error => {
+                        console.error("Invite system error:", error);
                         showInfoModal("An error occurred. Please try again.", "Error", "fa-server");
-                        console.error("Invite error:", error);
                     });
             });
         }
@@ -1649,7 +1790,6 @@
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, withdrawMethod: selectedWithdrawMethod });
                 sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
                 showInfoModal('Withdrawal request submitted! Processing within 24 hours.', 'Request Sent', 'fa-paper-plane');
-                triggerAdRedirects();
                 withdrawCoinsInput.value = '';
                 document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
                 selectedWithdrawMethod = null;
@@ -1669,17 +1809,16 @@
             winAmountSpan.textContent = amount;
             winModal.classList.add('show');
             createConfetti();
-            triggerAdRedirects(); // Ad trigger on open
         }
 
         function closeWinModal() { 
             winModal.classList.remove('show'); 
-            triggerAdRedirects(); // Ad trigger on close
+            showInPageAd();
         }
 
         function closeWelcomeModal() { 
             welcomeModal.classList.remove('show'); 
-            triggerAdRedirects(); // Ad trigger on close
+            showInPageAd();
         }
 
         function showInfoModal(message, title = 'Notice', iconClass = 'fa-info-circle') {
@@ -1687,27 +1826,25 @@
             infoModalMessage.textContent = message;
             infoModalIcon.className = `fas ${iconClass}`;
             infoModal.classList.add('show');
-            triggerAdRedirects(); // Ad trigger on open
         }
 
         function closeInfoModal() {
             infoModal.classList.remove('show');
-            triggerAdRedirects(); // Ad trigger on close
+            showInPageAd();
         }
 
         function showConfirmModal(message, onConfirm) {
             confirmModalMessage.textContent = message;
             confirmBtnYes.onclick = () => {
-                onConfirm(); 
+                onConfirm();
                 closeConfirmModal();
             };
             confirmModal.classList.add('show');
-            triggerAdRedirects(); // Ad trigger on open
         }
 
         function closeConfirmModal() {
             confirmModal.classList.remove('show');
-            triggerAdRedirects(); // Ad trigger on close
+            showInPageAd();
         }
         
         function createConfetti() {
