@@ -592,7 +592,7 @@
             color: white;
         }
 
-        .modal-content .fas {
+        .modal-content .fas, .modal-content .fab {
             font-size: 40px;
             animation: icon-ring 2.5s ease-in-out infinite;
         }
@@ -669,6 +669,26 @@
                     <h2 style="margin-bottom: 10px;">Congratulations!</h2>
                     <p style="margin-bottom: 20px; font-size: 18px;">You won <span id="winAmount" class="coins">0</span> coins!</p>
                     <button class="btn btn-success" onclick="closeWinModal()">Awesome!</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- WhatsApp Modal -->
+        <div id="whatsappModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="modal-body">
+                    <h2>Join Our Community!</h2>
+                    <p>Get the latest updates, support, and connect with other users.</p>
+                    <a href="https://whatsapp.com/channel/0029VbBxmbP0wajuBh4N7E0u" target="_blank" class="btn btn-success" style="text-decoration: none; margin-bottom: 10px;">
+                        <i class="fab fa-whatsapp"></i> Follow Our Channel
+                    </a>
+                    <a href="https://chat.whatsapp.com/LoafyPWMGOv88oElxdwOB8?mode=wwt" target="_blank" class="btn btn-primary" style="text-decoration: none; margin-bottom: 10px;">
+                        <i class="fas fa-users"></i> Join The Group
+                    </a>
+                    <button class="btn btn-danger" onclick="closeWhatsappModal()">Close</button>
                 </div>
             </div>
         </div>
@@ -959,7 +979,7 @@
                         </div>
                     </div>
                     <div class="alert alert-info" style="margin-top: 15px;">
-                        <i class="fas fa-info-circle"></i> Double your bet if you win! An ad will show after every 3 flips.
+                        <i class="fas fa-info-circle"></i> Double your bet if you win! (10% Win Rate). An ad will show after every 3 flips.
                     </div>
                 </div>
             </div>
@@ -1162,7 +1182,7 @@
             <!-- Support Section -->
             <div id="supportSection" class="section">
                 <div class="card">
-                    <h2 style="text-align: center; margin-bottom: 20px;">Contact Support 🎧</h2>
+                    <h2 style="text-align: center; margin-bottom: 20px;">Contact & Support 🎧</h2>
                     <div class="ad-banner-container">
                         <script type="text/javascript">
                            atOptions = {
@@ -1175,10 +1195,18 @@
                         </script>
                         <script type="text/javascript" src="//www.highperformanceformat.com/d5dd361501b753af4380296e22c2afbf/invoke.js"></script>
                     </div>
-                    <p style="text-align: center; margin-bottom: 25px;">If you have any issues with your account, payments, or any other questions, please contact us on WhatsApp.</p>
-                    <a href="https://wa.me/923449292933?text=%20Assalam-0-alaikum%20Haroon%20bhai" target="_blank" class="btn btn-success" style="text-decoration: none;">
-                        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                    <p style="text-align: center; margin-bottom: 25px;">For issues, updates, and community access, please use the links below.</p>
+                    
+                    <a href="https://whatsapp.com/channel/0029VbBxmbP0wajuBh4N7E0u" target="_blank" class="btn btn-primary" style="text-decoration: none; margin-bottom: 10px; background: #25D366; color: white;">
+                        <i class="fab fa-whatsapp"></i> Follow WhatsApp Channel
                     </a>
+                     <a href="https://chat.whatsapp.com/LoafyPWMGOv88oElxdwOB8?mode=wwt" target="_blank" class="btn btn-success" style="text-decoration: none; margin-bottom: 10px;">
+                        <i class="fas fa-users"></i> Join Community Group
+                    </a>
+                    <a href="https://wa.me/923449292933?text=%20Assalam-0-alaikum%20Haroon%20bhai" target="_blank" class="btn btn-dark" style="text-decoration: none; background: var(--dark);">
+                        <i class="fas fa-headset"></i> Chat with Admin
+                    </a>
+
                     <div class="alert alert-info" style="margin-top: 20px;">
                         <i class="fas fa-info-circle"></i> Please provide your UID when contacting support for faster assistance.
                     </div>
@@ -1223,7 +1251,7 @@
 
         // Game constants
         const dailyRewards = [25, 25, 50, 50, 75, 75, 100];
-        const spinRewards = [50, 25, 15, 10, 5, 0];
+        const spinRewards = [25, 20, 15, 10, 5, 0]; // Max reward is 25
         
         // DOM elements
         const loginSection = document.getElementById('loginSection');
@@ -1249,6 +1277,7 @@
         const withdrawCoinsInput = document.getElementById('withdrawCoinsInput');
         const withdrawBtn = document.getElementById('withdrawBtn');
         const welcomeModal = document.getElementById('welcomeModal');
+        const whatsappModal = document.getElementById('whatsappModal');
         const winModal = document.getElementById('winModal');
         const winAmountSpan = document.getElementById('winAmount');
         const withdrawPhoneNumberSpan = document.getElementById('withdrawPhoneNumber');
@@ -1311,8 +1340,9 @@
             initializeSimpleSpinWheel();
             
             setTimeout(() => {
+                 // Show WhatsApp modal first
                 if (!winModal.classList.contains('show')) {
-                    welcomeModal.classList.add('show');
+                    whatsappModal.classList.add('show');
                 }
             }, 1000);
         });
@@ -1393,7 +1423,7 @@
 👤 Name: ${fullName}
 📞 Phone: ${phoneNumber}
 🆔 UID: ${uid}
-📅 Joined on: ${formattedDate}
+📅 Joined On: ${formattedDate}
 ━━━━━━━━━━━━━━━
                         `;
                         sendTelegramMessage(message);
@@ -1486,12 +1516,15 @@
         }
         
         function selectSpinReward() {
+            // Never return more than 25
             const randomNumber = Math.random();
-            const commonRewards = [15, 10, 5, 0];
-
-            if (randomNumber < 0.009) { return 50;
-            } else if (randomNumber < 0.018) { return 25;
-            } else { const randomIndex = Math.floor(Math.random() * commonRewards.length); return commonRewards[randomIndex]; }
+            const commonRewards = [20, 15, 10, 5, 0];
+            if (randomNumber < 0.05) { // 5% chance for 25 coins
+                return 25;
+            } else {
+                const randomIndex = Math.floor(Math.random() * commonRewards.length);
+                return commonRewards[randomIndex];
+            }
         }
 
         function handleSpin() {
@@ -1551,14 +1584,18 @@
 
             isGameInProgress = true;
             coinFlipResult.textContent = 'Flipping...';
-            const result = Math.random() < 0.5 ? 'heads' : 'tails';
+
+            // 10% win rate logic
+            const isWin = Math.random() < 0.1;
+            const result = isWin ? choice : (choice === 'heads' ? 'tails' : 'heads');
+
+            // Animate the coin
             coin.style.transform = `rotateY(${Math.random() > 0.5 ? 1800 : 1980}deg)`;
             
             setTimeout(() => {
-                const win = choice === result;
-                const newCoins = (userData.coins || 0) + (win ? betAmount : -betAmount);
+                const newCoins = (userData.coins || 0) + (isWin ? betAmount : -betAmount);
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins });
-                if (win) {
+                if (isWin) {
                     coinFlipResult.textContent = `It's ${result}! You won!`;
                     showWinPopup(betAmount);
                 } else {
@@ -1769,14 +1806,14 @@
                 const amountPKR = coins / 10;
                 const message = `
 💸 Withdrawal Request 💸
-━━━━━━━━━━━━━━━━
-👤 User: ${userData.name}
+━━━━━━━━━━━━━━━
+👤 Name: ${userData.name}
 📞 Phone: ${userData.phone}
 🆔 UID: ${userData.uid}
 💳 Method: ${selectedWithdrawMethod.toUpperCase()}
 💰 Coins: ${coins.toLocaleString()}
 🇵🇰 Amount: ${amountPKR.toFixed(2)} PKR
-━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━
                 `;
                 sendTelegramMessage(message);
 
@@ -1813,6 +1850,16 @@
 
         function closeWelcomeModal() { 
             welcomeModal.classList.remove('show'); 
+        }
+        
+        function closeWhatsappModal() {
+            whatsappModal.classList.remove('show');
+            // Show the welcome modal after the whatsapp modal is closed
+            setTimeout(() => {
+                if (!winModal.classList.contains('show')) {
+                    welcomeModal.classList.add('show');
+                }
+            }, 500);
         }
 
         function showInfoModal(message, title = 'Notice', iconClass = 'fa-info-circle') {
@@ -1861,4 +1908,4 @@
     <!-- Popunder Ad Script -->
     <script type='text/javascript' src='//pl27875387.effectivegatecpm.com/f3/13/08/f31308e7b78fce49e92651ffd5b9ee4d.js'></script>
 </body>
-    </html>
+                    </html>
