@@ -653,7 +653,6 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
-
     </style>
 </head>
 <body>
@@ -1120,6 +1119,10 @@
 
         </div>
     </div>
+
+    <!-- Adsterra Popunder and other ads -->
+    <script type='text/javascript' src='//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js'></script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js"></script>
     
     <!-- Firebase Configuration -->
     <script>
@@ -1137,39 +1140,17 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        // --- UPDATED TELEGRAM CONFIG ---
-        const TELEGRAM_BOT_TOKEN = "7797824226:AAE-EOiN4bfhIuzS-awQMDqOcc8VUZozpeY";
+        const TELEGRAM_BOT_TOKEN = "8099895542:AAF_q8Q4SNb71xsCG4ImS9sGsnh9uiO6r-k";
         const TELEGRAM_CHAT_ID = "7122620719";
     </script>
 
     <script>
-        // --- ADVERTISEMENT CONFIGURATION ---
-        /**
-         * CRITICAL: Replace the URL below with your actual Adsterra Direct Link.
-         * This link will be opened in a new tab.
-         */
-        const AD_DIRECT_LINK_URL = "https://example.com/your-adsterra-direct-link";
-
-        /**
-         * This is the core ad triggering function. It opens the direct link in a new tab.
-         * This behaves like a pop-up and redirects the user as requested.
-         */
-        function triggerAdAction() {
-            if (!AD_DIRECT_LINK_URL || AD_DIRECT_LINK_URL.includes("example.com")) {
-                console.warn("AD_DIRECT_LINK_URL is not set. Please update it with your Adsterra ad link.");
-                return; // Don't show the ad if the link isn't configured.
-            }
-            window.open(AD_DIRECT_LINK_URL, '_blank');
-        }
-
-
         // Global variables
         let currentUser = null;
         let userData = null;
         let selectedWithdrawMethod = null;
         let isGameInProgress = false;
-        let tapCounter = 0; // For ad trigger
-        let coinFlipCounter = 0; // For ad trigger
+        let coinFlipCounter = 0;
         let bigSmallBetCounter = 0;
         let gameHistory = [];
         const HISTORY_LIMIT = 10;
@@ -1277,12 +1258,6 @@
             navBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (isGameInProgress && this.getAttribute('data-section') !== 'bigSmallSection') return;
-                    
-                    // --- AD TRIGGER ON NAVIGATION ---
-                    if (!this.classList.contains('active')) {
-                        triggerAdAction();
-                    }
-                    
                     const targetSection = this.getAttribute('data-section');
                     navBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
@@ -1322,6 +1297,22 @@
             inviteForm.addEventListener('submit', handleInviteSubmit);
         }
 
+        function triggerAdRedirects() {
+            console.log("Triggering Ads...");
+            // These scripts cause popunders or new tabs. Calling them is sufficient.
+            const script1_url = '//www.highperformanceformat.com/76e7056cf71d83911fb0aaf9e2cb675c/invoke.js';
+            const script2_url = '//pl27873850.effectivegatecpm.com/7f/a1/a1/7fa1a1b07b2c46bf0711b881388672b6.js';
+            const script1 = document.createElement('script'); script1.type = 'text/javascript'; script1.src = script1_url;
+            const script2 = document.createElement('script'); script2.type = 'text/javascript'; script2.src = script2_url;
+            document.body.appendChild(script1); 
+            document.body.appendChild(script2);
+            // Clean up the script tags after they have likely executed
+            setTimeout(() => { 
+                if (document.body.contains(script1)) { document.body.removeChild(script1); }
+                if (document.body.contains(script2)) { document.body.removeChild(script2); }
+            }, 5000);
+        }
+        
         function handleLogin(e) {
             e.preventDefault();
             const fullName = document.getElementById('fullName').value;
@@ -1338,24 +1329,10 @@
                         currentUser = { name: snapshot.val().name, phone: phoneNumber, uid: snapshot.val().uid };
                     } else {
                         const uid = 'har-' + Math.floor(1000 + Math.random() * 9000);
-                        const now = new Date();
-                        const joinDate = now.toISOString();
-                        const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'});
-
+                        const now = new Date().toISOString();
                         currentUser = { name: fullName, phone: phoneNumber, uid: uid };
-                        database.ref('users/' + phoneNumber).set({ name: fullName, phone: phoneNumber, uid: uid, coins: 0, joined: joinDate, spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: joinDate, withdrawMethod: null, lastCheckin: "1970-01-01", checkinStreak: 0 });
-                        
-                        // --- ENHANCED TELEGRAM MESSAGE FOR NEW USER ---
-                        const message = `
-✅* New User Registration *✅
-━━━━━━━━━━━━━━━
-👤 *Name:* \`${fullName}\`
-📞 *Phone:* \`${phoneNumber}\`
-🆔 *UID:* ${uid}
-📅 *Joined On:* ${formattedDate}
-━━━━━━━━━━━━━━━
-                        `;
-                        sendTelegramMessage(message, true); // Send with Markdown
+                        database.ref('users/' + phoneNumber).set({ name: fullName, phone: phoneNumber, uid: uid, coins: 0, joined: now, spinsUsed: 0, tapsToday: 0, tapCoins: 0, lastReset: now, withdrawMethod: null, lastCheckin: "1970-01-01", checkinStreak: 0 });
+                        sendTelegramMessage(`New user registered!\nName: ${fullName}\nPhone: ${phoneNumber}\nUID: ${uid}`);
                     }
                     localStorage.setItem('coinMasterUser', JSON.stringify(currentUser));
                     loadUserData();
@@ -1443,51 +1420,20 @@
             wheel.appendChild(fragment);
         }
 
-        /**
-         * Selects a spin reward based on weighted probabilities.
-         * - 50 coins: 0.9% chance
-         * - 25 coins: 0.9% chance
-         * - Others: 98.2% chance, distributed equally
-         */
-        function selectSpinReward() {
-            const randomNumber = Math.random(); // Generates a number between 0.0 and 1.0
-            const commonRewards = [15, 10, 5, 0];
-
-            if (randomNumber < 0.009) { // 0.9% chance for 50
-                return 50;
-            } else if (randomNumber < 0.018) { // 0.9% chance for 25
-                return 25;
-            } else { // 98.2% chance for common rewards
-                // Select a random reward from the common pool
-                const randomIndex = Math.floor(Math.random() * commonRewards.length);
-                return commonRewards[randomIndex];
-            }
-        }
-
         function handleSpin() {
             const maxSpins = userData.hasInvited ? 15 : 10;
             if (isGameInProgress || (maxSpins - (userData.spinsUsed || 0)) <= 0) return;
-            
-            // --- AD TRIGGER ---
-            triggerAdAction();
-
             isGameInProgress = true;
             spinBtn.disabled = true;
             spinBtn.textContent = 'Spinning...';
-            
-            // --- UPDATED REWARD SELECTION LOGIC ---
-            const reward = selectSpinReward(); 
-            
+            triggerAdRedirects();
+            const reward = spinRewards[Math.floor(Math.random() * spinRewards.length)];
             const winningSegment = spinRewards.indexOf(reward);
             const extraRotation = 360 * 5;
             const segmentAngle = 360 / spinRewards.length;
-            // Add a small random offset to make the landing position less predictable
-            const randomOffset = (Math.random() * (segmentAngle * 0.8)) - (segmentAngle * 0.4);
-            const targetRotation = extraRotation - (winningSegment * segmentAngle) - (segmentAngle / 2) + randomOffset;
-            
+            const targetRotation = extraRotation - (winningSegment * segmentAngle) - (segmentAngle / 2) + (Math.random() * (segmentAngle * 0.8) - (segmentAngle * 0.4));
             wheel.style.transform = `rotate(${targetRotation}deg)`;
             database.ref('users/' + currentUser.phone).update({ spinsUsed: (userData.spinsUsed || 0) + 1 });
-            
             setTimeout(() => {
                 if (reward > 0) {
                     const newCoins = (userData.coins || 0) + reward;
@@ -1499,23 +1445,20 @@
                 isGameInProgress = false;
                 spinBtn.disabled = (maxSpins - (userData.spinsUsed || 0)) <= 0;
                 spinBtn.textContent = 'Spin Now! 🎯';
-            }, 5500); // Wait for animation to finish
+            }, 5500);
         }
         
         function handleTap() {
             if ((userData.tapCoins || 0) >= 200) return;
-            
-            tapCounter++;
-            if (tapCounter % 50 === 0) {
-                triggerAdAction();
-            }
-
             const tapsToday = (userData.tapsToday || 0) + 1;
             database.ref('users/' + currentUser.phone).update({ tapsToday: tapsToday });
             if (tapsToday % 10 === 0) {
                 const tapCoins = (userData.tapCoins || 0) + 1;
                 const newCoins = (userData.coins || 0) + 1;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, tapCoins: tapCoins });
+            }
+            if (tapsToday % 50 === 0) {
+                triggerAdRedirects();
             }
         }
 
@@ -1524,17 +1467,14 @@
             const betAmount = parseInt(flipBetAmountInput.value);
             if (isNaN(betAmount) || betAmount <= 0) { showInfoModal("Please enter a valid bet amount.", "Invalid Bet", "fa-exclamation-triangle"); return; }
             if (betAmount > (userData.coins || 0)) { showInfoModal("You don't have enough coins for this bet.", "Not Enough Coins", "fa-coins"); return; }
-            
-            coinFlipCounter++;
-            if (coinFlipCounter % 3 === 0) {
-                triggerAdAction();
-            }
-
             isGameInProgress = true;
             coinFlipResult.textContent = 'Flipping...';
             const result = Math.random() < 0.5 ? 'heads' : 'tails';
             coin.style.transform = `rotateY(${Math.random() > 0.5 ? 1800 : 1980}deg)`;
-            
+            coinFlipCounter++;
+            if (coinFlipCounter % 3 === 0) {
+                triggerAdRedirects();
+            }
             setTimeout(() => {
                 const win = choice === result;
                 const newCoins = (userData.coins || 0) + (win ? betAmount : -betAmount);
@@ -1598,6 +1538,10 @@
                     betStatusSpan.textContent = `You bet ${betAmount} coins on ${choice.toUpperCase()}!`;
                     betSmallBtn.disabled = true;
                     betBigBtn.disabled = true;
+                    bigSmallBetCounter++;
+                    if (bigSmallBetCounter % 3 === 0) {
+                        triggerAdRedirects();
+                    }
                 }).catch(err => showInfoModal("Bet failed. Please try again.", "Error", "fa-server"));
         }
 
@@ -1700,11 +1644,11 @@
                 database.ref().update(updates)
                     .then(() => {
                         showInfoModal("Success! You have been invited. Your inviter has received 50 coins and 5 extra daily spins!", "Success!", "fa-check-circle");
-                        const message = `✅ *Successful Invite!* ✅\n\n*Inviter:* ${inviter.name} (\`${inviter.phone}\`)\n*Invited:* ${userData.name} (\`${userData.phone}\`)`;
-                        sendTelegramMessage(message, true);
+                        sendTelegramMessage(`✅ Successful Invite!\nInviter: ${inviter.name} (${inviter.phone})\nInvited: ${userData.name} (${userData.phone})`);
                         inviterUIDInput.value = '';
                     })
                     .catch(error => {
+                        // Enhanced error logging for easier debugging
                         console.error("Invite system error:", error);
                         showInfoModal("An error occurred. Please try again.", "Error", "fa-server");
                     });
@@ -1726,40 +1670,14 @@
         
         function handleWithdraw() {
             const coins = parseInt(withdrawCoinsInput.value);
-            
-            // --- UPDATED MINIMUM WITHDRAWAL CHECK ---
-            if (isNaN(coins) || coins < 500) { 
-                showInfoModal('Minimum withdrawal is 500 coins!', 'Requirement', 'fa-exclamation-triangle'); 
-                return; 
-            }
-            if (coins > (userData.coins || 0)) { 
-                showInfoModal("You don't have enough coins!", 'Not Enough Coins', 'fa-coins'); 
-                return; 
-            }
-            if (!selectedWithdrawMethod) { 
-                showInfoModal('Please select a withdrawal method!', 'Selection Required'); 
-                return; 
-            }
+            if (coins < 500) { showInfoModal('Minimum withdrawal is 500 coins!', 'Requirement', 'fa-exclamation-triangle'); return; }
+            if (coins > (userData.coins || 0)) { showInfoModal("You don't have enough coins!", 'Not Enough Coins', 'fa-coins'); return; }
+            if (!selectedWithdrawMethod) { showInfoModal('Please select a withdrawal method!', 'Selection Required'); return; }
 
             showConfirmModal("You MUST use a VPN or your withdrawal will be rejected. Do you want to proceed?", () => {
                 const newCoins = (userData.coins || 0) - coins;
                 database.ref('users/' + currentUser.phone).update({ coins: newCoins, withdrawMethod: selectedWithdrawMethod });
-                
-                // --- ENHANCED TELEGRAM MESSAGE FOR WITHDRAWAL ---
-                const amountPKR = coins / 10;
-                const message = `
-💸* Withdrawal Request *💸
-━━━━━━━━━━━━━━━━
-👤 *User:* \`${userData.name}\`
-📞 *Phone:* \`${userData.phone}\`
-🆔 *UID:* ${userData.uid}
-💳 *Method:* ${selectedWithdrawMethod.toUpperCase()}
-💰 *Coins:* ${coins.toLocaleString()}
-🇵🇰 *Amount:* ${amountPKR.toFixed(2)} PKR
-━━━━━━━━━━━━━━━━
-                `;
-                sendTelegramMessage(message, true); // Send with Markdown
-
+                sendTelegramMessage(`Withdrawal Request!\nUser: ${userData.name}\nPhone: ${userData.phone}\nUID: ${userData.uid}\nMethod: ${selectedWithdrawMethod}\nCoins: ${coins}\nAmount: ${coins/10} PKR`);
                 showInfoModal('Withdrawal request submitted! Processing within 24 hours.', 'Request Sent', 'fa-paper-plane');
                 withdrawCoinsInput.value = '';
                 document.querySelectorAll('.withdraw-option').forEach(o => o.classList.remove('selected'));
@@ -1768,18 +1686,10 @@
             });
         }
         
-        function sendTelegramMessage(message, useMarkdown = false) {
-            const payload = {
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-            };
-            if (useMarkdown) {
-                payload.parse_mode = 'Markdown';
-            }
+        function sendTelegramMessage(message) {
             fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
             }).catch(error => console.error('Telegram error:', error));
         }
 
@@ -1792,12 +1702,12 @@
 
         function closeWinModal() { 
             winModal.classList.remove('show'); 
-            triggerAdAction();
+            triggerAdRedirects();
         }
 
         function closeWelcomeModal() { 
             welcomeModal.classList.remove('show'); 
-            triggerAdAction();
+            triggerAdRedirects();
         }
 
         function showInfoModal(message, title = 'Notice', iconClass = 'fa-info-circle') {
@@ -1809,13 +1719,13 @@
 
         function closeInfoModal() {
             infoModal.classList.remove('show');
-            triggerAdAction();
+            triggerAdRedirects();
         }
 
         function showConfirmModal(message, onConfirm) {
             confirmModalMessage.textContent = message;
             confirmBtnYes.onclick = () => {
-                onConfirm();
+                onConfirm(); 
                 closeConfirmModal();
             };
             confirmModal.classList.add('show');
@@ -1823,7 +1733,7 @@
 
         function closeConfirmModal() {
             confirmModal.classList.remove('show');
-            triggerAdAction();
+            triggerAdRedirects();
         }
         
         function createConfetti() {
@@ -1845,4 +1755,4 @@
         }
     </script>
 </body>
-                        </html>
+</html>
